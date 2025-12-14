@@ -1,0 +1,25 @@
+
+> web@0.1.0 build
+> next build
+
+   Γû▓ Next.js 16.0.10 (Turbopack)
+   - Environments: .env
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully in 29.9s
+   Running TypeScript ...
+Failed to compile.
+
+./src/app/feed/page.tsx:67:29
+Type error: Type 'string | Record<string, never>' is not assignable to type 'ReactNode'.
+  Type 'Record<string, never>' is not assignable to type 'ReactNode'.
+    Type 'Record<string, never>' is missing the following properties from type 'ReactPortal': children, type, props, key
+
+  65 |                 <span className="mx-2">ΓÇó</span>
+  66 |                 <span>
+> 67 |                   Posted by {post.author.displayName || post.author.username}
+     |                             ^
+  68 |                 </span>
+  69 |               </div>
+  70 |             </div>
+Next.js build worker exited with code: 1 and signal: null
