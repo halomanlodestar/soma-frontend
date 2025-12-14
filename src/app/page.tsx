@@ -1,5 +1,7 @@
-import { ComponentExample } from "@/components/component-example";
+/** @format */
+
+import LoginPage from "./login/page";
 
 export default function Page() {
-return <ComponentExample />;
+  return <div></div>;
 }
