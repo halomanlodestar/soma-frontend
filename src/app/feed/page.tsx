@@ -7,6 +7,7 @@ import { api } from "@/lib/api";
 import { components } from "@/lib/api-types";
 import { CardTitle } from "@/components/ui/card";
 import { ThumbsUp, Trophy } from "lucide-react"; // Import some basic icons if available or standard ones
+import Link from "next/link";
 
 type FeedItem = components["schemas"]["FeedItem"];
 
@@ -48,7 +49,11 @@ export default function FeedPage() {
       <h1 className="text-2xl font-bold mb-6">Your Feed</h1>
 
       {posts.map((post) => (
-        <div key={post.id} className="px-0 space-y-4">
+        <Link
+          href={`/posts/${post.id}`}
+          key={post.id}
+          className="px-0 space-y-4"
+        >
           <div>
             <div className="flex justify-between items-start">
               <div className="text-sm text-muted-foreground mb-1">
@@ -94,7 +99,7 @@ export default function FeedPage() {
               <span>{post.awardCount}</span>
             </div>
           </div>
-        </div>
+        </Link>
       ))}
 
       {posts.length === 0 && (
