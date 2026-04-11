@@ -3,6 +3,8 @@
     "terminal.background": "#00000000",
     "activityBar.background": "#263025",
     "titleBar.activeBackground": "#364333",
-    "titleBar.activeForeground": "#F9FAF9"
+    "titleBar.activeForeground": "#F9FAF9",
+    "titleBar.inactiveBackground": "#263025",
+    "titleBar.inactiveForeground": "#F9FAF9"
   }
 }

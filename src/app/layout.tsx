@@ -5,8 +5,9 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Geist, Geist_Mono, Figtree } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { cn } from "@/lib/utils";
 
-const figtree = Figtree({ subsets: ["latin"], variable: "--font-sans" });
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={figtree.variable}>
+    <html lang="en" className={cn("font-sans", figtree.variable)}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
