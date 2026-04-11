@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { FeedItem as FeedItemType, Soma } from "@/lib/types";
 import { FeedItem } from "@/components/feed/FeedItem";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Plus } from "lucide-react";

@@ -16,7 +16,7 @@ export function FeedItem({ post, className }: FeedItemProps) {
     <div
       className={cn(
         "flex flex-col py-4 border-b border-border hover:bg-muted/10 transition-colors duration-200",
-        className
+        className,
       )}
     >
       {/* 1. Metadata Row */}
@@ -55,7 +55,7 @@ export function FeedItem({ post, className }: FeedItemProps) {
             <video
               src={post.media.items[0].originalUrl}
               controls
-              className="w-full h-auto max-h-[600px]"
+              className="w-full h-auto max-h-150"
             />
           )}
         </div>
