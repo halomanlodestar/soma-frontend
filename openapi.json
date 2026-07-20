@@ -1,0 +1,1448 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/users/me": {
+      "get": {
+        "operationId": "UsersController_getMyProfile",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"]
+      },
+      "patch": {
+        "operationId": "UsersController_updateMyProfile",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateUserProfileDto" }
+            }
+          }
+        },
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"]
+      }
+    },
+    "/api/v1/users/{username}": {
+      "get": {
+        "operationId": "UsersController_getUserByUsername",
+        "parameters": [
+          {
+            "name": "username",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Users"]
+      }
+    },
+    "/api/v1/posts": {
+      "post": {
+        "operationId": "PostsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreatePostDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Post created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or soma does not exist" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Creator role required" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Create a new post",
+        "tags": ["Posts"]
+      },
+      "get": {
+        "operationId": "PostsController_findTopPosts",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "Page number",
+            "schema": { "example": 1, "type": "number" }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of posts per page",
+            "schema": { "example": 20, "type": "number" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of top posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Post" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get top posts sorted by votes",
+        "tags": ["Posts"]
+      }
+    },
+    "/api/v1/somas/{somaId}/posts": {
+      "get": {
+        "operationId": "PostsController_findBySoma",
+        "parameters": [
+          {
+            "name": "somaId",
+            "required": true,
+            "in": "path",
+            "description": "Soma UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of posts in the soma",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Post" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all posts in a soma",
+        "tags": ["Posts"]
+      }
+    },
+    "/api/v1/posts/{id}": {
+      "get": {
+        "operationId": "PostsController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "404": { "description": "Post not found" }
+        },
+        "summary": "Get post by ID",
+        "tags": ["Posts"]
+      },
+      "patch": {
+        "operationId": "PostsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdatePostDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Post updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Post" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Not post author or admin" },
+          "404": { "description": "Post not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Update post",
+        "tags": ["Posts"]
+      },
+      "delete": {
+        "operationId": "PostsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Post deleted successfully" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Not post author or admin" },
+          "404": { "description": "Post not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Delete post",
+        "tags": ["Posts"]
+      }
+    },
+    "/api/v1/somas": {
+      "post": {
+        "operationId": "SomaController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateSomaDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Soma created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Soma" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input data" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Admin role required" },
+          "409": { "description": "Soma with this slug already exists" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Create a new soma (community)",
+        "tags": ["Somas"]
+      },
+      "get": {
+        "operationId": "SomaController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of all somas",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Soma" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all somas",
+        "tags": ["Somas"]
+      }
+    },
+    "/api/v1/somas/{slug}": {
+      "get": {
+        "operationId": "SomaController_findBySlug",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "description": "Soma slug",
+            "schema": { "example": "tech-news", "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Soma found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Soma" }
+              }
+            }
+          },
+          "404": { "description": "Soma not found" }
+        },
+        "summary": "Get soma by slug",
+        "tags": ["Somas"]
+      }
+    },
+    "/api/v1/auth/google": {
+      "get": {
+        "operationId": "AuthController_googleAuth",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/google/callback": {
+      "get": {
+        "operationId": "AuthController_googleAuthRedirect",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "operationId": "AuthController_getCurrentUser",
+        "parameters": [],
+        "responses": { "200": { "description": "" } },
+        "tags": ["Auth"]
+      }
+    },
+    "/api/v1/posts/{postId}/comments": {
+      "post": {
+        "operationId": "CommentsController_create",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCommentDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or post not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Create a top-level comment on a post",
+        "tags": ["Comments"]
+      },
+      "get": {
+        "operationId": "CommentsController_findAll",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Comment" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all comments for a post (flat list, sorted by creation)",
+        "tags": ["Comments"]
+      }
+    },
+    "/api/v1/comments/{commentId}/replies": {
+      "post": {
+        "operationId": "CommentsController_reply",
+        "parameters": [
+          {
+            "name": "commentId",
+            "required": true,
+            "in": "path",
+            "description": "Parent Comment UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateCommentDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Reply created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or parent comment not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Reply to an existing comment",
+        "tags": ["Comments"]
+      }
+    },
+    "/api/v1/comments/{id}": {
+      "patch": {
+        "operationId": "CommentsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UpdateCommentDto" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Not comment author or admin" },
+          "404": { "description": "Comment not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Update comment content",
+        "tags": ["Comments"]
+      },
+      "delete": {
+        "operationId": "CommentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Comment UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Comment" }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Not comment author or admin" },
+          "404": { "description": "Comment not found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Delete comment",
+        "tags": ["Comments"]
+      }
+    },
+    "/api/v1/notifications": {
+      "get": {
+        "operationId": "NotificationsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "List of notifications",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Notification" }
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Get all notifications for current user",
+        "tags": ["Notifications"]
+      }
+    },
+    "/api/v1/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markAsRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "Notification UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification marked as read",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Notification" }
+              }
+            }
+          },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Mark notification as read",
+        "tags": ["Notifications"]
+      }
+    },
+    "/api/v1/votes": {
+      "post": {
+        "operationId": "VotesController_upsert",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateVoteDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Vote created or updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Vote" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or target not found" },
+          "401": { "description": "Unauthorized" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Upsert (Create or Update) a vote",
+        "tags": ["Votes"]
+      },
+      "delete": {
+        "operationId": "VotesController_remove",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/DeleteVoteDto" }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Vote deleted successfully or did not exist"
+          },
+          "401": { "description": "Unauthorized" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Delete a vote",
+        "tags": ["Votes"]
+      }
+    },
+    "/api/v1/media/upload-intent": {
+      "post": {
+        "operationId": "MediaController_createUploadIntent",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UploadIntentDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Presigned upload URL generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadIntentResponseDto"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Creator role required" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Generate presigned URL for media upload",
+        "tags": ["Media"]
+      }
+    },
+    "/api/v1/posts/{postId}/media": {
+      "get": {
+        "operationId": "MediaController_getMediaByPost",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media collection found or null if no media attached",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/MediaCollection" }
+              }
+            }
+          }
+        },
+        "summary": "Get media collection for a post",
+        "tags": ["Media"]
+      }
+    },
+    "/api/v1/awards": {
+      "post": {
+        "operationId": "AwardsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateAwardDto" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Award created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Award" }
+              }
+            }
+          },
+          "400": { "description": "Invalid input or target not found" },
+          "401": { "description": "Unauthorized" }
+        },
+        "security": [{ "JWT-auth": [] }],
+        "summary": "Give an award to a post or comment",
+        "tags": ["Awards"]
+      }
+    },
+    "/api/v1/posts/{postId}/awards": {
+      "get": {
+        "operationId": "AwardsController_findAllByPost",
+        "parameters": [
+          {
+            "name": "postId",
+            "required": true,
+            "in": "path",
+            "description": "Post UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of awards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Award" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all awards for a post",
+        "tags": ["Awards"]
+      }
+    },
+    "/api/v1/comments/{commentId}/awards": {
+      "get": {
+        "operationId": "AwardsController_findAllByComment",
+        "parameters": [
+          {
+            "name": "commentId",
+            "required": true,
+            "in": "path",
+            "description": "Comment UUID",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of awards",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Award" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get all awards for a comment",
+        "tags": ["Awards"]
+      }
+    },
+    "/api/v1/feed": {
+      "get": {
+        "operationId": "FeedController_getGlobalFeed",
+        "parameters": [
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of posts to return (default: 20)",
+            "schema": { "minimum": 1, "default": 20, "type": "number" }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Cursor for pagination (Post ID)",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of recent posts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FeedItem" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get global feed (recent posts)",
+        "tags": ["Feed"]
+      }
+    },
+    "/api/v1/somas/{somaId}/feed": {
+      "get": {
+        "operationId": "FeedController_getSomaFeed",
+        "parameters": [
+          {
+            "name": "somaId",
+            "required": true,
+            "in": "path",
+            "description": "Soma UUID",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of posts to return (default: 20)",
+            "schema": { "minimum": 1, "default": 20, "type": "number" }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "Cursor for pagination (Post ID)",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of recent posts in soma",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FeedItem" }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get feed for a specific soma",
+        "tags": ["Feed"]
+      }
+    },
+    "/api/v1/follow/{userId}": {
+      "post": {
+        "operationId": "FollowController_follow",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the creator to follow",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "201": { "description": "" } },
+        "security": [{ "bearer": [] }],
+        "summary": "Follow a creator",
+        "tags": ["Follow"]
+      },
+      "delete": {
+        "operationId": "FollowController_unfollow",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "description": "ID of the creator to unfollow",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "security": [{ "bearer": [] }],
+        "summary": "Unfollow a creator",
+        "tags": ["Follow"]
+      }
+    },
+    "/api/v1/users/{userId}/followers": {
+      "get": {
+        "operationId": "FollowController_getFollowers",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "summary": "Get list of users following the creator",
+        "tags": ["Follow"]
+      }
+    },
+    "/api/v1/users/{userId}/following": {
+      "get": {
+        "operationId": "FollowController_getFollowing",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "summary": "Get list of creators this user follows",
+        "tags": ["Follow"]
+      }
+    },
+    "/api/v1/users/{userId}/follow-status": {
+      "get": {
+        "operationId": "FollowController_getFollowStatus",
+        "parameters": [
+          {
+            "name": "userId",
+            "required": true,
+            "in": "path",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": { "200": { "description": "" } },
+        "security": [{ "bearer": [] }],
+        "summary": "Check if current user follows the creator",
+        "tags": ["Follow"]
+      }
+    }
+  },
+  "info": {
+    "title": "Soma API",
+    "description": "The Soma (Reddit-like community platform) API documentation",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    { "name": "Somas", "description": "Community management endpoints" },
+    { "name": "Posts", "description": "Post management endpoints" },
+    { "name": "Media", "description": "Media upload and management endpoints" }
+  ],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "JWT-auth": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http",
+        "description": "Enter JWT token"
+      }
+    },
+    "schemas": {
+      "UpdateUserProfileDto": { "type": "object", "properties": {} },
+      "CreateMediaItemDto": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Type of media",
+            "enum": ["IMAGE", "VIDEO", "AUDIO"],
+            "example": "IMAGE"
+          },
+          "key": {
+            "type": "string",
+            "description": "S3 key returned from upload-intent",
+            "example": "soma/user-id/1744444800000-f3a9c1b2e4d50f87.jpg"
+          }
+        },
+        "required": ["type", "key"]
+      },
+      "CreatePostDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Title of the post",
+            "example": "The Future of AI in 2025"
+          },
+          "body": {
+            "type": "string",
+            "description": "Body/content of the post",
+            "example": "Here are my thoughts on AI developments..."
+          },
+          "somaId": {
+            "type": "string",
+            "description": "UUID of the soma where the post will be created",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "media": {
+            "description": "Media items to attach — each key comes from upload-intent",
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/CreateMediaItemDto" }
+          }
+        },
+        "required": ["title", "somaId"]
+      },
+      "Post": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "title": { "type": "string", "example": "The Future of AI in 2025" },
+          "body": {
+            "type": "object",
+            "example": "Here are my thoughts on AI developments...",
+            "nullable": true
+          },
+          "authorId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "somaId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174002"
+          },
+          "impressions": {
+            "type": "number",
+            "example": 0,
+            "description": "Number of times the post has been viewed"
+          },
+          "createdAt": { "format": "date-time", "type": "string" },
+          "updatedAt": { "format": "date-time", "type": "string" }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "authorId",
+          "somaId",
+          "impressions",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdatePostDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Updated title of the post",
+            "example": "The Future of AI in 2025 - Updated"
+          },
+          "body": {
+            "type": "string",
+            "description": "Updated body/content of the post",
+            "example": "Here are my updated thoughts..."
+          }
+        }
+      },
+      "CreateSomaDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the soma",
+            "example": "Technology News"
+          },
+          "slug": {
+            "type": "string",
+            "description": "URL-safe slug for the soma (lowercase, alphanumeric and hyphens only)",
+            "example": "tech-news"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of the soma",
+            "example": "A community for discussing the latest in technology"
+          }
+        },
+        "required": ["name", "slug"]
+      },
+      "Soma": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "slug": { "type": "string", "example": "tech-news" },
+          "name": { "type": "string", "example": "Technology News" },
+          "description": {
+            "type": "object",
+            "example": "A community for discussing the latest in technology",
+            "nullable": true
+          },
+          "createdAt": { "format": "date-time", "type": "string" },
+          "updatedAt": { "format": "date-time", "type": "string" }
+        },
+        "required": [
+          "id",
+          "slug",
+          "name",
+          "description",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content of the comment",
+            "example": "This is a great post!"
+          }
+        },
+        "required": ["content"]
+      },
+      "Comment": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Comment UUID" },
+          "content": {
+            "type": "string",
+            "description": "Content of the comment"
+          },
+          "authorId": { "type": "string", "description": "Author UUID" },
+          "postId": { "type": "string", "description": "Post UUID" },
+          "parentCommentId": {
+            "type": "object",
+            "description": "Parent Comment UUID",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Last update timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "content",
+          "authorId",
+          "postId",
+          "parentCommentId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UpdateCommentDto": {
+        "type": "object",
+        "properties": {
+          "content": {
+            "type": "string",
+            "description": "The content of the comment",
+            "example": "This is a great post!"
+          }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Notification UUID" },
+          "userId": { "type": "string", "description": "Recipient User UUID" },
+          "type": {
+            "type": "string",
+            "description": "Notification type (e.g. COMMENT, AWARD)"
+          },
+          "message": {
+            "type": "string",
+            "description": "Notification message"
+          },
+          "targetType": {
+            "type": "object",
+            "description": "Target type (e.g. POST, COMMENT)",
+            "nullable": true
+          },
+          "targetId": {
+            "type": "object",
+            "description": "Target UUID",
+            "nullable": true
+          },
+          "readAt": {
+            "type": "object",
+            "description": "Read timestamp",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "type",
+          "message",
+          "targetType",
+          "targetId",
+          "readAt",
+          "createdAt"
+        ]
+      },
+      "CreateVoteDto": {
+        "type": "object",
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "description": "The type of the target being voted on",
+            "enum": ["POST", "COMMENT"],
+            "example": "POST"
+          },
+          "targetId": {
+            "type": "string",
+            "description": "The UUID of the target being voted on",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "value": {
+            "type": "number",
+            "description": "The value of the vote: +1 (upvote) or -1 (downvote)",
+            "example": 1,
+            "enum": [1, -1]
+          }
+        },
+        "required": ["targetType", "targetId", "value"]
+      },
+      "Vote": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Vote UUID" },
+          "userId": {
+            "type": "string",
+            "description": "User UUID who cast the vote"
+          },
+          "targetType": {
+            "type": "string",
+            "description": "Target type",
+            "enum": ["POST", "COMMENT"]
+          },
+          "targetId": { "type": "string", "description": "Target UUID" },
+          "value": { "type": "number", "description": "Vote value (+1 or -1)" },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "targetType",
+          "targetId",
+          "value",
+          "createdAt"
+        ]
+      },
+      "DeleteVoteDto": {
+        "type": "object",
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "description": "The type of the target being un-voted",
+            "enum": ["POST", "COMMENT"],
+            "example": "POST"
+          },
+          "targetId": {
+            "type": "string",
+            "description": "The UUID of the target being un-voted",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          }
+        },
+        "required": ["targetType", "targetId"]
+      },
+      "UploadIntentDto": {
+        "type": "object",
+        "properties": {
+          "mediaType": {
+            "type": "string",
+            "description": "Type of media to upload",
+            "enum": ["IMAGE", "VIDEO", "AUDIO"],
+            "example": "IMAGE"
+          },
+          "mimeType": {
+            "type": "string",
+            "description": "MIME type of the file",
+            "example": "image/jpeg"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "Name of the file",
+            "example": "photo.jpg"
+          }
+        },
+        "required": ["mediaType", "mimeType", "fileName"]
+      },
+      "UploadIntentResponseDto": {
+        "type": "object",
+        "properties": {
+          "presignedUploadUrl": {
+            "type": "string",
+            "description": "Presigned URL for uploading the file",
+            "example": "https://bucket.s3.region.amazonaws.com/..."
+          },
+          "finalPublicUrl": {
+            "type": "string",
+            "description": "Final public URL of the uploaded file",
+            "example": "https://bucket.s3.region.amazonaws.com/soma/user-id/..."
+          },
+          "key": {
+            "type": "string",
+            "description": "S3 object key — pass this back when creating a post with media",
+            "example": "soma/user-id/1744444800000-f3a9c1b2e4d50f87.jpg"
+          }
+        },
+        "required": ["presignedUploadUrl", "finalPublicUrl", "key"]
+      },
+      "MediaItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "collectionId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174001"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["IMAGE", "VIDEO", "AUDIO"],
+            "example": "IMAGE"
+          },
+          "originalUrl": {
+            "type": "string",
+            "example": "https://bucket.s3.region.amazonaws.com/soma/user-id/..."
+          },
+          "metadata": {
+            "type": "object",
+            "nullable": true,
+            "example": { "width": 1920, "height": 1080 }
+          },
+          "createdAt": { "format": "date-time", "type": "string" }
+        },
+        "required": [
+          "id",
+          "collectionId",
+          "type",
+          "originalUrl",
+          "metadata",
+          "createdAt"
+        ]
+      },
+      "MediaCollection": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "postId": {
+            "type": "string",
+            "example": "123e4567-e89b-12d3-a456-426614174002"
+          },
+          "createdAt": { "format": "date-time", "type": "string" },
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/MediaItem" }
+          }
+        },
+        "required": ["id", "postId", "createdAt", "items"]
+      },
+      "CreateAwardDto": {
+        "type": "object",
+        "properties": {
+          "targetType": {
+            "type": "string",
+            "description": "The type of the target being awarded",
+            "enum": ["POST", "COMMENT"],
+            "example": "POST"
+          },
+          "targetId": {
+            "type": "string",
+            "description": "The UUID of the target being awarded",
+            "example": "123e4567-e89b-12d3-a456-426614174000"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the award",
+            "example": "Gold"
+          }
+        },
+        "required": ["targetType", "targetId", "name"]
+      },
+      "Award": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "description": "Award UUID" },
+          "awardedById": {
+            "type": "string",
+            "description": "User UUID who gave the award"
+          },
+          "targetType": {
+            "type": "string",
+            "description": "Target type",
+            "enum": ["POST", "COMMENT"]
+          },
+          "targetId": { "type": "string", "description": "Target UUID" },
+          "name": { "type": "string", "description": "Name of the award" },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Creation timestamp"
+          }
+        },
+        "required": [
+          "id",
+          "awardedById",
+          "targetType",
+          "targetId",
+          "name",
+          "createdAt"
+        ]
+      },
+      "FeedUser": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "username": { "type": "string" },
+          "displayName": { "type": "object", "nullable": true }
+        },
+        "required": ["id", "username", "displayName"]
+      },
+      "FeedSoma": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "slug": { "type": "string" },
+          "name": { "type": "string" }
+        },
+        "required": ["id", "slug", "name"]
+      },
+      "FeedMediaItem": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "originalUrl": { "type": "string" }
+        },
+        "required": ["type", "originalUrl"]
+      },
+      "FeedMediaCollection": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": { "$ref": "#/components/schemas/FeedMediaItem" }
+          }
+        },
+        "required": ["items"]
+      },
+      "FeedItem": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "title": { "type": "string" },
+          "body": { "type": "object", "nullable": true },
+          "createdAt": { "format": "date-time", "type": "string" },
+          "author": { "$ref": "#/components/schemas/FeedUser" },
+          "soma": { "$ref": "#/components/schemas/FeedSoma" },
+          "media": {
+            "nullable": true,
+            "allOf": [{ "$ref": "#/components/schemas/FeedMediaCollection" }]
+          },
+          "voteCount": { "type": "number" },
+          "awardCount": { "type": "number" }
+        },
+        "required": [
+          "id",
+          "title",
+          "body",
+          "createdAt",
+          "author",
+          "soma",
+          "media",
+          "voteCount",
+          "awardCount"
+        ]
+      }
+    }
+  }
+}
