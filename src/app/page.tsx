@@ -1,7 +1,15 @@
 /** @format */
+"use client";
 
-import LoginPage from "./login/page";
+import { useUser } from "@/hooks/useUser";
+import { useEffect } from "react";
 
 export default function Page() {
-  return <div></div>;
+  const { data: user } = useUser();
+
+  useEffect(() => {
+    console.log("user", user);
+  }, [user]);
+
+  return <div>Hello, {user?.displayName}!</div>;
 }
