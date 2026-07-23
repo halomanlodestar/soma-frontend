@@ -2,41 +2,111 @@
 
 "use client";
 
-/** @format */
-
+import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function LoginPage() {
-  const handleGoogleLogin = () => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
-    window.location.href = `${apiUrl}/auth/google`;
-  };
+  const { loginWithGoogle, isLoading, error } = useAuth();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle>Welcome Back</CardTitle>
-          <CardDescription>Sign in to your account to continue</CardDescription>
-        </CardHeader>
-        <CardContent className="flex justify-center">
-          <Button
-            variant={"outline"}
-            onClick={handleGoogleLogin}
-            className="w-full"
-          >
-            <GoogleIcon className="mr-2 h-4 w-4" />
-            Continue with Google
-          </Button>
-        </CardContent>
-      </Card>
+    <div className="flex min-h-screen w-full bg-background overflow-hidden lg:grid lg:grid-cols-2">
+      {/* Left Column: Art Showcase / Collage (Hidden on smaller screens) */}
+      <div className="relative hidden lg:flex h-full w-full items-center justify-center bg-zinc-950 p-8 overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute inset-0 z-0 opacity-40">
+          <Image 
+            src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=2000&auto=format&fit=crop" 
+            fill 
+            className="object-cover blur-2xl" 
+            alt="background blur" 
+          />
+        </div>
+        
+        {/* Collage Grid */}
+        <div className="relative z-10 grid grid-cols-2 gap-4 w-full max-w-lg rotate-[-4deg] scale-105 opacity-90 transition-all duration-1000 hover:rotate-0 hover:scale-100 hover:opacity-100">
+          
+          <div className="flex flex-col gap-4 mt-12">
+            <div className="relative h-64 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <Image 
+                src="https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?q=80&w=800&auto=format&fit=crop" 
+                fill 
+                className="object-cover transition-transform duration-700 hover:scale-110" 
+                alt="Artwork 1" 
+                priority
+              />
+            </div>
+            <div className="relative h-80 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <Image 
+                src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?q=80&w=800&auto=format&fit=crop" 
+                fill 
+                className="object-cover transition-transform duration-700 hover:scale-110" 
+                alt="Artwork 2" 
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-4 -mt-12">
+            <div className="relative h-80 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <Image 
+                src="https://images.unsplash.com/photo-1513364776144-60967b0f800f?q=80&w=800&auto=format&fit=crop" 
+                fill 
+                className="object-cover transition-transform duration-700 hover:scale-110" 
+                alt="Artwork 3" 
+                priority
+              />
+            </div>
+            <div className="relative h-64 w-full overflow-hidden rounded-2xl shadow-2xl ring-1 ring-white/10">
+              <Image 
+                src="https://images.unsplash.com/photo-1580136608260-4eb11f4b24fe?q=80&w=800&auto=format&fit=crop" 
+                fill 
+                className="object-cover transition-transform duration-700 hover:scale-110" 
+                alt="Artwork 4" 
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Column: Auth Form */}
+      <div className="relative flex flex-col items-center justify-center p-6 sm:p-12 h-full">
+        {/* Subtle radial gradients for the form background */}
+        <div className="pointer-events-none absolute -top-40 -right-40 size-96 rounded-full bg-primary/5 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-40 -left-40 size-96 rounded-full bg-primary/5 blur-3xl" />
+
+        <div className="z-10 w-full max-w-sm flex flex-col items-center gap-10">
+          
+          <div className="flex flex-col items-center text-center gap-2">
+            <h1 className="font-heading text-5xl font-bold tracking-tight text-foreground">
+              Soma
+            </h1>
+            <p className="text-sm font-medium tracking-wide text-muted-foreground">
+              art, where it should belong
+            </p>
+          </div>
+
+          <div className="w-full flex flex-col gap-4">
+            {error && (
+              <div className="rounded-md bg-destructive/10 p-3 text-sm font-medium text-destructive text-center">
+                {error}
+              </div>
+            )}
+
+            <Button
+              variant="outline"
+              type="button"
+              disabled={isLoading}
+              onClick={loginWithGoogle}
+              className="h-12 w-full justify-center gap-3 font-medium text-base shadow-sm hover:bg-accent hover:text-accent-foreground transition-all"
+            >
+              <GoogleIcon className="size-5" />
+              <span>Continue with Google</span>
+            </Button>
+          </div>
+          
+        </div>
+      </div>
     </div>
   );
 }
