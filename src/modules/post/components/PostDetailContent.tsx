@@ -2,12 +2,17 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
-import { BadgeCheck, Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
+import { BadgeCheck, Heart, MessageCircle, Share2, MoreHorizontal, Trophy } from "lucide-react";
 
 import { Post } from "@/modules/post/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
 
 interface PostDetailContentProps {
   post: Post | null;
@@ -44,25 +49,74 @@ export function PostDetailContent({ post, isLoading }: PostDetailContentProps) {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href={`/u/${post.author.username}`} className="flex items-center gap-4 group cursor-pointer">
-              <Avatar className="size-12 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
-                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
-                <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-              </Avatar>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{post.author.name}</span>
-                  {post.author.isVerified && (
-                    <BadgeCheck className="size-4 text-primary" aria-label="Verified Human" />
-                  )}
+            <HoverCard>
+              <HoverCardTrigger asChild>
+                <Link href={`/u/${post.author.username}`} className="flex items-center gap-4 group cursor-pointer">
+                  <Avatar className="size-12 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
+                    <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                    <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{post.author.name}</span>
+                      {post.author.isVerified && (
+                        <BadgeCheck className="size-4 text-primary" aria-label="Verified Human" />
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                      <Link href={`/s/${post.soma.slug}`} className="font-medium text-primary hover:underline" onClick={(e) => e.stopPropagation()}>
+                        s/{post.soma.slug}
+                      </Link>
+                      <span>•</span>
+                      <span>{timeAgo}</span>
+                    </div>
+                  </div>
+                </Link>
+              </HoverCardTrigger>
+              <HoverCardContent align="start" className="w-80 p-5 shadow-xl">
+                <div className="flex justify-between space-x-4">
+                  <Avatar className="size-14 ring-1 ring-border/50">
+                    <AvatarImage src={post.author.avatarUrl} />
+                    <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1 text-right">
+                    <h4 className="text-sm font-semibold flex justify-end items-center gap-1">
+                      {post.author.name}
+                      {post.author.isVerified && <BadgeCheck className="size-3.5 text-primary" />}
+                    </h4>
+                    <p className="text-xs text-primary font-medium">@{post.author.username}</p>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                  <Link href={`/s/${post.soma.slug}`} className="font-medium text-primary hover:underline">s/{post.soma.slug}</Link>
-                  <span>•</span>
-                  <span>{timeAgo}</span>
+                <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
+                  {post.author.bio}
+                </p>
+                
+                <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-foreground">{post.author.stats.posts}</span>
+                    <span>Posts</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <span className="font-semibold text-foreground">{post.author.stats.comments}</span>
+                    <span>Comments</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
+
+                {post.author.awards && post.author.awards.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-border/50 flex flex-col gap-2">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Top Awards</span>
+                    <div className="flex flex-wrap gap-2">
+                      {post.author.awards.slice(0, 3).map((award, i) => (
+                        <div key={i} className="flex items-center gap-1.5 text-xs font-medium bg-accent px-2 py-1 rounded-md text-foreground">
+                          <Trophy className="size-3 text-amber-500" />
+                          {award}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </HoverCardContent>
+            </HoverCard>
           </div>
           
           <Button variant="ghost" size="icon" className="text-muted-foreground">
@@ -87,7 +141,6 @@ export function PostDetailContent({ post, isLoading }: PostDetailContentProps) {
       )}
 
       {/* Body Content */}
-      {/* For now, simply rendering the text with whitespace preserved. Later we integrate a markdown renderer. */}
       <div className="prose prose-zinc dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-foreground/90 whitespace-pre-wrap">
         {post.content || post.excerpt}
       </div>

@@ -49,7 +49,7 @@ export function SomaHeader({ soma, isLoading }: SomaHeaderProps) {
           />
         )}
         {/* Soft gradient fade into the background color */}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background via-background/20 to-transparent" />
       </div>
 
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">

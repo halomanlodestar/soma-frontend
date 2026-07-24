@@ -1,14 +1,7 @@
 /** @format */
 
-import React from "react";
 import Image from "next/image";
-import {
-  BadgeCheck,
-  Trophy,
-  MapPin,
-  CalendarDays,
-  Link as LinkIcon,
-} from "lucide-react";
+import { BadgeCheck, Trophy, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 
 import { UserProfile } from "@/modules/user/types";
@@ -54,7 +47,7 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
             priority
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/20 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-background/80 via-background/20 to-transparent" />
       </div>
 
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
