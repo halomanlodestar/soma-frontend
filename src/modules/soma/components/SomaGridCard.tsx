@@ -33,7 +33,7 @@ export function SomaGridCard({ soma }: SomaGridCardProps) {
               className="object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background" />
+            <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-background" />
           )}
         </div>
 

@@ -77,16 +77,15 @@ export default function HeaderBlock() {
           <Button
             variant="ghost"
             size="sm"
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground font-semibold"
             asChild
           >
-            <a href="#">Sign in</a>
+            <Link href="/login">Log in</Link>
           </Button>
-          <Button size="sm" asChild>
-            <a href="#">
-              Get Started
-              <ArrowRight className="ml-2 size-4" aria-hidden="true" />
-            </a>
+          <Button size="sm" className="font-semibold px-5 rounded-full" asChild>
+            <Link href="/create">
+              Create Post
+            </Link>
           </Button>
         </div>
 
