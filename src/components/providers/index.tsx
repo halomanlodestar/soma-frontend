@@ -1,6 +1,6 @@
 /** @format */
 
-import { ThemeProvider } from "../theme-provider";
+import { ThemeProvider } from "./theme-provider";
 import { TooltipProvider } from "../ui/tooltip";
 import { ReactQueryProvider } from "./ReactQueryProvider";
 
