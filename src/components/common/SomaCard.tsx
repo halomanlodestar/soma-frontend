@@ -1,3 +1,5 @@
+/** @format */
+
 import React from "react";
 import Image from "next/image";
 import { Users, TrendingUp } from "lucide-react";
@@ -15,18 +17,26 @@ interface SomaCardProps {
 
 export function SomaCard({ soma }: SomaCardProps) {
   // Format numbers safely
-  const formattedCreators = new Intl.NumberFormat('en-US', { notation: "compact" }).format(soma.memberCount);
-  const formattedVisitors = new Intl.NumberFormat('en-US', { notation: "compact" }).format(soma.weeklyVisitorCount);
+  const formattedCreators = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+  }).format(soma.memberCount);
+  const formattedVisitors = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+  }).format(soma.weeklyVisitorCount);
 
   return (
     <div className="flex items-center gap-4 rounded-lg p-2 transition-colors hover:bg-accent/50 cursor-pointer group">
       <Avatar className="size-11 ring-1 ring-border/50 shadow-sm shrink-0">
-        <AvatarImage src={soma.coverUrl} alt={soma.name} className="object-cover" />
+        <AvatarImage
+          src={soma.coverUrl}
+          alt={soma.name}
+          className="object-cover"
+        />
         <AvatarFallback className="bg-primary/5 text-primary text-xs font-semibold">
           {soma.name.substring(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
-      
+
       <div className="flex flex-col overflow-hidden min-w-0">
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -34,22 +44,35 @@ export function SomaCard({ soma }: SomaCardProps) {
               {soma.name}
             </span>
           </HoverCardTrigger>
-          <HoverCardContent side="left" align="start" className="w-72 p-0 overflow-hidden shadow-xl">
+          <HoverCardContent
+            side="left"
+            align="start"
+            className="w-72 p-0 overflow-hidden shadow-xl"
+          >
             {/* Soma Banner/Cover Image */}
             <div className="relative w-full h-24 bg-muted">
               {soma.coverUrl ? (
-                <Image src={soma.coverUrl} alt={soma.name} fill className="object-cover" />
+                <Image
+                  src={soma.coverUrl}
+                  alt={soma.name}
+                  fill
+                  className="object-cover"
+                />
               ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-background" />
+                <div className="absolute inset-0 bg-linear-to-br from-primary/20 to-background" />
               )}
             </div>
-            
+
             <div className="p-4 flex flex-col gap-3">
               <div className="flex flex-col gap-0.5">
-                <h4 className="text-base font-bold tracking-tight">{soma.name}</h4>
-                <p className="text-xs font-medium text-primary">s/{soma.slug}</p>
+                <h4 className="text-base font-bold tracking-tight">
+                  {soma.name}
+                </h4>
+                <p className="text-xs font-medium text-primary">
+                  s/{soma.slug}
+                </p>
               </div>
-              
+
               <p className="text-sm text-muted-foreground leading-snug">
                 {soma.description}
               </p>
