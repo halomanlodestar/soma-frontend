@@ -3,7 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { Users, TrendingUp } from "lucide-react";
-import { Soma } from "@/modules/soma/api/useGetSomas";
+import { Soma } from "@/modules/soma/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   HoverCard,

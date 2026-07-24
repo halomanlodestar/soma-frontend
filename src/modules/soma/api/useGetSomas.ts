@@ -1,14 +1,6 @@
 import { useState, useEffect } from "react";
 
-export interface Soma {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  memberCount: number;
-  weeklyVisitorCount: number;
-  coverUrl?: string;
-}
+import { Soma } from "../types";
 
 const MOCK_SOMAS: Soma[] = [
   {

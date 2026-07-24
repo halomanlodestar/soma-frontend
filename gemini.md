@@ -3,7 +3,7 @@
 # Core Principles & AI Rules
 
 1. **Shadcn First**: DO NOT CREATE A COMPONENT IF IT IS AVAILABLE IN SHADCN. Just install the components using the CLI.
-2. **Strict Typing**: Always use proper TypeScript typing. Avoid using `any` whenever possible.
+2. **Strict Typing & Placement**: Always use proper TypeScript typing. Avoid using `any`. **CRITICAL**: Do NOT define types or interfaces inside API files, hooks, or components. Extract all types into their respective module's `types/` folder (e.g., `src/modules/auth/types/`) or the global `src/types/` folder.
 3. **Placeholder Data**: If you ever need placeholder data before APIs are ready, make a custom hook for it (e.g., `useFeed()`) and keep the mock data there. Never clutter UI components with raw data structures.
 4. **Coupling**: If a component gets too big, break it into smaller ones ONLY IF it follows fundamental engineering coupling rules.
 

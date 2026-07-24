@@ -13,7 +13,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Post } from "@/modules/post/api/useGetPosts";
+import { Post } from "@/modules/post/types";
 import { ShareDialog } from "./ShareDialog";
 
 interface PostCardProps {
@@ -168,7 +168,7 @@ export function PostCard({ post }: PostCardProps) {
             <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
-          <ShareDialog url={shareUrl} title={post.title}>
+          <ShareDialog url={shareUrl}>
             <Button
               variant="ghost"
               size="sm"
