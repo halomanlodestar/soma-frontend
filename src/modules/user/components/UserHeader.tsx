@@ -1,6 +1,14 @@
+/** @format */
+
 import React from "react";
 import Image from "next/image";
-import { BadgeCheck, Trophy, MapPin, CalendarDays, Link as LinkIcon } from "lucide-react";
+import {
+  BadgeCheck,
+  Trophy,
+  MapPin,
+  CalendarDays,
+  Link as LinkIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 
 import { UserProfile } from "@/modules/user/types";
@@ -35,14 +43,13 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
 
   return (
     <div className="w-full flex flex-col border-b border-border/40 bg-background pb-6">
-      
       {/* Cover Image */}
       <div className="relative h-48 md:h-64 w-full bg-muted overflow-hidden">
         {user.coverUrl && (
-          <Image 
-            src={user.coverUrl} 
-            alt="cover" 
-            fill 
+          <Image
+            src={user.coverUrl}
+            alt="cover"
+            fill
             className="object-cover opacity-90"
             priority
           />
@@ -51,16 +58,24 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
       </div>
 
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
-        
         {/* Profile Avatar & Actions */}
         <div className="relative -mt-16 flex flex-col md:flex-row md:items-end justify-between gap-4 z-10">
           <Avatar className="size-32 rounded-full border-4 border-background bg-card shadow-lg">
-            <AvatarImage src={user.avatarUrl} alt={user.name} className="object-cover" />
-            <AvatarFallback className="text-3xl font-bold">{user.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+            <AvatarImage
+              src={user.avatarUrl}
+              alt={user.name}
+              className="object-cover"
+            />
+            <AvatarFallback className="text-3xl font-bold">
+              {user.name.substring(0, 2).toUpperCase()}
+            </AvatarFallback>
           </Avatar>
 
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="font-semibold shadow-sm rounded-full">
+            <Button
+              variant="outline"
+              className="font-semibold shadow-sm rounded-full"
+            >
               Message
             </Button>
             <Button className="font-semibold shadow-sm rounded-full px-6">
@@ -74,7 +89,9 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
           <div className="flex flex-col gap-1">
             <h1 className="font-heading text-3xl font-bold tracking-tight text-foreground flex items-center gap-2">
               {user.name}
-              {user.isVerified && <BadgeCheck className="size-6 text-primary" />}
+              {user.isVerified && (
+                <BadgeCheck className="size-6 text-primary" />
+              )}
             </h1>
             <p className="text-primary font-medium">@{user.username}</p>
           </div>
@@ -89,17 +106,26 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
               Joined {joinDate}
             </span>
             <span className="flex items-center gap-1.5 font-medium text-foreground">
-              {user.stats.following} <span className="text-muted-foreground font-normal">Following</span>
+              {user.stats.following}{" "}
+              <span className="text-muted-foreground font-normal">
+                Following
+              </span>
             </span>
             <span className="flex items-center gap-1.5 font-medium text-foreground">
-              {user.stats.followers} <span className="text-muted-foreground font-normal">Followers</span>
+              {user.stats.followers}{" "}
+              <span className="text-muted-foreground font-normal">
+                Followers
+              </span>
             </span>
           </div>
 
           {user.awards && user.awards.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-2">
               {user.awards.map((award, i) => (
-                <div key={i} className="flex items-center gap-1.5 text-xs font-semibold bg-accent px-2.5 py-1 rounded-md text-foreground">
+                <div
+                  key={i}
+                  className="flex items-center gap-1.5 text-xs font-semibold bg-accent px-2.5 py-1 rounded-md text-foreground"
+                >
                   <Trophy className="size-3.5 text-amber-500" />
                   {award}
                 </div>
@@ -107,7 +133,6 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
             </div>
           )}
         </div>
-
       </div>
     </div>
   );

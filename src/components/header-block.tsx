@@ -2,6 +2,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { ArrowRight, Menu } from "lucide-react";
 
@@ -17,10 +18,8 @@ import {
 } from "@/components/ui/sheet";
 
 const navLinks = [
-  { label: "Product", href: "#" },
-  { label: "Solutions", href: "#" },
-  { label: "Pricing", href: "#" },
-  { label: "Resources", href: "#" },
+  { label: "Home", href: "/" },
+  { label: "Explore", href: "/explore" },
 ];
 
 export default function HeaderBlock() {
@@ -29,7 +28,7 @@ export default function HeaderBlock() {
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-6 px-6">
-        <a href="#" className="flex shrink-0 items-center gap-2.5">
+        <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <svg
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -60,17 +59,17 @@ export default function HeaderBlock() {
             />
           </svg>
           <span className="text-base font-bold tracking-tight">Acme</span>
-        </a>
+        </Link>
 
         <nav className="hidden items-center gap-7 md:flex">
           {navLinks.map((link) => (
-            <a
+            <Link
               key={link.label}
               href={link.href}
               className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
-            </a>
+            </Link>
           ))}
         </nav>
 

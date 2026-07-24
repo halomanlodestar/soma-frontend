@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { BadgeCheck, Heart, MessageCircle, Share2, MoreHorizontal } from "lucide-react";
@@ -43,23 +44,25 @@ export function PostDetailContent({ post, isLoading }: PostDetailContentProps) {
         
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Avatar className="size-12 ring-1 ring-border">
-              <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
-              <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-foreground">{post.author.name}</span>
-                {post.author.isVerified && (
-                  <BadgeCheck className="size-4 text-primary" aria-label="Verified Human" />
-                )}
+            <Link href={`/u/${post.author.username}`} className="flex items-center gap-4 group cursor-pointer">
+              <Avatar className="size-12 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
+                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                <AvatarFallback>{post.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+              </Avatar>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-1.5">
+                  <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{post.author.name}</span>
+                  {post.author.isVerified && (
+                    <BadgeCheck className="size-4 text-primary" aria-label="Verified Human" />
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                  <Link href={`/s/${post.soma.slug}`} className="font-medium text-primary hover:underline">s/{post.soma.slug}</Link>
+                  <span>•</span>
+                  <span>{timeAgo}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <span className="font-medium text-primary">s/{post.soma.slug}</span>
-                <span>•</span>
-                <span>{timeAgo}</span>
-              </div>
-            </div>
+            </Link>
           </div>
           
           <Button variant="ghost" size="icon" className="text-muted-foreground">

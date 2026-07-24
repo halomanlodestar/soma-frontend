@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowBigUp, ArrowBigDown, MessageSquare, BadgeCheck } from "lucide-react";
 
@@ -32,10 +33,10 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
       <div className="flex flex-col w-full">
         {/* Comment Header */}
         <div className="flex items-center gap-2 text-xs">
-          <span className="font-semibold text-foreground flex items-center gap-1">
+          <Link href={`/u/${comment.author.username}`} className="font-semibold text-foreground flex items-center gap-1 hover:text-primary hover:underline">
             {comment.author.name}
             {comment.author.isVerified && <BadgeCheck className="size-3.5 text-primary" />}
-          </span>
+          </Link>
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">{timeAgo}</span>
         </div>

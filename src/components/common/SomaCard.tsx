@@ -1,5 +1,7 @@
 /** @format */
 
+import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { Users, TrendingUp } from "lucide-react";
 import { Soma } from "@/modules/soma/types";
@@ -24,7 +26,10 @@ export function SomaCard({ soma }: SomaCardProps) {
   }).format(soma.weeklyVisitorCount);
 
   return (
-    <div className="flex items-center gap-4 rounded-lg p-2 transition-colors hover:bg-accent/50 cursor-pointer group">
+    <Link
+      href={`/s/${soma.slug}`}
+      className="flex items-center gap-4 rounded-lg p-2 transition-colors hover:bg-accent/50 cursor-pointer group"
+    >
       <Avatar className="size-11 ring-1 ring-border/50 shadow-sm shrink-0">
         <AvatarImage
           src={soma.coverUrl}
@@ -39,7 +44,10 @@ export function SomaCard({ soma }: SomaCardProps) {
       <div className="flex flex-col overflow-hidden min-w-0">
         <HoverCard>
           <HoverCardTrigger asChild>
-            <span className="text-sm font-bold tracking-tight text-foreground truncate group-hover:text-primary transition-colors cursor-pointer block">
+            <span
+              className="text-sm font-bold tracking-tight text-foreground truncate group-hover:text-primary transition-colors cursor-pointer block"
+              onClick={(e) => e.preventDefault()}
+            >
               {soma.name}
             </span>
           </HoverCardTrigger>
@@ -47,6 +55,7 @@ export function SomaCard({ soma }: SomaCardProps) {
             side="left"
             align="start"
             className="w-72 p-0 overflow-hidden shadow-xl"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Soma Banner/Cover Image */}
             <div className="relative w-full h-24 bg-muted">
@@ -96,6 +105,6 @@ export function SomaCard({ soma }: SomaCardProps) {
           <span className="truncate">{formattedCreators} creators</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

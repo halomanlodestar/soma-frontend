@@ -1,6 +1,7 @@
 /** @format */
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import { Heart, MessageCircle, Share2, BadgeCheck, Trophy } from "lucide-react";
@@ -33,7 +34,7 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex items-center gap-3 text-sm">
           <HoverCard>
             <HoverCardTrigger asChild>
-              <div className="flex items-center gap-3 cursor-pointer group">
+              <Link href={`/u/${post.author.username}`} className="flex items-center gap-3 cursor-pointer group">
                 <Avatar className="size-9 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
                   <AvatarImage
                     src={post.author.avatarUrl}
@@ -56,14 +57,14 @@ export function PostCard({ post }: PostCardProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <span className="font-medium hover:text-foreground transition-colors">
+                    <Link href={`/s/${post.soma.slug}`} className="font-medium hover:text-foreground transition-colors" onClick={(e) => e.stopPropagation()}>
                       s/{post.soma.slug}
-                    </span>
+                    </Link>
                     <span>•</span>
                     <span>{timeAgo}</span>
                   </div>
                 </div>
-              </div>
+              </Link>
             </HoverCardTrigger>
             <HoverCardContent align="start" className="w-80 p-5 shadow-xl">
               <div className="flex justify-between space-x-4">
@@ -127,25 +128,25 @@ export function PostCard({ post }: PostCardProps) {
         </div>
 
         {/* Content (Title is dominant) */}
-        <div className="group flex cursor-pointer flex-col gap-2.5">
+        <Link href={`/s/${post.soma.slug}/posts/${post.id}`} className="group flex cursor-pointer flex-col gap-2.5">
           <h2 className="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
             {post.title}
           </h2>
           <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
             {post.excerpt}
           </p>
-        </div>
+        </Link>
 
         {/* Media Preview (if exists) */}
         {post.mediaUrl && (
-          <div className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl bg-muted">
-            <Image
-              src={post.mediaUrl}
-              alt={post.title}
-              fill
-              className="object-cover"
+          <Link href={`/s/${post.soma.slug}/posts/${post.id}`} className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl bg-muted">
+            <Image 
+              src={post.mediaUrl} 
+              alt={post.title} 
+              fill 
+              className="object-cover" 
             />
-          </div>
+          </Link>
         )}
 
         {/* Interaction Row (Visually quiet) */}
