@@ -3,9 +3,9 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/common/Navbar";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/providers";
+import HeaderBlock from "@/components/header-block";
 
 const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -34,7 +34,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <Navbar />
+          <HeaderBlock />
           {children}
         </Providers>
       </body>
