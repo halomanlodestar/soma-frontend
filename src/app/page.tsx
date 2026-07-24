@@ -1,7 +1,7 @@
 /** @format */
 "use client";
 
-import { useUser } from "@/hooks/useUser";
+import { useUser } from "@/modules/user/hooks/useUser";
 import { useEffect } from "react";
 
 export default function Page() {
