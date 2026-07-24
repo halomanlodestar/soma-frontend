@@ -7,8 +7,15 @@ export interface Post {
   mediaUrl?: string;
   author: {
     name: string;
+    username: string;
     avatarUrl?: string;
     isVerified: boolean;
+    bio: string;
+    stats: {
+      posts: number;
+      comments: number;
+    };
+    awards: string[];
   };
   soma: {
     name: string;
@@ -29,8 +36,12 @@ const MOCK_POSTS: Post[] = [
     mediaUrl: "https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=800&auto=format&fit=crop",
     author: {
       name: "Elias Vance",
+      username: "elias_vance",
       avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=100&auto=format&fit=crop",
       isVerified: true,
+      bio: "Film photographer based in Portland. Finding light in the shadows.",
+      stats: { posts: 42, comments: 312 },
+      awards: ["Silver Lens", "Top Contributor", "Early Adopter"]
     },
     soma: {
       name: "Visual Arts",
@@ -48,7 +59,11 @@ const MOCK_POSTS: Post[] = [
     excerpt: "It started as a shortcut, but soon I realized the soul of my essays was being hollowed out. The struggle of finding the right word is exactly where the art lives.",
     author: {
       name: "Clara Lin",
+      username: "clarawrites",
       isVerified: true,
+      bio: "Essayist, overthinker, coffee enthusiast.",
+      stats: { posts: 14, comments: 89 },
+      awards: ["Golden Quill", "Thought Leader"]
     },
     soma: {
       name: "Essays & Thought",
@@ -67,8 +82,12 @@ const MOCK_POSTS: Post[] = [
     mediaUrl: "https://images.unsplash.com/photo-1610992015732-2449b76344bc?q=80&w=800&auto=format&fit=crop",
     author: {
       name: "Marcus Thorne",
+      username: "marcus_woodcraft",
       avatarUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=100&auto=format&fit=crop",
       isVerified: true,
+      bio: "Creating tangible things in an intangible world. Woodworker for 20 years.",
+      stats: { posts: 8, comments: 45 },
+      awards: ["Master Craftsman"]
     },
     soma: {
       name: "Craftsmanship",
