@@ -1,6 +1,5 @@
 /** @format */
 
-import React from "react";
 import Image from "next/image";
 import { Users, TrendingUp } from "lucide-react";
 import { Soma } from "@/modules/soma/types";

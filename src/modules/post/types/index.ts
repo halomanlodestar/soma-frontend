@@ -2,6 +2,7 @@ export interface Post {
   id: string;
   title: string;
   excerpt: string;
+  content?: string; // Full markdown/html content for detailed view
   mediaUrl?: string;
   author: {
     name: string;
