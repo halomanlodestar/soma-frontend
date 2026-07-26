@@ -1,33 +1,57 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@apollo/client/react";
+import { graphql } from "@/gql";
 import { UserProfile } from "../types";
 
+const GET_USER_BY_ID = graphql(`
+  query GetUserById($id: String!) {
+    getUserById(id: $id) {
+      __typename
+      ... on UserResponseDto {
+        id
+        displayName
+        username
+        avatarUrl
+        coverUrl
+        bio
+        isVerified
+        createdAt
+        stats {
+          posts
+          comments
+          followers
+          following
+        }
+        awards
+      }
+    }
+  }
+`);
+
 export const useGetUserById = (userId: string) => {
-  const [data, setData] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: queryData, loading, error } = useQuery(GET_USER_BY_ID, {
+    variables: { id: userId },
+  });
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setData({
-        id: userId,
-        name: "Elias Vance",
-        username: "elias_vance",
-        avatarUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400&auto=format&fit=crop",
-        coverUrl: "https://images.unsplash.com/photo-1516961642265-531546e84af2?q=80&w=2000&auto=format&fit=crop",
-        bio: "Film photographer based in Portland. Finding light in the shadows. Believer in analog imperfections.",
-        isVerified: true,
-        joinedAt: "2024-03-12T00:00:00Z",
-        stats: {
-          posts: 42,
-          comments: 312,
-          followers: 1240,
-          following: 89,
-        },
-        awards: ["Silver Lens", "Top Contributor", "Early Adopter"],
-      });
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, [userId]);
+  const userData = queryData?.getUserById;
+  const item = userData?.__typename === 'UserResponseDto' ? userData : null;
 
-  return { data, isLoading };
+  const userProfile: UserProfile | null = item ? {
+    id: item.id,
+    name: item.displayName || item.username,
+    username: item.username,
+    avatarUrl: item.avatarUrl || undefined,
+    coverUrl: item.coverUrl || undefined,
+    bio: item.bio || "",
+    isVerified: item.isVerified,
+    joinedAt: item.createdAt,
+    stats: {
+      posts: item.stats?.posts || 0,
+      comments: item.stats?.comments || 0,
+      followers: item.stats?.followers || 0,
+      following: item.stats?.following || 0,
+    },
+    awards: (item.awards || []).filter((a): a is string => a !== null),
+  } : null;
+
+  return { data: userProfile, isLoading: loading, error };
 };

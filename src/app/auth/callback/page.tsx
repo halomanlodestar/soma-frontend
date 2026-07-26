@@ -15,7 +15,7 @@ function AuthCallback() {
 
     if (token) {
       localStorage.setItem("accessToken", token);
-      router.push("/feed");
+      router.push("/");
     } else {
       // Handle error case - maybe redirect back to login
       console.error("No access token found");

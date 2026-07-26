@@ -1,26 +1,41 @@
-import { useState, useEffect } from "react";
+import { useQuery } from "@apollo/client/react";
+import { graphql } from "@/gql";
 import { Soma } from "../types";
 
+const GET_SOMA_BY_SLUG = graphql(`
+  query GetSomaBySlug($slug: String!) {
+    getSomaBySlug(slug: $slug) {
+      __typename
+      ... on Soma {
+        id
+        name
+        slug
+        description
+        memberCount
+        weeklyVisitorCount
+        coverUrl
+      }
+    }
+  }
+`);
+
 export const useGetSomaBySlug = (slug: string) => {
-  const [data, setData] = useState<Soma | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data: queryData, loading, error } = useQuery(GET_SOMA_BY_SLUG, {
+    variables: { slug },
+  });
 
-  useEffect(() => {
-    // Simulate network delay
-    const timer = setTimeout(() => {
-      setData({
-        id: "s_1",
-        name: "Visual Arts",
-        slug: slug,
-        description: "A sanctuary for painters, photographers, and digital artists who craft by hand. Share your canvas, your process, and your final pieces. No generative art allowed.",
-        memberCount: 12400,
-        weeklyVisitorCount: 45200,
-        coverUrl: "https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?q=80&w=2000&auto=format&fit=crop",
-      });
-      setIsLoading(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [slug]);
+  const somaData = queryData?.getSomaBySlug;
+  const item = somaData?.__typename === 'Soma' ? somaData : null;
 
-  return { data, isLoading };
+  const soma: Soma | null = item ? {
+    id: item.id,
+    name: item.name,
+    slug: item.slug,
+    description: item.description || "",
+    memberCount: item.memberCount,
+    weeklyVisitorCount: item.weeklyVisitorCount,
+    coverUrl: item.coverUrl || undefined,
+  } : null;
+
+  return { data: soma, isLoading: loading, error };
 };

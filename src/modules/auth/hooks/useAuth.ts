@@ -32,7 +32,7 @@ export const useAuth = () => {
     setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
-      window.location.href = `${apiUrl}/auth/google`;
+      window.location.href = `${apiUrl}/api/v1/auth/google`;
     } catch {
       setAuthState((prev) => ({
         ...prev,
