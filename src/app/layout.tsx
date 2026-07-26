@@ -1,22 +1,17 @@
 /** @format */
 
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Public_Sans } from "next/font/google";
+import { Fraunces, Nunito } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/providers";
 import HeaderBlock from "@/components/header-block";
 
-const publicSans = Public_Sans({ subsets: ["latin"], variable: "--font-sans" });
+const nunito = Nunito({ subsets: ["latin"], variable: "--font-sans" });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const fraunces = Fraunces({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-heading",
 });
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,10 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", publicSans.variable)} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" className={cn("font-sans", nunito.variable, fraunces.variable)} suppressHydrationWarning>
+      <body className="antialiased font-sans bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
         <Providers>
           <HeaderBlock />
           {children}
