@@ -77,7 +77,7 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button size="sm" variant="ghost" className="font-semibold px-5 rounded-full" asChild>
+          <Button size="sm" variant="ghost" className="font-semibold px-5" asChild>
             <Link href="/create">
               Create Post
             </Link>
