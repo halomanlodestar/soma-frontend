@@ -2,10 +2,10 @@ import React from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import { ArrowBigUp, ArrowBigDown, MessageSquare, BadgeCheck } from "lucide-react";
-
 import { Comment } from "@/modules/comment/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { useVote } from "@/modules/post/api/useVote";
 
 interface CommentItemProps {
   comment: Comment;
@@ -13,8 +13,30 @@ interface CommentItemProps {
 }
 
 function CommentItem({ comment, depth = 0 }: CommentItemProps) {
+  const { vote, removeVote } = useVote();
   const timeAgo = formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true });
   const isReply = depth > 0;
+
+  const hasUpvoted = comment.userVoteValue === 1;
+  const hasDownvoted = comment.userVoteValue === -1;
+
+  const handleUpvote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (hasUpvoted) {
+      removeVote(comment.id, "COMMENT", 1);
+    } else {
+      vote(comment.id, "COMMENT", 1, comment.userVoteValue);
+    }
+  };
+
+  const handleDownvote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (hasDownvoted) {
+      removeVote(comment.id, "COMMENT", -1);
+    } else {
+      vote(comment.id, "COMMENT", -1, comment.userVoteValue);
+    }
+  };
 
   return (
     <div className={`flex gap-3 ${isReply ? 'mt-4' : 'mt-6'}`}>
@@ -48,12 +70,24 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
 
         {/* Action Row */}
         <div className="flex items-center gap-1 mt-2 -ml-2 text-muted-foreground">
-          <Button variant="ghost" size="icon" className="size-7 hover:text-primary hover:bg-primary/10">
-            <ArrowBigUp className="size-4" />
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleUpvote}
+            className={`size-7 hover:text-primary hover:bg-primary/10 ${hasUpvoted ? "text-primary bg-primary/10" : ""}`}
+          >
+            <ArrowBigUp className={`size-4 ${hasUpvoted ? "fill-current" : ""}`} />
           </Button>
-          <span className="text-xs font-semibold px-1">{comment.stats.upvotes}</span>
-          <Button variant="ghost" size="icon" className="size-7 hover:text-destructive hover:bg-destructive/10">
-            <ArrowBigDown className="size-4" />
+          <span className={`text-xs font-semibold px-1 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : ""}`}>
+            {comment.stats.upvotes}
+          </span>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={handleDownvote}
+            className={`size-7 hover:text-destructive hover:bg-destructive/10 ${hasDownvoted ? "text-destructive bg-destructive/10" : ""}`}
+          >
+            <ArrowBigDown className={`size-4 ${hasDownvoted ? "fill-current" : ""}`} />
           </Button>
           <Button variant="ghost" size="sm" className="h-7 px-2 ml-2 text-xs gap-1.5">
             <MessageSquare className="size-3.5" />

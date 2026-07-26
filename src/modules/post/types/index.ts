@@ -24,5 +24,6 @@ export interface Post {
     upvotes: number;
     comments: number;
   };
+  userVoteValue?: number | null;
   createdAt: string;
 }

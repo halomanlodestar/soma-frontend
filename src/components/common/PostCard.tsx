@@ -4,7 +4,14 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
-import { Heart, MessageCircle, Share2, BadgeCheck, Trophy } from "lucide-react";
+import {
+  MessageCircle,
+  Share2,
+  BadgeCheck,
+  Trophy,
+  ArrowBigUp,
+  ArrowBigDown,
+} from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,16 +23,41 @@ import {
 } from "@/components/ui/hover-card";
 import { Post } from "@/modules/post/types";
 import { ShareDialog } from "./ShareDialog";
+import { useVote } from "@/modules/post/api/useVote";
 
 interface PostCardProps {
   post: Post;
 }
 
 export function PostCard({ post }: PostCardProps) {
+  const { vote, removeVote } = useVote();
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
   });
   const shareUrl = `https://soma.art/p/${post.id}`;
+
+  const hasUpvoted = post.userVoteValue === 1;
+  const hasDownvoted = post.userVoteValue === -1;
+
+  const handleUpvote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasUpvoted) {
+      removeVote(post.id, "POST", 1);
+    } else {
+      vote(post.id, "POST", 1, post.userVoteValue);
+    }
+  };
+
+  const handleDownvote = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (hasDownvoted) {
+      removeVote(post.id, "POST", -1);
+    } else {
+      vote(post.id, "POST", -1, post.userVoteValue);
+    }
+  };
 
   return (
     <Card className="w-full overflow-hidden border-border/40 bg-card transition-colors hover:bg-accent/5">
@@ -34,21 +66,26 @@ export function PostCard({ post }: PostCardProps) {
         <div className="flex items-center gap-3 text-sm">
           <HoverCard>
             <HoverCardTrigger asChild>
-              <Link href={`/u/${post.author.username}`} className="flex items-center gap-3 cursor-pointer group">
-                <Avatar className="size-9 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
-                  <AvatarImage
-                    src={post.author.avatarUrl}
-                    alt={post.author.name}
-                  />
-                  <AvatarFallback>
-                    {post.author.name.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+              <div className="flex items-center gap-3 group">
+                <Link href={`/u/${post.author.username}`}>
+                  <Avatar className="size-9 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
+                    <AvatarImage
+                      src={post.author.avatarUrl}
+                      alt={post.author.name}
+                    />
+                    <AvatarFallback>
+                      {post.author.name.substring(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                </Link>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-foreground group-hover:text-primary transition-colors">
+                    <Link
+                      href={`/u/${post.author.username}`}
+                      className="font-semibold text-foreground group-hover:text-primary transition-colors"
+                    >
                       {post.author.name}
-                    </span>
+                    </Link>
                     {post.author.isVerified && (
                       <BadgeCheck
                         className="size-4 text-primary"
@@ -57,14 +94,18 @@ export function PostCard({ post }: PostCardProps) {
                     )}
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <Link href={`/s/${post.soma.slug}`} className="font-medium hover:text-foreground transition-colors" onClick={(e) => e.stopPropagation()}>
+                    <Link
+                      href={`/s/${post.soma.slug}`}
+                      className="font-medium hover:text-foreground transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       s/{post.soma.slug}
                     </Link>
                     <span>•</span>
                     <span>{timeAgo}</span>
                   </div>
                 </div>
-              </Link>
+              </div>
             </HoverCardTrigger>
             <HoverCardContent align="start" className="w-80 p-5 shadow-xl">
               <div className="flex justify-between space-x-4">
@@ -128,7 +169,10 @@ export function PostCard({ post }: PostCardProps) {
         </div>
 
         {/* Content (Title is dominant) */}
-        <Link href={`/s/${post.soma.slug}/posts/${post.id}`} className="group flex cursor-pointer flex-col gap-2.5">
+        <Link
+          href={`/s/${post.soma.slug}/posts/${post.id}`}
+          className="group flex cursor-pointer flex-col gap-2.5"
+        >
           <h2 className="text-xl font-bold tracking-tight text-foreground transition-colors group-hover:text-primary">
             {post.title}
           </h2>
@@ -139,12 +183,15 @@ export function PostCard({ post }: PostCardProps) {
 
         {/* Media Preview (if exists) */}
         {post.mediaUrl && (
-          <Link href={`/s/${post.soma.slug}/posts/${post.id}`} className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl bg-muted">
-            <Image 
-              src={post.mediaUrl} 
-              alt={post.title} 
-              fill 
-              className="object-cover" 
+          <Link
+            href={`/s/${post.soma.slug}/posts/${post.id}`}
+            className="relative aspect-video w-full cursor-pointer overflow-hidden rounded-xl bg-muted"
+          >
+            <Image
+              src={post.mediaUrl}
+              alt={post.title}
+              fill
+              className="object-cover"
             />
           </Link>
         )}
@@ -153,11 +200,28 @@ export function PostCard({ post }: PostCardProps) {
         <div className="-ml-2 flex items-center gap-1 pt-1 text-muted-foreground">
           <Button
             variant="ghost"
-            size="sm"
-            className="h-8 gap-2 px-2 hover:text-primary"
+            size="icon"
+            onClick={handleUpvote}
+            className={`size-8 hover:text-primary hover:bg-primary/10 ${hasUpvoted ? "text-primary bg-primary/10" : ""}`}
           >
-            <Heart className="size-4" />
-            <span className="text-xs font-medium">{post.stats.upvotes}</span>
+            <ArrowBigUp
+              className={`size-5 ${hasUpvoted ? "fill-current" : ""}`}
+            />
+          </Button>
+          <span
+            className={`text-xs font-semibold px-1 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : ""}`}
+          >
+            {post.stats.upvotes}
+          </span>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDownvote}
+            className={`size-8 hover:text-destructive hover:bg-destructive/10 ${hasDownvoted ? "text-destructive bg-destructive/10" : ""}`}
+          >
+            <ArrowBigDown
+              className={`size-5 ${hasDownvoted ? "fill-current" : ""}`}
+            />
           </Button>
 
           <Button

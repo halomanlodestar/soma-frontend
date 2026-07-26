@@ -12,6 +12,7 @@ export interface Comment {
   stats: {
     upvotes: number;
   };
+  userVoteValue?: number | null;
   createdAt: string;
   replies?: Comment[];
 }

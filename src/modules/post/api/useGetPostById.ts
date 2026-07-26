@@ -14,6 +14,7 @@ const GET_POST_BY_ID = graphql(`
         mediaUrl
         createdAt
         voteCount
+        userVoteValue
         commentCount
         soma {
           name
@@ -70,7 +71,8 @@ export const useGetPostById = (postId: string) => {
     stats: {
       upvotes: item.voteCount,
       comments: item.commentCount,
-    }
+    },
+    userVoteValue: item.userVoteValue,
   } : null;
 
   return { data: post, isLoading: loading, error };

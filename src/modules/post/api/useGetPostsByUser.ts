@@ -1,3 +1,5 @@
+/** @format */
+
 import { useQuery } from "@apollo/client/react";
 import { graphql } from "@/gql";
 import { Post } from "../types";
@@ -12,6 +14,7 @@ const GET_POSTS_BY_USER = graphql(`
       mediaUrl
       createdAt
       voteCount
+      userVoteValue
       commentCount
       soma {
         name
@@ -34,7 +37,11 @@ const GET_POSTS_BY_USER = graphql(`
 `);
 
 export const useGetPostsByUser = (userId?: string) => {
-  const { data: queryData, loading, error } = useQuery(GET_POSTS_BY_USER, {
+  const {
+    data: queryData,
+    loading,
+    error,
+  } = useQuery(GET_POSTS_BY_USER, {
     variables: { userId: userId || "" },
     skip: !userId,
   });
@@ -61,12 +68,15 @@ export const useGetPostsByUser = (userId?: string) => {
             posts: item.author.stats?.posts || 0,
             comments: item.author.stats?.comments || 0,
           },
-          awards: (item.author.awards || []).filter((a): a is string => a !== null),
+          awards: (item.author.awards || []).filter(
+            (a): a is string => a !== null,
+          ),
         },
         stats: {
           upvotes: item.voteCount,
           comments: item.commentCount,
         },
+        userVoteValue: item.userVoteValue,
       }))
     : null;
 

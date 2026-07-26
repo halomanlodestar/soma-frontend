@@ -10,6 +10,7 @@ const GET_COMMENTS_BY_POST = graphql(`
       parentCommentId
       content
       voteCount
+      userVoteValue
       createdAt
       author {
         displayName
@@ -41,6 +42,7 @@ export const useGetComments = (postId: string) => {
         isVerified: item.author.isVerified,
       },
       stats: { upvotes: item.voteCount },
+      userVoteValue: item.userVoteValue,
       createdAt: item.createdAt,
       replies: [] as Comment[]
     }));

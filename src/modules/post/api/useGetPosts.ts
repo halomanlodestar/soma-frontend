@@ -13,6 +13,7 @@ const GET_POSTS = graphql(`
       mediaUrl
       createdAt
       voteCount
+      userVoteValue
       commentCount
       soma {
         name
@@ -65,6 +66,7 @@ export const useGetPosts = () => {
           upvotes: item.voteCount,
           comments: item.commentCount,
         },
+        userVoteValue: item.userVoteValue,
       }))
     : null;
 
