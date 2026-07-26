@@ -2,9 +2,9 @@ import { useQuery } from "@apollo/client/react";
 import { graphql } from "@/gql";
 import { UserProfile } from "../types";
 
-const GET_USER_BY_ID = graphql(`
-  query GetUserById($id: String!) {
-    getUserById(id: $id) {
+const GET_USER_BY_USERNAME = graphql(`
+  query GetUserByUsername($username: String!) {
+    userByUsername(username: $username) {
       __typename
       ... on UserResponseDto {
         id
@@ -27,12 +27,12 @@ const GET_USER_BY_ID = graphql(`
   }
 `);
 
-export const useGetUserById = (userId: string) => {
-  const { data: queryData, loading, error } = useQuery(GET_USER_BY_ID, {
-    variables: { id: userId },
+export const useGetUserByUsername = (username: string) => {
+  const { data: queryData, loading, error } = useQuery(GET_USER_BY_USERNAME, {
+    variables: { username },
   });
 
-  const userData = queryData?.getUserById;
+  const userData = queryData?.userByUsername;
   const item = userData?.__typename === 'UserResponseDto' ? userData : null;
 
   const userProfile: UserProfile | null = item ? {

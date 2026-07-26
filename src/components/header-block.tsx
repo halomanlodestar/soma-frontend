@@ -16,6 +16,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useGetMe } from "@/modules/user/api/useGetMe";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -24,6 +26,7 @@ const navLinks = [
 
 export default function HeaderBlock() {
   const [open, setOpen] = useState(false);
+  const { me, isLoading } = useGetMe();
 
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-background/80 backdrop-blur">
@@ -74,19 +77,30 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-muted-foreground hover:text-foreground font-semibold"
-            asChild
-          >
-            <Link href="/login">Log in</Link>
-          </Button>
-          <Button size="sm" className="font-semibold px-5 rounded-full" asChild>
+          <Button size="sm" variant="ghost" className="font-semibold px-5 rounded-full" asChild>
             <Link href="/create">
               Create Post
             </Link>
           </Button>
+          {isLoading ? (
+            <div className="size-8 rounded-full bg-muted animate-pulse" />
+          ) : me ? (
+            <Link href={`/u/${me.username}`} className="ml-2">
+              <Avatar className="size-8">
+                <AvatarImage src={me.avatarUrl || undefined} alt={me.displayName || me.username} />
+                <AvatarFallback>{(me.displayName || me.username).charAt(0).toUpperCase()}</AvatarFallback>
+              </Avatar>
+            </Link>
+          ) : (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground hover:text-foreground font-semibold"
+              asChild
+            >
+              <Link href="/login">Log in</Link>
+            </Button>
+          )}
         </div>
 
         <Sheet open={open} onOpenChange={setOpen}>
