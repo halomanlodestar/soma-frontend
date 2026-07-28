@@ -20,19 +20,22 @@ export default function ExplorePage() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-24">
+    <main className="flex min-h-screen flex-col bg-background pb-24">
       
       {/* Search Header (Instagram/Reddit inspired unified search) */}
-      <div className="w-full bg-card border-b border-border/40 sticky top-16 z-20 shadow-sm">
-        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 py-6">
-          <div className="relative max-w-3xl mx-auto">
+      <div className="w-full border-b border-border bg-background/92 sticky top-17 z-20 backdrop-blur-md">
+        <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div><p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">Find your corner</p><h1 className="font-heading text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">Explore at your own pace</h1></div>
+          </div>
+          <div className="relative max-w-2xl">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
               <Search className="size-5 text-muted-foreground" />
             </div>
             <Input 
               type="text" 
               placeholder="Search art, creators, or communities..." 
-              className="pl-12 h-14 rounded-full bg-muted/50 border-transparent focus-visible:ring-primary/20 focus-visible:border-primary text-base shadow-inner"
+              className="h-12 rounded-xl border-border bg-card pl-12 text-base shadow-none focus-visible:ring-ring/25"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -40,27 +43,27 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 mt-10">
         
         <Tabs defaultValue="somas" className="w-full">
-          <TabsList className="mb-8 w-full justify-start bg-transparent p-0 border-b border-border/40 rounded-none h-auto gap-8">
+          <TabsList className="mb-8 h-auto w-full justify-start gap-7 rounded-none border-b border-border bg-transparent p-0">
             <TabsTrigger 
               value="somas" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium flex items-center gap-2"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Hash className="size-4" />
               Discover Somas
             </TabsTrigger>
             <TabsTrigger 
               value="posts" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium flex items-center gap-2"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Flame className="size-4" />
               Trending Art
             </TabsTrigger>
             <TabsTrigger 
               value="foryou" 
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium flex items-center gap-2"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Sparkles className="size-4" />
               For You
@@ -69,7 +72,7 @@ export default function ExplorePage() {
 
           {/* Somas Grid Tab */}
           <TabsContent value="somas" className="mt-0 focus-visible:outline-none focus-visible:ring-0">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {somasLoading ? (
                 Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="flex flex-col h-72 rounded-xl border border-border/40 bg-card overflow-hidden">
@@ -121,6 +124,6 @@ export default function ExplorePage() {
 
         </Tabs>
       </div>
-    </div>
+    </main>
   );
 }

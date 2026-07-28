@@ -22,9 +22,9 @@ export function SomaGridCard({ soma }: SomaGridCardProps) {
 
   return (
     <Link href={`/s/${soma.slug}`} className="group block h-full">
-      <Card className="h-full overflow-hidden border-border/40 bg-card transition-all hover:bg-accent/5 hover:border-primary/20 hover:shadow-md flex flex-col">
+      <Card className="h-full overflow-hidden border border-border bg-card shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:border-foreground/25 hover:shadow-[0_12px_28px_rgba(23,23,23,0.08)] flex flex-col">
         {/* Banner Image */}
-        <div className="relative h-32 w-full bg-muted overflow-hidden shrink-0">
+        <div className="relative h-36 w-full bg-muted overflow-hidden shrink-0">
           {soma.coverUrl ? (
             <Image
               src={soma.coverUrl}
@@ -53,10 +53,10 @@ export function SomaGridCard({ soma }: SomaGridCardProps) {
           </div>
 
           <div className="flex flex-col gap-1 mb-3">
-            <h3 className="font-heading text-lg font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
+            <h3 className="font-heading text-xl font-semibold tracking-[-0.035em] text-foreground group-hover:text-primary transition-colors">
               {soma.name}
             </h3>
-            <span className="text-xs font-medium text-primary">
+            <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
               s/{soma.slug}
             </span>
           </div>
@@ -65,12 +65,12 @@ export function SomaGridCard({ soma }: SomaGridCardProps) {
             {soma.description}
           </p>
 
-          <div className="mt-auto flex items-center gap-4 text-xs font-medium text-muted-foreground pt-4 border-t border-border/40">
+          <div className="mt-auto flex items-center gap-4 text-xs font-medium text-muted-foreground pt-4 border-t border-border">
             <div className="flex items-center gap-1.5">
               <Users className="size-4" />
               <span>{formattedCreators}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-green-600/80 dark:text-green-500/80">
+            <div className="flex items-center gap-1.5 text-muted-foreground">
               <TrendingUp className="size-4" />
               <span>{formattedVisitors}/wk</span>
             </div>

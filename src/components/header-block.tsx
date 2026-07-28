@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ArrowRight, Menu } from "lucide-react";
+import { ArrowRight, Menu, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,8 +29,8 @@ export default function HeaderBlock() {
   const { me, isLoading } = useGetMe();
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-border bg-background/80 backdrop-blur">
-      <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-6 px-6">
+    <header className="sticky top-0 z-30 w-full border-b border-border bg-background/92 backdrop-blur-md">
+      <div className="mx-auto flex h-17 w-full max-w-7xl items-center gap-8 px-4 sm:px-6">
         <Link href="/" className="flex shrink-0 items-center gap-2.5">
           <svg
             viewBox="0 0 24 24"
@@ -61,15 +61,15 @@ export default function HeaderBlock() {
               transform="rotate(15 17 7)"
             />
           </svg>
-          <span className="text-base font-bold tracking-tight">Acme</span>
+          <span className="font-heading text-xl font-bold tracking-[-0.06em]">soma</span>
         </Link>
 
-        <nav className="hidden items-center gap-7 md:flex">
+        <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
             >
               {link.label}
             </Link>
@@ -77,8 +77,9 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button size="sm" variant="ghost" className="font-semibold px-5" asChild>
+          <Button size="sm" className="h-9 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/85" asChild>
             <Link href="/create">
+              <Plus data-icon="inline-start" />
               Create Post
             </Link>
           </Button>
@@ -95,7 +96,7 @@ export default function HeaderBlock() {
             <Button
               variant="ghost"
               size="sm"
-              className="text-muted-foreground hover:text-foreground font-semibold"
+              className="h-9 rounded-full px-4 text-sm font-semibold text-muted-foreground hover:text-foreground"
               asChild
             >
               <Link href="/login">Log in</Link>
@@ -152,7 +153,7 @@ export default function HeaderBlock() {
                     transform="rotate(15 17 7)"
                   />
                 </svg>
-                Acme
+                soma
               </SheetTitle>
             </SheetHeader>
 
@@ -172,13 +173,13 @@ export default function HeaderBlock() {
             <SheetFooter className="mt-6 flex-col gap-2 sm:flex-col">
               <SheetClose asChild>
                 <Button variant="outline" className="w-full" asChild>
-                  <a href="#">Sign in</a>
+                  <a href="/login">Log in</a>
                 </Button>
               </SheetClose>
               <SheetClose asChild>
                 <Button className="w-full" asChild>
-                  <a href="#">
-                    Get Started
+                  <a href="/create">
+                    Create post
                     <ArrowRight className="ml-2 size-4" aria-hidden="true" />
                   </a>
                 </Button>

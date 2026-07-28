@@ -58,7 +58,7 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <article className="w-full flex flex-col gap-4 py-6 px-4 sm:px-6 border-b border-x border-border bg-transparent">
+    <article className="group/post w-full border-b border-border py-8 first:pt-2 sm:py-10">
       {/* Metadata Row */}
       <div className="flex items-center gap-3 text-sm">
         <HoverCard>
@@ -171,12 +171,12 @@ export function PostCard({ post }: PostCardProps) {
       {/* Content */}
       <Link
         href={`/s/${post.soma.slug}/posts/${post.id}`}
-        className="group flex cursor-pointer flex-col gap-2"
+        className="group flex cursor-pointer flex-col gap-2.5"
       >
-        <h2 className="text-xl font-heading font-bold text-foreground transition-colors group-hover:text-primary">
+        <h2 className="font-heading text-xl font-semibold leading-snug tracking-[-0.035em] text-foreground transition-colors group-hover:text-primary sm:text-2xl">
           {post.title}
         </h2>
-        <p className="line-clamp-3 text-sm leading-relaxed text-muted-foreground">
+        <p className="line-clamp-3 text-[0.9375rem] leading-7 text-muted-foreground">
           {post.excerpt}
         </p>
       </Link>
@@ -185,33 +185,33 @@ export function PostCard({ post }: PostCardProps) {
       {post.mediaUrl && (
         <Link
           href={`/s/${post.soma.slug}/posts/${post.id}`}
-          className="relative aspect-4/3 sm:aspect-video w-full cursor-pointer overflow-hidden rounded-md bg-muted/50 mt-1"
+          className="relative mt-3 aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg bg-muted sm:aspect-video"
         >
           <Image
             src={post.mediaUrl}
             alt={post.title}
             fill
-            className="object-cover transition-transform duration-500 hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover/post:scale-[1.015]"
           />
         </Link>
       )}
 
       {/* Interaction Row */}
-      <div className="flex items-center justify-between pt-2">
+      <div className="flex items-center justify-between pt-5">
         {/* Voting Group */}
-        <div className="flex items-center bg-accent/30 rounded-md border border-border/50 overflow-hidden">
+        <div className="flex items-center overflow-hidden rounded-lg border border-border bg-muted/40">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleUpvote}
-            className={`h-8 px-2.5 rounded-none hover:bg-primary/20 ${hasUpvoted ? "text-primary bg-primary/10" : "text-muted-foreground"}`}
+            className={`h-8 px-2.5 rounded-none hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"}`}
           >
             <ArrowBigUp
               className={`size-4 ${hasUpvoted ? "fill-current" : ""}`}
             />
           </Button>
           <span
-            className={`text-xs font-bold px-2 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
+            className={`px-2 text-xs font-bold tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
           >
             {post.stats.upvotes}
           </span>
@@ -219,7 +219,7 @@ export function PostCard({ post }: PostCardProps) {
             variant="ghost"
             size="sm"
             onClick={handleDownvote}
-            className={`h-8 px-2.5 rounded-none hover:bg-destructive/20 ${hasDownvoted ? "text-destructive bg-destructive/10" : "text-muted-foreground"}`}
+            className={`h-8 px-2.5 rounded-none hover:bg-destructive/10 ${hasDownvoted ? "bg-destructive/10 text-destructive" : "text-muted-foreground"}`}
           >
             <ArrowBigDown
               className={`size-4 ${hasDownvoted ? "fill-current" : ""}`}
