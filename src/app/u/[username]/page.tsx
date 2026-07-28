@@ -22,8 +22,9 @@ export default function UserProfilePage({ params }: UserPageProps) {
 
   const { data: user, isLoading: userLoading } = useGetUserByUsername(username);
   const { data: posts, isLoading: postsLoading } = useGetPostsByUser(user?.id);
-  const { data: comments, isLoading: commentsLoading } =
-    useGetCommentsByUser(user?.id);
+  const { data: comments, isLoading: commentsLoading } = useGetCommentsByUser(
+    user?.id,
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-20">
@@ -33,7 +34,10 @@ export default function UserProfilePage({ params }: UserPageProps) {
       {/* Bottom Half: Tabs */}
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 mt-6">
         <Tabs defaultValue="posts" className="w-full">
-          <TabsList className="mb-8 w-full justify-start bg-transparent p-0 border-b border-border/40 rounded-none h-auto gap-8">
+          <TabsList
+            variant={"pill"}
+            className="mb-8 w-full justify-start bg-transparent p-0 border-b border-border/40 rounded-none h-auto gap-8"
+          >
             <TabsTrigger
               value="posts"
               className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium"

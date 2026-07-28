@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useLayoutEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Search, Sparkles } from "lucide-react";
 
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
@@ -18,9 +18,6 @@ export default function ExplorePage() {
   const { data: posts, isLoading: postsLoading } = useGetPosts();
   
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeTab, setActiveTab] = useState("somas");
-  const [tabIndicator, setTabIndicator] = useState({ left: 0, width: 0 });
-  const tabListRef = useRef<HTMLDivElement>(null);
   const normalizedQuery = searchQuery.trim().toLowerCase();
   const filteredSomas = somas?.filter((soma) =>
     [soma.name, soma.slug, soma.description]
@@ -34,23 +31,6 @@ export default function ExplorePage() {
       .toLowerCase()
       .includes(normalizedQuery),
   );
-
-  useLayoutEffect(() => {
-    const tabList = tabListRef.current;
-    const activeTrigger = tabList?.querySelector<HTMLElement>("[data-state='active']");
-
-    if (!tabList || !activeTrigger) return;
-
-    const updateIndicator = () => {
-      setTabIndicator({ left: activeTrigger.offsetLeft, width: activeTrigger.offsetWidth });
-    };
-
-    updateIndicator();
-    const resizeObserver = new ResizeObserver(updateIndicator);
-    resizeObserver.observe(tabList);
-
-    return () => resizeObserver.disconnect();
-  }, [activeTab]);
 
   return (
     <main className="flex min-h-screen flex-col bg-background pb-24">
@@ -79,31 +59,11 @@ export default function ExplorePage() {
 
       <section className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 sm:pt-10">
         
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList ref={tabListRef} className="relative isolate mb-10 !h-11 w-fit rounded-xl border border-border bg-secondary/70 p-1">
-            <span
-              aria-hidden="true"
-              className="pointer-events-none absolute bottom-1 left-0 top-1 z-0 rounded-lg bg-primary transition-[transform,width] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
-              style={{ transform: `translateX(${tabIndicator.left}px)`, width: tabIndicator.width }}
-            />
-            <TabsTrigger 
-              value="somas" 
-              className="relative z-10 !h-full !bg-transparent rounded-lg px-4 text-sm font-normal text-muted-foreground transition-colors data-active:!bg-transparent data-[state=active]:font-medium data-[state=active]:!text-primary-foreground data-[state=active]:shadow-none"
-            >
-              Communities
-            </TabsTrigger>
-            <TabsTrigger 
-              value="posts" 
-              className="relative z-10 !h-full !bg-transparent rounded-lg px-4 text-sm font-normal text-muted-foreground transition-colors data-active:!bg-transparent data-[state=active]:font-medium data-[state=active]:!text-primary-foreground data-[state=active]:shadow-none"
-            >
-              Work
-            </TabsTrigger>
-            <TabsTrigger 
-              value="foryou" 
-              className="relative z-10 !h-full !bg-transparent rounded-lg px-4 text-sm font-normal text-muted-foreground transition-colors data-active:!bg-transparent data-[state=active]:font-medium data-[state=active]:!text-primary-foreground data-[state=active]:shadow-none"
-            >
-              For You
-            </TabsTrigger>
+        <Tabs defaultValue="somas" className="w-full">
+          <TabsList variant="pill" className="mb-10">
+            <TabsTrigger value="somas">Communities</TabsTrigger>
+            <TabsTrigger value="posts">Work</TabsTrigger>
+            <TabsTrigger value="foryou">For You</TabsTrigger>
           </TabsList>
 
           {/* Somas Grid Tab */}
