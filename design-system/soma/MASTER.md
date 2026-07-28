@@ -222,6 +222,7 @@ Motion should make the interface feel alive but unhurried.
 - Prefer 200–350ms microinteractions.
 - Use spatial continuity: indicators move to their next location instead of teleporting.
 - Use `cubic-bezier(0.22, 1, 0.36, 1)` for the signature navigation/tab movement.
+- A confirmed social action may earn one compact acknowledgement: Follow expands briefly and plays bell → creator craft → check, with each 360ms icon popping, tilting, and contracting before the next. Use Paintbrush as the temporary craft icon until creator-Soma data is available. Adding an upvote uses a 360ms arrow/count pop. Never repeat these on hover or removal.
 - Avoid page-wide entrance choreography, looping decoration, aggressive scale, and bounce.
 - Do not animate layout in ways that move surrounding content.
 - Every nonessential animation must be disabled by `motion-reduce`.

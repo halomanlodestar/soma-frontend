@@ -29,6 +29,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { vote, removeVote } = useVote();
+  const [isUpvoteConfirming, setIsUpvoteConfirming] = React.useState(false);
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
   });
@@ -44,6 +45,8 @@ export function PostCard({ post }: PostCardProps) {
       removeVote(post.id, "POST", 1);
     } else {
       vote(post.id, "POST", 1, post.userVoteValue);
+      setIsUpvoteConfirming(true);
+      window.setTimeout(() => setIsUpvoteConfirming(false), 360);
     }
   };
 
@@ -204,14 +207,14 @@ export function PostCard({ post }: PostCardProps) {
             variant="ghost"
             size="sm"
             onClick={handleUpvote}
-            className={`h-8 px-2.5 rounded-none hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"}`}
+            className={`h-8 px-2.5 rounded-none hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"} ${isUpvoteConfirming ? "motion-safe:animate-[soma-vote-pop_360ms_cubic-bezier(0.22,1,0.36,1)]" : ""}`}
           >
             <ArrowBigUp
-              className={`size-4 ${hasUpvoted ? "fill-current" : ""}`}
+              className={`size-4 transition-transform duration-200 ${hasUpvoted ? "fill-current" : ""} ${isUpvoteConfirming ? "scale-110" : ""}`}
             />
           </Button>
           <span
-            className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
+            className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"} ${isUpvoteConfirming ? "motion-safe:animate-[soma-vote-pop_360ms_cubic-bezier(0.22,1,0.36,1)]" : ""}`}
           >
             {post.stats.upvotes}
           </span>

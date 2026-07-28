@@ -1,7 +1,17 @@
 /** @format */
 
+"use client";
+
 import Image from "next/image";
-import { BadgeCheck, CalendarDays, Trophy } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import {
+  BadgeCheck,
+  Bell,
+  CalendarDays,
+  Check,
+  Paintbrush,
+  Trophy,
+} from "lucide-react";
 import { format } from "date-fns";
 
 import { UserProfile } from "@/modules/user/types";
@@ -9,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface UserHeaderProps {
   user: UserProfile | null;
@@ -16,6 +27,16 @@ interface UserHeaderProps {
 }
 
 export function UserHeader({ user, isLoading }: UserHeaderProps) {
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [followStage, setFollowStage] = useState<
+    "bell" | "craft" | "check" | null
+  >(null);
+  const followTimers = useRef<number[]>([]);
+
+  useEffect(() => {
+    return () => followTimers.current.forEach(window.clearTimeout);
+  }, []);
+
   if (isLoading || !user) {
     return (
       <div className="flex w-full flex-col">
@@ -34,6 +55,30 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
   }
 
   const joinDate = format(new Date(user.joinedAt), "MMMM yyyy");
+
+  const handleFollow = () => {
+    if (followStage) return;
+
+    if (isFollowing) {
+      setIsFollowing(false);
+      return;
+    }
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setIsFollowing(true);
+      return;
+    }
+
+    setFollowStage("bell");
+    followTimers.current = [
+      window.setTimeout(() => setFollowStage("craft"), 360),
+      window.setTimeout(() => setFollowStage("check"), 720),
+      window.setTimeout(() => {
+        setFollowStage(null);
+        setIsFollowing(true);
+      }, 1080),
+    ];
+  };
 
   return (
     <section className="flex w-full flex-col border-b border-border bg-background">
@@ -66,10 +111,42 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
           </Avatar>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="outline">
-              Message
+            <Button variant="outline">Message</Button>
+            <Button
+              onClick={handleFollow}
+              aria-label={isFollowing ? "Unfollow" : "Follow creator"}
+              aria-busy={followStage !== null}
+              className={cn(
+                "h-10 overflow-hidden transition-[width,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                followStage
+                  ? "w-28 px-0"
+                  : isFollowing
+                    ? "w-28 px-4"
+                    : "w-24 px-4",
+                followStage && "pointer-events-none",
+              )}
+            >
+              {followStage ? (
+                <span className="flex size-5 items-center justify-center">
+                  {followStage === "bell" && (
+                    <Bell className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
+                  )}
+                  {followStage === "craft" && (
+                    <Paintbrush className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
+                  )}
+                  {followStage === "check" && (
+                    <Check className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
+                  )}
+                </span>
+              ) : (
+                <>
+                  {isFollowing && (
+                    <Check data-icon="inline-start" className="text-current" />
+                  )}
+                  {isFollowing ? "Following" : "Follow"}
+                </>
+              )}
             </Button>
-            <Button className="px-5">Follow</Button>
           </div>
         </div>
 
@@ -79,7 +156,10 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
             <h1 className="flex items-center gap-2 font-heading text-3xl font-medium tracking-[-0.04em] text-foreground sm:text-4xl">
               {user.name}
               {user.isVerified && (
-                <BadgeCheck className="size-5 text-primary sm:size-6" aria-label="Verified creator" />
+                <BadgeCheck
+                  className="size-5 text-primary sm:size-6"
+                  aria-label="Verified creator"
+                />
               )}
             </h1>
             <p className="text-sm text-muted-foreground">@{user.username}</p>
@@ -96,15 +176,11 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
             </span>
             <span className="flex items-center gap-1.5 text-foreground">
               {user.stats.following}{" "}
-              <span className="text-muted-foreground">
-                Following
-              </span>
+              <span className="text-muted-foreground">Following</span>
             </span>
             <span className="flex items-center gap-1.5 text-foreground">
               {user.stats.followers}{" "}
-              <span className="text-muted-foreground">
-                Followers
-              </span>
+              <span className="text-muted-foreground">Followers</span>
             </span>
           </div>
 
