@@ -65,6 +65,8 @@
   --border: #deded4;
   --input: #deded4;
   --ring: #557765;
+  --button-accent: #D4A373;
+  --button-accent-foreground: #26342e;
   --radius: 0.75rem;
   --sidebar: #fbfaf8;
   --sidebar-foreground: #26342e;
@@ -96,6 +98,8 @@
   --border: #1C1816;
   --input: #1C1816;
   --ring: #D4A373;
+  --button-accent: #557765;
+  --button-accent-foreground: #F5EBE0;
   --sidebar: #0A0908;
   --sidebar-foreground: #F5EBE0;
   --sidebar-primary: #D4A373;
@@ -126,6 +130,8 @@
   --border: #262626;
   --input: #262626;
   --ring: #D4A373;
+  --button-accent: #557765;
+  --button-accent-foreground: #EAE0D5;
   --sidebar: #000000;
   --sidebar-foreground: #EAE0D5;
   --sidebar-primary: #D4A373;
