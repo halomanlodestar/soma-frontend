@@ -49,12 +49,12 @@ export default function SomaPage({ params }: PageProps) {
           >
             <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
               {/* Main Content Column */}
-              <div className="flex flex-col gap-6 lg:col-span-8">
+              <div className="flex flex-col lg:col-span-8">
                 {postsLoading
                   ? Array.from({ length: 3 }).map((_, i) => (
                       <div
                         key={i}
-                        className="flex flex-col gap-5 rounded-xl border border-border/40 bg-card p-6 shadow-sm"
+                        className="flex flex-col gap-5 border-b border-border py-10 first:pt-2"
                       >
                         <div className="flex items-center gap-3">
                           <Skeleton className="size-9 rounded-full" />
@@ -76,14 +76,14 @@ export default function SomaPage({ params }: PageProps) {
               {/* Context Column (Rules summary) */}
               <div className="hidden lg:flex flex-col gap-6 lg:col-span-4">
                 <div className="sticky top-8 flex flex-col gap-6">
-                  <div className="rounded-xl border border-border/40 bg-card p-5 shadow-sm">
-                    <h3 className="font-semibold text-foreground mb-2">
+                  <div className="border-y border-border py-5">
+                    <h3 className="mb-2 font-semibold text-foreground">
                       About s/{soma?.slug}
                     </h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {soma?.description}
                     </p>
-                    <div className="mt-4 pt-4 border-t border-border/40 text-xs text-muted-foreground">
+                    <div className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
                       Created Jul 2026
                     </div>
                   </div>
@@ -97,7 +97,7 @@ export default function SomaPage({ params }: PageProps) {
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
             <div className="max-w-3xl flex flex-col gap-6">
-              <div className="rounded-xl border border-border/40 bg-card p-8 shadow-sm">
+              <div className="border-y border-border py-8">
                 <h3 className="font-heading text-xl font-bold mb-6">
                   Community Guidelines
                 </h3>

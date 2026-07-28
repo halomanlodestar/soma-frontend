@@ -43,21 +43,21 @@ export function ShareDialog({ children, url }: ShareDialogProps) {
           <Button
             variant="outline"
             size="icon"
-            className="size-12 rounded-full hover:bg-sky-500/10 hover:text-sky-500 hover:border-sky-500/30 transition-colors"
+            className="size-12 rounded-lg hover:bg-sky-500/10 hover:text-sky-500 hover:border-sky-500/30 transition-colors"
           >
             <TwitterLogo weight="fill" className="size-5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="size-12 rounded-full hover:bg-pink-500/10 hover:text-pink-500 hover:border-pink-500/30 transition-colors"
+            className="size-12 rounded-lg hover:bg-pink-500/10 hover:text-pink-500 hover:border-pink-500/30 transition-colors"
           >
             <InstagramLogo weight="fill" className="size-5" />
           </Button>
           <Button
             variant="outline"
             size="icon"
-            className="size-12 rounded-full hover:bg-blue-600/10 hover:text-blue-600 hover:border-blue-600/30 transition-colors"
+            className="size-12 rounded-lg hover:bg-blue-600/10 hover:text-blue-600 hover:border-blue-600/30 transition-colors"
           >
             <FacebookLogo weight="fill" className="size-5" />
           </Button>

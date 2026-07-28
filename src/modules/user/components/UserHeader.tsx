@@ -65,15 +65,10 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
           </Avatar>
 
           <div className="flex items-center gap-3">
-            <Button
-              variant="outline"
-              className="font-semibold shadow-sm rounded-full"
-            >
+            <Button variant="outline" className="font-semibold shadow-sm">
               Message
             </Button>
-            <Button className="font-semibold shadow-sm rounded-full px-6">
-              Follow
-            </Button>
+            <Button className="font-semibold shadow-sm px-6">Follow</Button>
           </div>
         </div>
 
