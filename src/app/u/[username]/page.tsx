@@ -3,6 +3,7 @@
 "use client";
 
 import { use } from "react";
+import { Bookmark } from "lucide-react";
 import { useGetUserByUsername } from "@/modules/user/api/useGetUserByUsername";
 import { useGetPostsByUser } from "@/modules/post/api/useGetPostsByUser";
 import { useGetCommentsByUser } from "@/modules/comment/api/useGetCommentsByUser";
@@ -28,34 +29,14 @@ export default function UserProfilePage({ params }: UserPageProps) {
 
   return (
     <div className="flex flex-col min-h-screen bg-background pb-20">
-      {/* Top Half: User Header */}
       <UserHeader user={user} isLoading={userLoading} />
 
-      {/* Bottom Half: Tabs */}
-      <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8 mt-6">
+      <main className="mx-auto mt-8 w-full max-w-7xl px-4 sm:mt-10 sm:px-6 lg:px-8">
         <Tabs defaultValue="posts" className="w-full">
-          <TabsList
-            variant={"pill"}
-            className="mb-8 w-full justify-start bg-transparent p-0 border-b border-border/40 rounded-none h-auto gap-8"
-          >
-            <TabsTrigger
-              value="posts"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium"
-            >
-              Posts
-            </TabsTrigger>
-            <TabsTrigger
-              value="comments"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium"
-            >
-              Comments
-            </TabsTrigger>
-            <TabsTrigger
-              value="saved"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-0 text-base font-medium"
-            >
-              Saved Art
-            </TabsTrigger>
+          <TabsList variant="pill" className="mb-8">
+            <TabsTrigger value="posts">Posts</TabsTrigger>
+            <TabsTrigger value="comments">Comments</TabsTrigger>
+            <TabsTrigger value="saved">Saved art</TabsTrigger>
           </TabsList>
 
           {/* Posts Tab */}
@@ -63,12 +44,12 @@ export default function UserProfilePage({ params }: UserPageProps) {
             value="posts"
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
-            <div className="flex flex-col gap-6">
+            <div className="max-w-3xl">
               {postsLoading
                 ? Array.from({ length: 2 }).map((_, i) => (
-                    <div
+                    <article
                       key={i}
-                      className="flex flex-col gap-5 rounded-xl border border-border/40 bg-card p-6 shadow-sm"
+                      className="flex flex-col gap-4 border-b border-border py-8 first:pt-0 sm:gap-5"
                     >
                       <div className="flex items-center gap-3">
                         <Skeleton className="size-9 rounded-full" />
@@ -80,7 +61,7 @@ export default function UserProfilePage({ params }: UserPageProps) {
                       <Skeleton className="mt-2 h-6 w-3/4" />
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="mt-2 aspect-video w-full rounded-xl" />
-                    </div>
+                    </article>
                   ))
                 : posts?.map((post) => <PostCard key={post.id} post={post} />)}
             </div>
@@ -91,7 +72,7 @@ export default function UserProfilePage({ params }: UserPageProps) {
             value="comments"
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
-            <div className="rounded-xl border border-border/40 bg-card p-6 shadow-sm">
+            <div className="max-w-3xl border-t border-border pt-2">
               <CommentTree comments={comments} isLoading={commentsLoading} />
             </div>
           </TabsContent>
@@ -101,30 +82,18 @@ export default function UserProfilePage({ params }: UserPageProps) {
             value="saved"
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
-            <div className="flex flex-col items-center justify-center py-20 text-center">
-              <div className="size-16 rounded-full bg-accent flex items-center justify-center mb-4">
-                <svg
-                  className="size-8 text-muted-foreground"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                  />
-                </svg>
+            <div className="flex max-w-xl flex-col items-start border-y border-border py-16 text-left">
+              <div className="mb-5 flex size-11 items-center justify-center rounded-full bg-accent">
+                <Bookmark className="size-5 text-primary" />
               </div>
-              <h3 className="font-semibold text-lg">No saved art</h3>
-              <p className="text-muted-foreground mt-2 max-w-sm">
+              <h3 className="font-heading text-2xl font-medium tracking-[-0.03em]">No saved art</h3>
+              <p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">
                 Only {user?.name || "this user"} can see what they have saved.
               </p>
             </div>
           </TabsContent>
         </Tabs>
-      </div>
+      </main>
     </div>
   );
 }
