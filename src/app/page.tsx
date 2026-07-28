@@ -16,8 +16,8 @@ export default function HomeFeedPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="mb-10 flex flex-col justify-between gap-5 border-b border-border pb-8 sm:flex-row sm:items-end">
         <div className="max-w-2xl">
-          <p className="mb-3 text-xs font-bold uppercase tracking-[0.18em] text-primary">A quieter place for art</p>
-          <h1 className="font-heading text-4xl font-semibold tracking-[-0.055em] text-foreground sm:text-5xl">Made by people.<br />Given room to breathe.</h1>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary">A quieter place for art</p>
+          <h1 className="font-heading text-4xl font-medium tracking-[-0.055em] text-foreground sm:text-5xl">Made by people.<br />Given room to breathe.</h1>
         </div>
         <p className="max-w-xs text-sm leading-6 text-muted-foreground">A considered feed of work, process, and conversation—without the endless noise.</p>
       </div>
@@ -25,7 +25,7 @@ export default function HomeFeedPage() {
         {/* Main Content Column (Primary Flow) */}
         <section className="flex min-w-0 flex-col gap-4 lg:col-span-8">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading text-2xl font-semibold tracking-[-0.04em]">Latest work</h2>
+            <h2 className="font-heading text-2xl font-medium tracking-[-0.04em]">Latest work</h2>
             <span className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Take your time</span>
           </div>
 
@@ -59,7 +59,7 @@ export default function HomeFeedPage() {
           <div className="sticky top-8 flex flex-col gap-8">
             {/* Featured Communities */}
             <div className="flex flex-col gap-3">
-              <h2 className="text-xs font-bold tracking-[0.16em] text-muted-foreground uppercase">
+              <h2 className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
                 Discover Somas
               </h2>
               <div className="flex flex-col gap-2">
@@ -81,15 +81,15 @@ export default function HomeFeedPage() {
 
             {/* Apply Banner */}
             <div className="flex flex-col items-start gap-3 rounded-2xl bg-primary p-6 text-left text-primary-foreground">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary-foreground/70">Your work belongs here</p>
-              <h3 className="font-heading text-2xl font-semibold tracking-[-0.04em]">
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary-foreground/70">Your work belongs here</p>
+              <h3 className="font-heading text-2xl font-medium tracking-[-0.04em]">
                 Are you a creator?
               </h3>
               <p className="text-sm leading-6 text-primary-foreground/70">
                 Join the sanctuary. Apply to verify your craft and share your
                 work.
               </p>
-              <button className="mt-2 text-sm font-bold text-primary-foreground underline-offset-4 hover:underline">
+              <button className="mt-2 text-sm font-medium text-primary-foreground underline-offset-4 hover:underline">
                 Apply for Creatorship →
               </button>
             </div>

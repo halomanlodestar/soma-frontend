@@ -79,7 +79,7 @@ export function PostCard({ post }: PostCardProps) {
                 <div className="flex items-center gap-1.5">
                   <Link
                     href={`/u/${post.author.username}`}
-                    className="font-bold text-foreground group-hover:text-primary transition-colors"
+                    className="font-medium text-foreground group-hover:text-primary transition-colors"
                   >
                     {post.author.name}
                   </Link>
@@ -173,7 +173,7 @@ export function PostCard({ post }: PostCardProps) {
         href={`/s/${post.soma.slug}/posts/${post.id}`}
         className="group flex cursor-pointer flex-col gap-2.5"
       >
-        <h2 className="font-heading text-xl font-semibold leading-snug tracking-[-0.035em] text-foreground transition-colors group-hover:text-primary sm:text-2xl">
+        <h2 className="font-heading text-xl font-medium leading-snug tracking-[-0.035em] text-foreground transition-colors group-hover:text-primary sm:text-2xl">
           {post.title}
         </h2>
         <p className="line-clamp-3 text-[0.9375rem] leading-7 text-muted-foreground">
@@ -211,7 +211,7 @@ export function PostCard({ post }: PostCardProps) {
             />
           </Button>
           <span
-            className={`px-2 text-xs font-bold tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
+            className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
           >
             {post.stats.upvotes}
           </span>
@@ -235,7 +235,7 @@ export function PostCard({ post }: PostCardProps) {
             className="h-8 gap-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
           >
             <MessageCircle className="size-4" />
-            <span className="text-xs font-semibold">{post.stats.comments}</span>
+            <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
           <ShareDialog url={shareUrl}>

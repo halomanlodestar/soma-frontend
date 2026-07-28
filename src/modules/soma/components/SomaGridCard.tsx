@@ -53,10 +53,10 @@ export function SomaGridCard({ soma }: SomaGridCardProps) {
           </div>
 
           <div className="flex flex-col gap-1 mb-3">
-            <h3 className="font-heading text-xl font-semibold tracking-[-0.035em] text-foreground group-hover:text-primary transition-colors">
+            <h3 className="font-heading text-xl font-medium tracking-[-0.035em] text-foreground group-hover:text-primary transition-colors">
               {soma.name}
             </h3>
-            <span className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground">
+            <span className="text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground">
               s/{soma.slug}
             </span>
           </div>

@@ -61,7 +61,9 @@ export default function HeaderBlock() {
               transform="rotate(15 17 7)"
             />
           </svg>
-          <span className="font-heading text-xl font-bold tracking-[-0.06em]">soma</span>
+          <span className="font-heading text-xl font-bold tracking-[-0.06em]">
+            soma
+          </span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
@@ -77,10 +79,10 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button size="sm" className="h-9 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground hover:bg-primary/85" asChild>
+          <Button asChild>
             <Link href="/create">
-              <Plus data-icon="inline-start" />
               Create Post
+              <Plus />
             </Link>
           </Button>
           {isLoading ? (
@@ -88,8 +90,13 @@ export default function HeaderBlock() {
           ) : me ? (
             <Link href={`/u/${me.username}`} className="ml-2">
               <Avatar className="size-8">
-                <AvatarImage src={me.avatarUrl || undefined} alt={me.displayName || me.username} />
-                <AvatarFallback>{(me.displayName || me.username).charAt(0).toUpperCase()}</AvatarFallback>
+                <AvatarImage
+                  src={me.avatarUrl || undefined}
+                  alt={me.displayName || me.username}
+                />
+                <AvatarFallback>
+                  {(me.displayName || me.username).charAt(0).toUpperCase()}
+                </AvatarFallback>
               </Avatar>
             </Link>
           ) : (

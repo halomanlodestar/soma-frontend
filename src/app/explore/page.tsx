@@ -26,7 +26,7 @@ export default function ExplorePage() {
       <div className="w-full border-b border-border bg-background/92 sticky top-17 z-20 backdrop-blur-md">
         <div className="mx-auto w-full max-w-7xl px-4 py-7 sm:px-6">
           <div className="mb-5 flex items-end justify-between gap-4">
-            <div><p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-primary">Find your corner</p><h1 className="font-heading text-3xl font-semibold tracking-[-0.05em] sm:text-4xl">Explore at your own pace</h1></div>
+            <div><p className="mb-2 text-xs font-medium uppercase tracking-[0.16em] text-primary">Find your corner</p><h1 className="font-heading text-3xl font-medium tracking-[-0.05em] sm:text-4xl">Explore at your own pace</h1></div>
           </div>
           <div className="relative max-w-2xl">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -49,21 +49,21 @@ export default function ExplorePage() {
           <TabsList className="mb-8 h-auto w-full justify-start gap-7 rounded-none border-b border-border bg-transparent p-0">
             <TabsTrigger 
               value="somas" 
-              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-medium data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Hash className="size-4" />
               Discover Somas
             </TabsTrigger>
             <TabsTrigger 
               value="posts" 
-              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-medium data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Flame className="size-4" />
               Trending Art
             </TabsTrigger>
             <TabsTrigger 
               value="foryou" 
-              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-semibold data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+              className="rounded-none border-b-2 border-transparent px-0 py-3 text-sm font-medium data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none"
             >
               <Sparkles className="size-4" />
               For You
