@@ -3,7 +3,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, Plus } from "lucide-react";
 
@@ -28,13 +28,39 @@ const navLinks = [
 
 export default function HeaderBlock() {
   const [open, setOpen] = useState(false);
+  const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+  const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const { me, isLoading } = useGetMe();
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    const activeLink = nav?.querySelector<HTMLElement>("[data-active='true']");
+
+    if (!nav || !activeLink) return;
+
+    const updateIndicator = () => {
+      setIndicator({
+        left: activeLink.offsetLeft,
+        width: activeLink.offsetWidth,
+      });
+    };
+
+    updateIndicator();
+    const resizeObserver = new ResizeObserver(updateIndicator);
+    resizeObserver.observe(nav);
+
+    return () => resizeObserver.disconnect();
+  }, [pathname]);
 
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-background/95 backdrop-blur-md">
       <div className="mx-auto flex h-18 w-full max-w-7xl items-center px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Soma home">
+        <Link
+          href="/"
+          className="flex shrink-0 items-center gap-2"
+          aria-label="Soma home"
+        >
           <svg
             viewBox="0 0 24 24"
             fill="currentColor"
@@ -69,21 +95,41 @@ export default function HeaderBlock() {
           </span>
         </Link>
 
-        <nav className="ml-8 hidden items-center gap-6 border-l border-border pl-8 md:flex" aria-label="Primary navigation">
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              href={link.href}
-              className={cn(
-                "relative py-2 text-sm transition-colors hover:text-foreground focus-visible:text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform",
-                (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
-                  ? "font-medium text-foreground after:scale-x-100"
-                  : "text-muted-foreground",
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav
+          ref={navRef}
+          className="relative ml-8 hidden items-center gap-6 border-l border-border pl-8 md:flex"
+          aria-label="Primary navigation"
+        >
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(link.href);
+
+            return (
+              <Link
+                key={link.label}
+                href={link.href}
+                data-active={isActive}
+                className={cn(
+                  "py-2 text-sm transition-colors hover:text-foreground focus-visible:text-foreground",
+                  isActive
+                    ? "font-medium text-foreground"
+                    : "text-muted-foreground",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -bottom-1 left-0 h-px bg-primary transition-[transform,width] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+            style={{
+              transform: `translateX(${indicator.left}px)`,
+              width: indicator.width,
+            }}
+          />
         </nav>
 
         <div className="ml-auto hidden items-center gap-1.5 md:flex">
@@ -96,7 +142,10 @@ export default function HeaderBlock() {
           {isLoading ? (
             <div className="size-9 rounded-full bg-muted animate-pulse" />
           ) : me ? (
-            <Link href={`/u/${me.username}`} className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/30">
+            <Link
+              href={`/u/${me.username}`}
+              className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
+            >
               <Avatar className="size-9">
                 <AvatarImage
                   src={me.avatarUrl || undefined}
@@ -178,7 +227,11 @@ export default function HeaderBlock() {
                     href={link.href}
                     className={cn(
                       "border-b border-border py-4 text-sm transition-colors last:border-b-0 hover:text-foreground",
-                      (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
+                      (
+                        link.href === "/"
+                          ? pathname === "/"
+                          : pathname.startsWith(link.href)
+                      )
                         ? "font-medium text-foreground"
                         : "text-muted-foreground",
                     )}
