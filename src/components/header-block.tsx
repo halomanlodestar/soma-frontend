@@ -4,6 +4,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetMe } from "@/modules/user/api/useGetMe";
+import { cn } from "@/lib/utils";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -26,17 +28,18 @@ const navLinks = [
 
 export default function HeaderBlock() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const { me, isLoading } = useGetMe();
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-border bg-background/92 backdrop-blur-md">
-      <div className="mx-auto flex h-17 w-full max-w-7xl items-center gap-8 px-4 sm:px-6">
-        <Link href="/" className="flex shrink-0 items-center gap-2.5">
+    <header className="sticky top-0 z-30 w-full border-b border-border bg-background/95 backdrop-blur-md">
+      <div className="mx-auto flex h-18 w-full max-w-7xl items-center px-4 sm:px-6">
+        <Link href="/" className="flex shrink-0 items-center gap-2" aria-label="Soma home">
           <svg
             viewBox="0 0 24 24"
             fill="currentColor"
             aria-hidden="true"
-            className="size-6 shrink-0 text-primary"
+            className="size-5 shrink-0 text-primary"
           >
             <rect x="3" y="3" width="8" height="8" transform="rotate(-6 7 7)" />
             <rect
@@ -61,35 +64,40 @@ export default function HeaderBlock() {
               transform="rotate(15 17 7)"
             />
           </svg>
-          <span className="font-heading text-xl font-bold tracking-[-0.06em]">
+          <span className="font-heading text-xl font-medium tracking-[-0.04em]">
             soma
           </span>
         </Link>
 
-        <nav className="hidden items-center gap-6 md:flex">
+        <nav className="ml-8 hidden items-center gap-6 border-l border-border pl-8 md:flex" aria-label="Primary navigation">
           {navLinks.map((link) => (
             <Link
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:text-foreground"
+              className={cn(
+                "relative py-2 text-sm transition-colors hover:text-foreground focus-visible:text-foreground after:absolute after:inset-x-0 after:-bottom-1 after:h-px after:origin-left after:scale-x-0 after:bg-primary after:transition-transform",
+                (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
+                  ? "font-medium text-foreground after:scale-x-100"
+                  : "text-muted-foreground",
+              )}
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="ml-auto hidden items-center gap-2 md:flex">
-          <Button asChild>
+        <div className="ml-auto hidden items-center gap-1.5 md:flex">
+          <Button variant="outline" asChild>
             <Link href="/create">
-              Create Post
-              <Plus />
+              <Plus data-icon="inline-start" />
+              Share work
             </Link>
           </Button>
           {isLoading ? (
-            <div className="size-8 rounded-full bg-muted animate-pulse" />
+            <div className="size-9 rounded-full bg-muted animate-pulse" />
           ) : me ? (
-            <Link href={`/u/${me.username}`} className="ml-2">
-              <Avatar className="size-8">
+            <Link href={`/u/${me.username}`} className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/30">
+              <Avatar className="size-9">
                 <AvatarImage
                   src={me.avatarUrl || undefined}
                   alt={me.displayName || me.username}
@@ -102,8 +110,7 @@ export default function HeaderBlock() {
           ) : (
             <Button
               variant="ghost"
-              size="sm"
-              className="h-9 rounded-full px-4 text-sm font-semibold text-muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground"
               asChild
             >
               <Link href="/login">Log in</Link>
@@ -164,12 +171,17 @@ export default function HeaderBlock() {
               </SheetTitle>
             </SheetHeader>
 
-            <nav className="flex flex-col px-4">
+            <nav className="flex flex-col px-4" aria-label="Mobile navigation">
               {navLinks.map((link) => (
                 <SheetClose asChild key={link.label}>
                   <a
                     href={link.href}
-                    className="border-b border-border py-3 text-sm font-medium text-muted-foreground transition-colors last:border-b-0 hover:text-foreground"
+                    className={cn(
+                      "border-b border-border py-4 text-sm transition-colors last:border-b-0 hover:text-foreground",
+                      (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
+                        ? "font-medium text-foreground"
+                        : "text-muted-foreground",
+                    )}
                   >
                     {link.label}
                   </a>
@@ -186,8 +198,8 @@ export default function HeaderBlock() {
               <SheetClose asChild>
                 <Button className="w-full" asChild>
                   <a href="/create">
-                    Create post
-                    <ArrowRight className="ml-2 size-4" aria-hidden="true" />
+                    Share work
+                    <ArrowRight data-icon="inline-end" aria-hidden="true" />
                   </a>
                 </Button>
               </SheetClose>

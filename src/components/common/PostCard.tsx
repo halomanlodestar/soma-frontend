@@ -58,7 +58,7 @@ export function PostCard({ post }: PostCardProps) {
   };
 
   return (
-    <article className="group/post w-full border-b border-border py-8 first:pt-2 sm:py-10">
+    <article className="group/post flex w-full flex-col gap-5 border-b border-border py-8 first:pt-2 sm:gap-6 sm:py-10">
       {/* Metadata Row */}
       <div className="flex items-center gap-3 text-sm">
         <HoverCard>
@@ -173,7 +173,7 @@ export function PostCard({ post }: PostCardProps) {
         href={`/s/${post.soma.slug}/posts/${post.id}`}
         className="group flex cursor-pointer flex-col gap-2.5"
       >
-        <h2 className="font-heading text-xl font-medium leading-snug tracking-[-0.035em] text-foreground transition-colors group-hover:text-primary sm:text-2xl">
+        <h2 className="font-heading text-lg font-medium leading-snug tracking-[-0.025em] text-foreground transition-colors group-hover:text-primary sm:text-xl">
           {post.title}
         </h2>
         <p className="line-clamp-3 text-[0.9375rem] leading-7 text-muted-foreground">
@@ -185,7 +185,7 @@ export function PostCard({ post }: PostCardProps) {
       {post.mediaUrl && (
         <Link
           href={`/s/${post.soma.slug}/posts/${post.id}`}
-          className="relative mt-3 aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg bg-muted sm:aspect-video"
+          className="relative aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg bg-muted sm:aspect-video"
         >
           <Image
             src={post.mediaUrl}
@@ -197,7 +197,7 @@ export function PostCard({ post }: PostCardProps) {
       )}
 
       {/* Interaction Row */}
-      <div className="flex items-center justify-between pt-5">
+      <div className="flex items-center justify-between pt-1">
         {/* Voting Group */}
         <div className="flex items-center overflow-hidden rounded-lg border border-border bg-muted/40">
           <Button
