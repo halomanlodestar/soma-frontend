@@ -59,7 +59,9 @@ function TabsList({
     if (!list) return;
 
     const updateIndicator = () => {
-      const activeTrigger = list.querySelector<HTMLElement>("[data-state='active']");
+      const activeTrigger = list.querySelector<HTMLElement>(
+        "[data-state='active']",
+      );
 
       if (activeTrigger) {
         setIndicator({
@@ -122,7 +124,7 @@ function TabsTrigger({
         "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
         "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
         "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:-bottom-1.25 group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
-        "group-data-[variant=pill]/tabs-list:z-10 group-data-[variant=pill]/tabs-list:!h-full group-data-[variant=pill]/tabs-list:rounded-lg group-data-[variant=pill]/tabs-list:px-4 group-data-[variant=pill]/tabs-list:text-sm group-data-[variant=pill]/tabs-list:font-normal group-data-[variant=pill]/tabs-list:text-muted-foreground group-data-[variant=pill]/tabs-list:data-active:!bg-transparent group-data-[variant=pill]/tabs-list:data-active:font-medium group-data-[variant=pill]/tabs-list:data-active:!text-primary-foreground group-data-[variant=pill]/tabs-list:data-active:shadow-none dark:group-data-[variant=pill]/tabs-list:data-active:!border-transparent dark:group-data-[variant=pill]/tabs-list:data-active:!bg-transparent",
+        "group-data-[variant=pill]/tabs-list:z-10 group-data-[variant=pill]/tabs-list:!h-full group-data-[variant=pill]/tabs-list:rounded-lg group-data-[variant=pill]/tabs-list:px-4 group-data-[variant=pill]/tabs-list:text-sm group-data-[variant=pill]/tabs-list:font-normal group-data-[variant=pill]/tabs-list:text-muted-foreground group-data-[variant=pill]/tabs-list:data-active:!bg-transparent group-data-[variant=pill]/tabs-list:data-active:font-medium group-data-[variant=pill]/tabs-list:data-active:!text-primary-foreground group-data-[variant=pill]/tabs-list:data-active:shadow-none dark:group-data-[variant=pill]/tabs-list:data-active:!bg-transparent",
         className,
       )}
       {...props}
