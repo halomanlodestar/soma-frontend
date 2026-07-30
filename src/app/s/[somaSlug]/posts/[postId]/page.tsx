@@ -2,232 +2,213 @@
 
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
+  ArrowBigDown,
+  ArrowBigUp,
+  ArrowLeft,
   BadgeCheck,
-  Heart,
   MessageCircle,
   Share2,
-  MoreHorizontal,
 } from "lucide-react";
 
 import { useGetPostById } from "@/modules/post/api/useGetPostById";
+import { useVote } from "@/modules/post/api/useVote";
 import { useGetComments } from "@/modules/comment/api/useGetComments";
 import { CommentTree } from "@/modules/comment/components/CommentTree";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { ShareDialog } from "@/components/common/ShareDialog";
 
 interface PostPageProps {
   params: Promise<{ somaSlug: string; postId: string }>;
 }
 
 export default function PostPage({ params }: PostPageProps) {
-  const { postId } = use(params);
-
+  const { somaSlug, postId } = use(params);
   const { data: post, isLoading: postLoading } = useGetPostById(postId);
   const { data: comments, isLoading: commentsLoading } = useGetComments(postId);
+  const { vote, removeVote } = useVote();
+  const [isUpvoteConfirming, setIsUpvoteConfirming] = useState(false);
 
   if (postLoading || !post) {
     return (
-      <div className="flex flex-col min-h-screen bg-background px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mx-auto w-full max-w-350 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
-          <div className="lg:col-span-7 xl:col-span-8">
-            <Skeleton className="w-full aspect-4/3 rounded-2xl" />
+      <main className="min-h-screen bg-background pb-24">
+        <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+          <Skeleton className="mb-10 h-4 w-36" />
+          <div className="flex max-w-3xl flex-col gap-5">
+            <Skeleton className="h-5 w-28" />
+            <Skeleton className="h-12 w-4/5 sm:h-16" />
+            <Skeleton className="h-10 w-52" />
           </div>
-          <div className="lg:col-span-5 xl:col-span-4 flex flex-col gap-6">
-            <Skeleton className="h-[80vh] w-full rounded-2xl" />
+          <Skeleton className="mt-10 aspect-4/3 w-full rounded-xl bg-muted sm:aspect-[16/9]" />
+          <div className="mt-10 flex max-w-2xl flex-col gap-3">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-11/12" />
+            <Skeleton className="h-4 w-4/5" />
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
   });
+  const shareUrl = `https://soma.art/p/${post.id}`;
+  const hasUpvoted = post.userVoteValue === 1;
+  const hasDownvoted = post.userVoteValue === -1;
+
+  const handleUpvote = () => {
+    if (hasUpvoted) {
+      removeVote(post.id, "POST", 1);
+      return;
+    }
+
+    vote(post.id, "POST", 1, post.userVoteValue);
+    setIsUpvoteConfirming(true);
+    window.setTimeout(() => setIsUpvoteConfirming(false), 360);
+  };
+
+  const handleDownvote = () => {
+    if (hasDownvoted) {
+      removeVote(post.id, "POST", -1);
+      return;
+    }
+
+    vote(post.id, "POST", -1, post.userVoteValue);
+  };
+
+  const scrollToThoughts = () => {
+    document.getElementById("thoughts")?.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="mx-auto w-full max-w-350 px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
-          {/* LEFT COLUMN: Pure Media */}
-          <div className="lg:col-span-7 xl:col-span-8 flex flex-col justify-center items-center h-[60vh] lg:h-[85vh] lg:sticky lg:top-20">
-            {post.mediaUrl && (
-              <div className="relative w-full h-full rounded-2xl overflow-hidden flex justify-center items-center">
-                <Image
-                  src={post.mediaUrl}
-                  alt={post.title}
-                  fill
-                  className="object-contain rounded-2xl shadow-sm"
-                  priority
-                />
-              </div>
-            )}
-          </div>
+    <main className="min-h-screen bg-background pb-24">
+      <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <Link
+          href={`/s/${somaSlug}`}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+        >
+          <ArrowLeft className="size-4" />
+          Back to s/{post.soma.slug}
+        </Link>
 
-          {/* RIGHT COLUMN: Author, Caption, Comments, Actions */}
-          <div className="lg:col-span-5 xl:col-span-4 flex flex-col h-[85vh] lg:sticky lg:top-20 border border-border/40 rounded-2xl bg-card shadow-sm overflow-hidden">
-            {/* Header: Author Info */}
-            <div className="flex items-center justify-between p-4 border-b border-border/40 shrink-0 bg-card z-10">
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <Link
-                    href={`/u/${post.author.username}`}
-                    className="flex items-center gap-3 group cursor-pointer"
-                  >
-                    <Avatar className="size-10 ring-1 ring-border group-hover:ring-primary/50 transition-colors">
-                      <AvatarImage
-                        src={post.author.avatarUrl}
-                        alt={post.author.name}
-                      />
-                      <AvatarFallback>
-                        {post.author.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
-                          {post.author.name}
-                        </span>
-                        {post.author.isVerified && (
-                          <BadgeCheck
-                            className="size-3.5 text-primary"
-                            aria-label="Verified Human"
-                          />
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <Link
-                          href={`/s/${post.soma.slug}`}
-                          className="font-medium text-primary hover:underline"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          s/{post.soma.slug}
-                        </Link>
-                      </div>
-                    </div>
-                  </Link>
-                </HoverCardTrigger>
-                <HoverCardContent align="start" className="w-80 p-5 shadow-xl">
-                  <div className="flex justify-between space-x-4">
-                    <Avatar className="size-14 ring-1 ring-border/50">
-                      <AvatarImage src={post.author.avatarUrl} />
-                      <AvatarFallback>
-                        {post.author.name.substring(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="space-y-1 text-right">
-                      <h4 className="text-sm font-semibold flex justify-end items-center gap-1">
-                        {post.author.name}
-                        {post.author.isVerified && (
-                          <BadgeCheck className="size-3.5 text-primary" />
-                        )}
-                      </h4>
-                      <p className="text-xs text-primary font-medium">
-                        @{post.author.username}
-                      </p>
-                    </div>
-                  </div>
-                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                    {post.author.bio}
-                  </p>
-                </HoverCardContent>
-              </HoverCard>
+        <article className="pt-8 sm:pt-10">
+          <header className="max-w-3xl">
+            <Link
+              href={`/s/${post.soma.slug}`}
+              className="text-xs font-medium uppercase tracking-[0.16em] text-primary transition-colors hover:text-foreground"
+            >
+              s/{post.soma.slug}
+            </Link>
+            <h1 className="mt-3 font-heading text-3xl font-medium leading-[1.12] tracking-[-0.045em] text-foreground sm:text-4xl lg:text-5xl">
+              {post.title}
+            </h1>
+
+            <Link
+              href={`/u/${post.author.username}`}
+              className="group mt-6 inline-flex items-center gap-3"
+            >
+              <Avatar className="size-10 ring-1 ring-border transition-colors group-hover:ring-primary/50">
+                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                <AvatarFallback>
+                  {post.author.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <span className="flex flex-col gap-0.5">
+                <span className="flex items-center gap-1.5 text-sm font-medium text-foreground transition-colors group-hover:text-primary">
+                  {post.author.name}
+                  {post.author.isVerified && (
+                    <BadgeCheck className="size-4 text-primary" aria-label="Verified creator" />
+                  )}
+                </span>
+                <span className="text-xs text-muted-foreground">{timeAgo}</span>
+              </span>
+            </Link>
+          </header>
+
+          {post.mediaUrl && (
+            <figure className="relative mt-10 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted sm:aspect-[16/10]">
+              <Image
+                src={post.mediaUrl}
+                alt={post.title}
+                fill
+                className="object-contain"
+                priority
+              />
+            </figure>
+          )}
+
+          <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-16">
+            <div className="max-w-2xl whitespace-pre-wrap text-[0.9375rem] leading-7 text-foreground sm:text-base sm:leading-8">
+              {post.content || post.excerpt}
+            </div>
+
+            <aside className="flex h-fit items-center gap-2 border-y border-border py-3 lg:sticky lg:top-24 lg:flex-col lg:items-stretch lg:border-y-0 lg:border-l lg:py-0 lg:pl-6">
+              <div className="flex items-center overflow-hidden rounded-lg border border-border bg-muted/40">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUpvote}
+                  aria-label={hasUpvoted ? "Remove upvote" : "Upvote"}
+                  className={`h-8 rounded-none px-2.5 hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"} ${isUpvoteConfirming ? "motion-safe:animate-[soma-vote-pop_360ms_cubic-bezier(0.22,1,0.36,1)]" : ""}`}
+                >
+                  <ArrowBigUp
+                    className={`size-4 transition-transform duration-200 ${hasUpvoted ? "fill-current" : ""} ${isUpvoteConfirming ? "scale-110" : ""}`}
+                  />
+                </Button>
+                <span
+                  className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
+                >
+                  {post.stats.upvotes}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleDownvote}
+                  aria-label={hasDownvoted ? "Remove downvote" : "Downvote"}
+                  className={`h-8 rounded-none px-2.5 hover:bg-destructive/10 ${hasDownvoted ? "bg-destructive/10 text-destructive" : "text-muted-foreground"}`}
+                >
+                  <ArrowBigDown className={`size-4 ${hasDownvoted ? "fill-current" : ""}`} />
+                </Button>
+              </div>
 
               <Button
                 variant="ghost"
-                size="icon"
-                className="text-muted-foreground h-8 w-8"
+                size="sm"
+                onClick={scrollToThoughts}
+                className="h-8 gap-2 px-3 text-muted-foreground hover:bg-accent/30 hover:text-foreground lg:justify-start"
               >
-                <MoreHorizontal className="size-4" />
+                <MessageCircle data-icon="inline-start" />
+                <span>{post.stats.comments} thoughts</span>
               </Button>
-            </div>
 
-            {/* Scrollable Comments Area (including Caption) */}
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-              {/* Caption as Top Comment */}
-              <div className="flex gap-3 mb-6">
-                <Avatar className="size-8 ring-1 ring-border shrink-0">
-                  <AvatarImage src={post.author.avatarUrl} />
-                  <AvatarFallback className="text-xs">
-                    {post.author.name.substring(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col w-full pt-0.5">
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <Link
-                      href={`/u/${post.author.username}`}
-                      className="font-semibold text-foreground hover:underline"
-                    >
-                      {post.author.username}
-                    </Link>
-                    {post.author.isVerified && (
-                      <BadgeCheck className="size-3.5 text-primary" />
-                    )}
-                  </div>
-                  <div className="mt-2 text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">
-                    <h1 className="text-base font-bold mb-2 text-foreground">
-                      {post.title}
-                    </h1>
-                    {post.content || post.excerpt}
-                  </div>
-                  <span className="text-xs text-muted-foreground mt-2">
-                    {timeAgo}
-                  </span>
-                </div>
-              </div>
-
-              <hr className="border-border/40 mb-2" />
-
-              <div className="mt-4">
-                <CommentTree comments={comments} isLoading={commentsLoading} />
-              </div>
-            </div>
-
-            {/* Action Bar (Pinned to Bottom) */}
-            <div className="flex flex-col p-3 border-t border-border/40 shrink-0 bg-card z-10">
-              <div className="flex items-center gap-1 mb-1">
+              <ShareDialog url={shareUrl}>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-primary"
+                  size="sm"
+                  className="h-8 gap-2 px-3 text-muted-foreground hover:bg-accent/30 hover:text-foreground lg:justify-start"
                 >
-                  <Heart className="size-5" />
+                  <Share2 data-icon="inline-start" />
+                  <span>Share</span>
                 </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <MessageCircle className="size-5" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ml-auto text-muted-foreground hover:text-foreground"
-                >
-                  <Share2 className="size-5" />
-                </Button>
-              </div>
-              <div className="px-2 pb-1 flex items-center gap-3 text-sm font-semibold text-foreground">
-                <span>{post.stats.upvotes} likes</span>
-                <span className="text-muted-foreground font-normal text-xs">
-                  {timeAgo}
-                </span>
-              </div>
-            </div>
+              </ShareDialog>
+            </aside>
           </div>
-        </div>
+
+          <section id="thoughts" className="mt-16 max-w-3xl border-t border-border pt-8 sm:mt-20 sm:pt-10">
+            <CommentTree comments={comments} isLoading={commentsLoading} />
+          </section>
+        </article>
       </div>
-    </div>
+    </main>
   );
 }
