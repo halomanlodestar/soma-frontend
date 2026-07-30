@@ -3,16 +3,16 @@
 "use client";
 
 import Link from "next/link";
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Menu, Plus } from "lucide-react";
+import { Menu, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetClose,
   SheetContent,
-  SheetFooter,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -23,17 +23,31 @@ import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Explore", href: "/explore" },
+  {
+    label: "Home",
+    href: "/",
+  },
+  {
+    label: "Explore",
+    href: "/explore",
+  },
 ];
 
 export default function HeaderBlock() {
   const [open, setOpen] = useState(false);
   const [indicator, setIndicator] = useState({ left: 0, width: 0 });
+  const [mobileHoverKey, setMobileHoverKey] = useState<string | null>(null);
+  const [mobileIndicator, setMobileIndicator] = useState({ top: 0, height: 0 });
   const navRef = useRef<HTMLElement>(null);
+  const mobileNavRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const { me, isLoading } = useGetMe();
   const { requestAuth } = useAuthPrompt();
+  const mobileSelectedKey =
+    navLinks.find((link) =>
+      link.href === "/" ? pathname === "/" : pathname.startsWith(link.href),
+    )?.href ?? (pathname.startsWith("/u/") ? "account" : null);
+  const mobileHighlightKey = mobileHoverKey ?? mobileSelectedKey;
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -54,6 +68,31 @@ export default function HeaderBlock() {
 
     return () => resizeObserver.disconnect();
   }, [pathname]);
+
+  const updateMobileIndicator = useCallback((target?: HTMLElement | null) => {
+    const nav = mobileNavRef.current;
+    const highlightedLink =
+      target ??
+      nav?.querySelector<HTMLElement>("[data-mobile-highlight='true']");
+
+    if (!nav || !highlightedLink) return;
+
+    setMobileIndicator({
+      top: highlightedLink.offsetTop,
+      height: highlightedLink.offsetHeight,
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    const nav = mobileNavRef.current;
+    if (!nav) return;
+
+    updateMobileIndicator();
+    const resizeObserver = new ResizeObserver(() => updateMobileIndicator());
+    resizeObserver.observe(nav);
+
+    return () => resizeObserver.disconnect();
+  }, [mobileHighlightKey, updateMobileIndicator]);
 
   return (
     <header className="sticky top-0 z-30 w-full border-b border-border bg-background/95 backdrop-blur-md">
@@ -191,9 +230,16 @@ export default function HeaderBlock() {
               <Menu className="size-5" aria-hidden="true" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-3/4 max-w-xs">
-            <SheetHeader>
-              <SheetTitle className="flex items-center gap-2.5">
+          <SheetContent
+            side="right"
+            className="soma-mobile-sheet w-full max-w-none border-0 bg-background p-0 data-[state=closed]:duration-250 data-[state=open]:duration-350 data-[state=open]:ease-[cubic-bezier(0.22,1,0.36,1)]"
+          >
+            <SheetHeader
+              className="px-6 pb-0 pt-6 text-left"
+              data-sheet-reveal
+              style={{ animationDelay: "70ms" }}
+            >
+              <SheetTitle className="flex items-center gap-2.5 font-heading text-2xl font-medium tracking-[-0.04em]">
                 <svg
                   viewBox="0 0 24 24"
                   fill="currentColor"
@@ -231,55 +277,85 @@ export default function HeaderBlock() {
                 </svg>
                 soma
               </SheetTitle>
+              <SheetDescription className="sr-only">
+                Main navigation and account actions
+              </SheetDescription>
             </SheetHeader>
 
-            <nav className="flex flex-col px-4" aria-label="Mobile navigation">
-              {navLinks.map((link) => (
-                <SheetClose asChild key={link.label}>
-                  <a
-                    href={link.href}
-                    className={cn(
-                      "border-b border-border py-4 text-sm transition-colors last:border-b-0 hover:text-foreground",
-                      (
-                        link.href === "/"
-                          ? pathname === "/"
-                          : pathname.startsWith(link.href)
-                      )
-                        ? "font-medium text-foreground"
-                        : "text-muted-foreground",
-                    )}
-                  >
-                    {link.label}
-                  </a>
-                </SheetClose>
-              ))}
-            </nav>
+            <nav
+              ref={mobileNavRef}
+              className="relative mt-12 flex flex-col"
+              aria-label="Mobile navigation"
+              onPointerLeave={() => {
+                setMobileHoverKey(null);
+                requestAnimationFrame(() => updateMobileIndicator());
+              }}
+            >
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 z-0 bg-primary transition-[transform,height] duration-350 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
+                style={{
+                  transform: `translateY(${mobileIndicator.top}px)`,
+                  height: mobileIndicator.height,
+                }}
+              />
+              {navLinks.map((link) => {
+                const isHighlighted = mobileHighlightKey === link.href;
 
-            <SheetFooter className="mt-6 flex-col gap-2 sm:flex-col">
+                return (
+                  <SheetClose asChild key={link.label}>
+                    <Link
+                      href={link.href}
+                      className={cn(
+                        "relative z-10 flex items-baseline gap-4 px-6 py-3 font-heading text-5xl font-medium leading-none tracking-[-0.055em] transition-colors sm:text-6xl",
+                        isHighlighted
+                          ? "text-primary-foreground"
+                          : "text-foreground hover:text-primary focus-visible:text-primary",
+                      )}
+                      data-mobile-highlight={isHighlighted}
+                      data-sheet-reveal
+                      style={{
+                        animationDelay: link.href === "/" ? "140ms" : "210ms",
+                      }}
+                      onPointerEnter={(event) => {
+                        setMobileHoverKey(link.href);
+                        updateMobileIndicator(event.currentTarget);
+                      }}
+                      onFocus={(event) => {
+                        setMobileHoverKey(link.href);
+                        updateMobileIndicator(event.currentTarget);
+                      }}
+                    >
+                      {link.label}
+                    </Link>
+                  </SheetClose>
+                );
+              })}
               <SheetClose asChild>
-                <Button variant="outline" className="w-full" asChild>
-                  <a href="/login">Log in</a>
-                </Button>
+                <Link
+                  href={me ? `/u/${me.username}` : "/login"}
+                  className={cn(
+                    "relative z-10 flex items-baseline gap-4 px-6 py-3 font-heading text-5xl font-medium leading-none tracking-[-0.055em] outline-none transition-colors sm:text-6xl",
+                    mobileHighlightKey === "account"
+                      ? "text-primary-foreground"
+                      : "text-primary hover:text-foreground focus-visible:text-foreground",
+                  )}
+                  data-mobile-highlight={mobileHighlightKey === "account"}
+                  data-sheet-reveal
+                  style={{ animationDelay: "280ms" }}
+                  onPointerEnter={(event) => {
+                    setMobileHoverKey("account");
+                    updateMobileIndicator(event.currentTarget);
+                  }}
+                  onFocus={(event) => {
+                    setMobileHoverKey("account");
+                    updateMobileIndicator(event.currentTarget);
+                  }}
+                >
+                  {me ? `u/${me.displayName || me.username}` : "Log in"}
+                </Link>
               </SheetClose>
-              <SheetClose asChild>
-                {me ? (
-                  <Button className="w-full" asChild>
-                    <a href="/create">
-                      Share work
-                      <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                    </a>
-                  </Button>
-                ) : (
-                  <Button
-                    className="w-full"
-                    onClick={() => requestAuth("share")}
-                  >
-                    Share work
-                    <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                  </Button>
-                )}
-              </SheetClose>
-            </SheetFooter>
+            </nav>
           </SheetContent>
         </Sheet>
       </div>
