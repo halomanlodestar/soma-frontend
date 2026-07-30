@@ -1,11 +1,19 @@
+/** @format */
+
 import React from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowBigUp, ArrowBigDown, MessageSquare, BadgeCheck } from "lucide-react";
+import {
+  ArrowBigUp,
+  ArrowBigDown,
+  MessageSquare,
+  BadgeCheck,
+} from "lucide-react";
 import { Comment } from "@/modules/comment/types";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useVote } from "@/modules/post/api/useVote";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 interface CommentItemProps {
   comment: Comment;
@@ -14,7 +22,10 @@ interface CommentItemProps {
 
 function CommentItem({ comment, depth = 0 }: CommentItemProps) {
   const { vote, removeVote } = useVote();
-  const timeAgo = formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true });
+  const { requestAuth } = useAuthPrompt();
+  const timeAgo = formatDistanceToNow(new Date(comment.createdAt), {
+    addSuffix: true,
+  });
   const isReply = depth > 0;
 
   const hasUpvoted = comment.userVoteValue === 1;
@@ -22,30 +33,35 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
 
   const handleUpvote = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (hasUpvoted) {
-      removeVote(comment.id, "COMMENT", 1);
-    } else {
-      vote(comment.id, "COMMENT", 1, comment.userVoteValue);
-    }
+    requestAuth("support", () => {
+      if (hasUpvoted) {
+        removeVote(comment.id, "COMMENT", 1);
+      } else {
+        vote(comment.id, "COMMENT", 1, comment.userVoteValue);
+      }
+    });
   };
 
   const handleDownvote = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (hasDownvoted) {
-      removeVote(comment.id, "COMMENT", -1);
-    } else {
-      vote(comment.id, "COMMENT", -1, comment.userVoteValue);
-    }
+    requestAuth("support", () => {
+      if (hasDownvoted) {
+        removeVote(comment.id, "COMMENT", -1);
+      } else {
+        vote(comment.id, "COMMENT", -1, comment.userVoteValue);
+      }
+    });
   };
 
   return (
-    <div className={`flex gap-3 ${isReply ? 'mt-4' : 'mt-6'}`}>
-      
+    <div className={`flex gap-3 ${isReply ? "mt-4" : "mt-6"}`}>
       {/* Avatar column with vertical thread line */}
       <div className="flex flex-col items-center gap-2">
         <Avatar className="size-8 ring-1 ring-border shrink-0">
           <AvatarImage src={comment.author.avatarUrl} />
-          <AvatarFallback className="text-xs">{comment.author.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+          <AvatarFallback className="text-xs">
+            {comment.author.name.substring(0, 2).toUpperCase()}
+          </AvatarFallback>
         </Avatar>
         {comment.replies && comment.replies.length > 0 && (
           <div className="w-[1.5px] h-full bg-border/40 rounded-full my-1" />
@@ -55,9 +71,14 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
       <div className="flex flex-col w-full">
         {/* Comment Header */}
         <div className="flex items-center gap-2 text-xs">
-          <Link href={`/u/${comment.author.username}`} className="font-semibold text-foreground flex items-center gap-1 hover:text-primary hover:underline">
+          <Link
+            href={`/u/${comment.author.username}`}
+            className="font-semibold text-foreground flex items-center gap-1 hover:text-primary hover:underline"
+          >
             {comment.author.name}
-            {comment.author.isVerified && <BadgeCheck className="size-3.5 text-primary" />}
+            {comment.author.isVerified && (
+              <BadgeCheck className="size-3.5 text-primary" />
+            )}
           </Link>
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">{timeAgo}</span>
@@ -70,26 +91,36 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
 
         {/* Action Row */}
         <div className="flex items-center gap-1 mt-2 -ml-2 text-muted-foreground">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleUpvote}
             className={`size-7 hover:text-primary hover:bg-primary/10 ${hasUpvoted ? "text-primary bg-primary/10" : ""}`}
           >
-            <ArrowBigUp className={`size-4 ${hasUpvoted ? "fill-current" : ""}`} />
+            <ArrowBigUp
+              className={`size-4 ${hasUpvoted ? "fill-current" : ""}`}
+            />
           </Button>
-          <span className={`text-xs font-semibold px-1 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : ""}`}>
+          <span
+            className={`text-xs font-semibold px-1 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : ""}`}
+          >
             {comment.stats.upvotes}
           </span>
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleDownvote}
             className={`size-7 hover:text-destructive hover:bg-destructive/10 ${hasDownvoted ? "text-destructive bg-destructive/10" : ""}`}
           >
-            <ArrowBigDown className={`size-4 ${hasDownvoted ? "fill-current" : ""}`} />
+            <ArrowBigDown
+              className={`size-4 ${hasDownvoted ? "fill-current" : ""}`}
+            />
           </Button>
-          <Button variant="ghost" size="sm" className="h-7 px-2 ml-2 text-xs gap-1.5">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-7 px-2 ml-2 text-xs gap-1.5"
+          >
             <MessageSquare className="size-3.5" />
             Reply
           </Button>
@@ -98,7 +129,7 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
         {/* Recursive Replies */}
         {comment.replies && comment.replies.length > 0 && (
           <div className="flex flex-col gap-2 w-full">
-            {comment.replies.map(reply => (
+            {comment.replies.map((reply) => (
               <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
             ))}
           </div>
@@ -115,18 +146,28 @@ interface CommentTreeProps {
 
 export function CommentTree({ comments, isLoading }: CommentTreeProps) {
   if (isLoading) {
-    return <div className="text-sm text-muted-foreground py-8">Loading thoughts...</div>;
+    return (
+      <div className="text-sm text-muted-foreground py-8">
+        Loading thoughts...
+      </div>
+    );
   }
 
   if (!comments || comments.length === 0) {
-    return <div className="text-sm text-muted-foreground py-8">No thoughts shared yet. Be the first.</div>;
+    return (
+      <div className="text-sm text-muted-foreground py-8">
+        No thoughts shared yet. Be the first.
+      </div>
+    );
   }
 
   return (
     <div className="flex flex-col w-full max-w-3xl mx-auto py-4">
-      <h3 className="font-heading text-lg font-bold mb-4">Thoughts & Feedback</h3>
+      <h3 className="font-heading text-lg font-bold mb-4">
+        Thoughts & Feedback
+      </h3>
       <div className="flex flex-col">
-        {comments.map(comment => (
+        {comments.map((comment) => (
           <CommentItem key={comment.id} comment={comment} />
         ))}
       </div>
