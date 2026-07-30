@@ -133,7 +133,7 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-1.5 md:flex">
-          <Button variant="outline" asChild>
+          <Button size={"sm"} variant="outline" asChild>
             <Link href="/create">
               <Plus data-icon="inline-start" />
               Share work
