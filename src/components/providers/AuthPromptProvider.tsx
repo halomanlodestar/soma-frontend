@@ -62,6 +62,7 @@ const AuthPromptContext = createContext<AuthPromptContextValue | null>(null);
 export function AuthPromptProvider({ children }: { children: ReactNode }) {
   const { me, isLoading } = useGetMe();
   const [action, setAction] = useState<AuthAction | null>(null);
+  const [displayAction, setDisplayAction] = useState<AuthAction>("support");
 
   const requestAuth = useCallback(
     (nextAction: AuthAction, onAuthenticated?: () => void) => {
@@ -71,13 +72,14 @@ export function AuthPromptProvider({ children }: { children: ReactNode }) {
       }
 
       if (!isLoading) {
+        setDisplayAction(nextAction);
         setAction(nextAction);
       }
     },
     [isLoading, me],
   );
 
-  const content = action ? promptCopy[action] : null;
+  const content = promptCopy[displayAction];
 
   return (
     <AuthPromptContext.Provider
@@ -85,8 +87,7 @@ export function AuthPromptProvider({ children }: { children: ReactNode }) {
     >
       {children}
       <Dialog open={action !== null} onOpenChange={(open) => !open && setAction(null)}>
-        {content && (
-          <DialogContent className="overflow-hidden p-0 sm:max-w-lg" showCloseButton={false}>
+        <DialogContent className="overflow-hidden p-0 sm:max-w-lg" showCloseButton={false}>
             <div className="grid sm:grid-cols-[11rem_minmax(0,1fr)]">
               <div className="relative min-h-40 overflow-hidden bg-primary p-5 text-primary-foreground sm:min-h-full">
                 <p className="relative z-10 max-w-24 font-heading text-xl font-medium leading-tight tracking-[-0.04em]">
@@ -132,8 +133,7 @@ export function AuthPromptProvider({ children }: { children: ReactNode }) {
                 </button>
               </div>
             </div>
-          </DialogContent>
-        )}
+        </DialogContent>
       </Dialog>
     </AuthPromptContext.Provider>
   );
