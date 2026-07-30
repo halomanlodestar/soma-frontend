@@ -20,6 +20,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetMe } from "@/modules/user/api/useGetMe";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 const navLinks = [
   { label: "Home", href: "/" },
@@ -32,6 +33,7 @@ export default function HeaderBlock() {
   const navRef = useRef<HTMLElement>(null);
   const pathname = usePathname();
   const { me, isLoading } = useGetMe();
+  const { requestAuth } = useAuthPrompt();
 
   useLayoutEffect(() => {
     const nav = navRef.current;
@@ -133,12 +135,23 @@ export default function HeaderBlock() {
         </nav>
 
         <div className="ml-auto hidden items-center gap-1.5 md:flex">
-          <Button size={"sm"} variant="outline" asChild>
-            <Link href="/create">
+          {me ? (
+            <Button size={"sm"} variant="outline" asChild>
+              <Link href="/create">
+                <Plus data-icon="inline-start" />
+                Share work
+              </Link>
+            </Button>
+          ) : (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => requestAuth("share")}
+            >
               <Plus data-icon="inline-start" />
               Share work
-            </Link>
-          </Button>
+            </Button>
+          )}
           {isLoading ? (
             <div className="size-9 rounded-full bg-muted animate-pulse" />
           ) : me ? (
@@ -249,12 +262,22 @@ export default function HeaderBlock() {
                 </Button>
               </SheetClose>
               <SheetClose asChild>
-                <Button className="w-full" asChild>
-                  <a href="/create">
+                {me ? (
+                  <Button className="w-full" asChild>
+                    <a href="/create">
+                      Share work
+                      <ArrowRight data-icon="inline-end" aria-hidden="true" />
+                    </a>
+                  </Button>
+                ) : (
+                  <Button
+                    className="w-full"
+                    onClick={() => requestAuth("share")}
+                  >
                     Share work
                     <ArrowRight data-icon="inline-end" aria-hidden="true" />
-                  </a>
-                </Button>
+                  </Button>
+                )}
               </SheetClose>
             </SheetFooter>
           </SheetContent>

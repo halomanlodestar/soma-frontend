@@ -22,6 +22,7 @@ import {
 import { Post } from "@/modules/post/types";
 import { ShareDialog } from "./ShareDialog";
 import { useVote } from "@/modules/post/api/useVote";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 interface PostCardProps {
   post: Post;
@@ -29,6 +30,7 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { vote, removeVote } = useVote();
+  const { isAuthenticated, requestAuth } = useAuthPrompt();
   const [isUpvoteConfirming, setIsUpvoteConfirming] = React.useState(false);
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
@@ -41,23 +43,27 @@ export function PostCard({ post }: PostCardProps) {
   const handleUpvote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (hasUpvoted) {
-      removeVote(post.id, "POST", 1);
-    } else {
-      vote(post.id, "POST", 1, post.userVoteValue);
-      setIsUpvoteConfirming(true);
-      window.setTimeout(() => setIsUpvoteConfirming(false), 360);
-    }
+    requestAuth("support", () => {
+      if (hasUpvoted) {
+        removeVote(post.id, "POST", 1);
+      } else {
+        vote(post.id, "POST", 1, post.userVoteValue);
+        setIsUpvoteConfirming(true);
+        window.setTimeout(() => setIsUpvoteConfirming(false), 360);
+      }
+    });
   };
 
   const handleDownvote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (hasDownvoted) {
-      removeVote(post.id, "POST", -1);
-    } else {
-      vote(post.id, "POST", -1, post.userVoteValue);
-    }
+    requestAuth("support", () => {
+      if (hasDownvoted) {
+        removeVote(post.id, "POST", -1);
+      } else {
+        vote(post.id, "POST", -1, post.userVoteValue);
+      }
+    });
   };
 
   return (
@@ -241,15 +247,26 @@ export function PostCard({ post }: PostCardProps) {
             <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
-          <ShareDialog url={shareUrl}>
+          {isAuthenticated ? (
+            <ShareDialog url={shareUrl}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+              >
+                <Share2 className="size-4" />
+              </Button>
+            </ShareDialog>
+          ) : (
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => requestAuth("share")}
               className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
             >
               <Share2 className="size-4" />
             </Button>
-          </ShareDialog>
+          )}
         </div>
       </div>
     </article>

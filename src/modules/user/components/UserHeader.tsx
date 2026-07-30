@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 interface UserHeaderProps {
   user: UserProfile | null;
@@ -32,6 +33,7 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
     "bell" | "craft" | "check" | null
   >(null);
   const followTimers = useRef<number[]>([]);
+  const { requestAuth } = useAuthPrompt();
 
   useEffect(() => {
     return () => followTimers.current.forEach(window.clearTimeout);
@@ -56,7 +58,7 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
 
   const joinDate = format(new Date(user.joinedAt), "MMMM yyyy");
 
-  const handleFollow = () => {
+  const runFollowSequence = () => {
     if (followStage) return;
 
     if (isFollowing) {
@@ -79,6 +81,8 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
       }, 1080),
     ];
   };
+
+  const handleFollow = () => requestAuth("follow", runFollowSequence);
 
   return (
     <section className="flex w-full flex-col border-b border-border bg-background">

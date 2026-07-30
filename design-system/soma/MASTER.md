@@ -193,6 +193,15 @@ Do not replace this with an instantaneous selected-state pill, a black thumb, or
 - Search can be prominent at the top of Explore, but should not feel like a command centre.
 - Visible focus treatment must remain clear without changing the visual language.
 
+### Sign-in invitation
+
+Unauthenticated social actions should invite participation rather than fail silently or redirect abruptly.
+
+- Use the shared `AuthPromptProvider` and `requestAuth()` gate for supporting work, following a creator, and sharing work.
+- The dialog has a small primary-colored art-print panel, an action-specific editorial prompt, a clear sign-in CTA, and an unobtrusive “Not right now” exit.
+- Tailor the message to the attempted action: support signals appreciation, following keeps a creator close, and sharing passes worthwhile work along.
+- Do not show this prompt for ordinary browsing. It is a response to a deliberate action.
+
 ### Icons
 
 - Use the project's Lucide icon set consistently.

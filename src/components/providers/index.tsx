@@ -4,6 +4,7 @@ import { ThemeProvider } from "./theme-provider";
 import { TooltipProvider } from "../ui/tooltip";
 import { ReactQueryProvider } from "./ReactQueryProvider";
 import { ApolloAppProvider } from "@/lib/apollo-provider";
+import { AuthPromptProvider } from "@/components/providers/AuthPromptProvider";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -15,7 +16,9 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>{children}</TooltipProvider>
+          <TooltipProvider>
+            <AuthPromptProvider>{children}</AuthPromptProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </ReactQueryProvider>
     </ApolloAppProvider>

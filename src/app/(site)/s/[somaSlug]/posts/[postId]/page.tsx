@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShareDialog } from "@/components/common/ShareDialog";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 interface PostPageProps {
   params: Promise<{ somaSlug: string; postId: string }>;
@@ -33,6 +34,7 @@ export default function PostPage({ params }: PostPageProps) {
   const { data: post, isLoading: postLoading } = useGetPostById(postId);
   const { data: comments, isLoading: commentsLoading } = useGetComments(postId);
   const { vote, removeVote } = useVote();
+  const { isAuthenticated, requestAuth } = useAuthPrompt();
   const [isUpvoteConfirming, setIsUpvoteConfirming] = useState(false);
 
   if (postLoading || !post) {
@@ -64,23 +66,27 @@ export default function PostPage({ params }: PostPageProps) {
   const hasDownvoted = post.userVoteValue === -1;
 
   const handleUpvote = () => {
-    if (hasUpvoted) {
-      removeVote(post.id, "POST", 1);
-      return;
-    }
+    requestAuth("support", () => {
+      if (hasUpvoted) {
+        removeVote(post.id, "POST", 1);
+        return;
+      }
 
-    vote(post.id, "POST", 1, post.userVoteValue);
-    setIsUpvoteConfirming(true);
-    window.setTimeout(() => setIsUpvoteConfirming(false), 360);
+      vote(post.id, "POST", 1, post.userVoteValue);
+      setIsUpvoteConfirming(true);
+      window.setTimeout(() => setIsUpvoteConfirming(false), 360);
+    });
   };
 
   const handleDownvote = () => {
-    if (hasDownvoted) {
-      removeVote(post.id, "POST", -1);
-      return;
-    }
+    requestAuth("support", () => {
+      if (hasDownvoted) {
+        removeVote(post.id, "POST", -1);
+        return;
+      }
 
-    vote(post.id, "POST", -1, post.userVoteValue);
+      vote(post.id, "POST", -1, post.userVoteValue);
+    });
   };
 
   const scrollToThoughts = () => {
@@ -118,7 +124,10 @@ export default function PostPage({ params }: PostPageProps) {
               className="group mt-6 inline-flex items-center gap-3"
             >
               <Avatar className="size-10 ring-1 ring-border transition-colors group-hover:ring-primary/50">
-                <AvatarImage src={post.author.avatarUrl} alt={post.author.name} />
+                <AvatarImage
+                  src={post.author.avatarUrl}
+                  alt={post.author.name}
+                />
                 <AvatarFallback>
                   {post.author.name.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
@@ -127,7 +136,10 @@ export default function PostPage({ params }: PostPageProps) {
                 <span className="flex items-center gap-1.5 text-sm font-medium text-foreground transition-colors group-hover:text-primary">
                   {post.author.name}
                   {post.author.isVerified && (
-                    <BadgeCheck className="size-4 text-primary" aria-label="Verified creator" />
+                    <BadgeCheck
+                      className="size-4 text-primary"
+                      aria-label="Verified creator"
+                    />
                   )}
                 </span>
                 <span className="text-xs text-muted-foreground">{timeAgo}</span>
@@ -177,7 +189,9 @@ export default function PostPage({ params }: PostPageProps) {
                   aria-label={hasDownvoted ? "Remove downvote" : "Downvote"}
                   className={`h-8 rounded-none px-2.5 hover:bg-destructive/10 ${hasDownvoted ? "bg-destructive/10 text-destructive" : "text-muted-foreground"}`}
                 >
-                  <ArrowBigDown className={`size-4 ${hasDownvoted ? "fill-current" : ""}`} />
+                  <ArrowBigDown
+                    className={`size-4 ${hasDownvoted ? "fill-current" : ""}`}
+                  />
                 </Button>
               </div>
 
@@ -191,20 +205,35 @@ export default function PostPage({ params }: PostPageProps) {
                 <span>{post.stats.comments} thoughts</span>
               </Button>
 
-              <ShareDialog url={shareUrl}>
+              {isAuthenticated ? (
+                <ShareDialog url={shareUrl}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 gap-2 px-3 text-muted-foreground hover:bg-accent/30 hover:text-foreground lg:justify-start"
+                  >
+                    <Share2 data-icon="inline-start" />
+                    <span>Share</span>
+                  </Button>
+                </ShareDialog>
+              ) : (
                 <Button
                   variant="ghost"
                   size="sm"
+                  onClick={() => requestAuth("share")}
                   className="h-8 gap-2 px-3 text-muted-foreground hover:bg-accent/30 hover:text-foreground lg:justify-start"
                 >
                   <Share2 data-icon="inline-start" />
                   <span>Share</span>
                 </Button>
-              </ShareDialog>
+              )}
             </aside>
           </div>
 
-          <section id="thoughts" className="mt-16 max-w-3xl border-t border-border pt-8 sm:mt-20 sm:pt-10">
+          <section
+            id="thoughts"
+            className="mt-16 max-w-3xl border-t border-border pt-8 sm:mt-20 sm:pt-10"
+          >
             <CommentTree comments={comments} isLoading={commentsLoading} />
           </section>
         </article>
