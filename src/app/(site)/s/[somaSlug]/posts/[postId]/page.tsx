@@ -47,7 +47,7 @@ export default function PostPage({ params }: PostPageProps) {
             <Skeleton className="h-12 w-4/5 sm:h-16" />
             <Skeleton className="h-10 w-52" />
           </div>
-          <Skeleton className="mt-10 aspect-4/3 w-full rounded-xl bg-muted sm:aspect-[16/9]" />
+          <Skeleton className="mt-10 aspect-4/3 w-full rounded-xl bg-muted sm:aspect-video" />
           <div className="mt-10 flex max-w-2xl flex-col gap-3">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-11/12" />
@@ -148,7 +148,7 @@ export default function PostPage({ params }: PostPageProps) {
           </header>
 
           {post.mediaUrl && (
-            <figure className="relative mt-10 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted sm:aspect-[16/10]">
+            <figure className="relative mt-10 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted sm:aspect-16/10">
               <Image
                 src={post.mediaUrl}
                 alt={post.title}
