@@ -4,28 +4,42 @@
 
 import { HttpLink } from "@apollo/client";
 import { ApolloNextAppProvider, ApolloClient, InMemoryCache } from "@apollo/experimental-nextjs-app-support";
-import { SetContextLink } from "@apollo/client/link/context";
+
+let refreshInFlight: Promise<boolean> | null = null;
+
+async function refreshSession() {
+  if (!refreshInFlight) {
+    refreshInFlight = fetch("/api/auth/refresh", {
+      method: "POST",
+      credentials: "same-origin",
+      cache: "no-store",
+    })
+      .then((response) => response.ok)
+      .catch(() => false)
+      .finally(() => {
+        refreshInFlight = null;
+      });
+  }
+
+  return refreshInFlight;
+}
+
+async function authenticatedFetch(input: RequestInfo | URL, init?: RequestInit) {
+  const response = await fetch(input, { ...init, credentials: "same-origin" });
+  if (response.status !== 401 || !(await refreshSession())) return response;
+
+  return fetch(input, { ...init, credentials: "same-origin" });
+}
 
 function makeClient() {
   const httpLink = new HttpLink({
-    uri: "http://localhost:8000/graphql",
-  });
-
-  const authLink = new SetContextLink((prevContext, request) => {
-    const { headers } = prevContext;
-    const token = typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-    
-    return {
-      headers: {
-        ...headers,
-        authorization: token ? `Bearer ${token}` : "",
-      }
-    }
+    uri: "/api/graphql",
+    fetch: authenticatedFetch,
   });
 
   return new ApolloClient({
     cache: new InMemoryCache(),
-    link: authLink.concat(httpLink),
+    link: httpLink,
   });
 }
 
