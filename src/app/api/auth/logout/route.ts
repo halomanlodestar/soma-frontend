@@ -18,7 +18,6 @@ export async function POST(request: NextRequest) {
 
   const response = NextResponse.json({ success: true });
 
-  response.cookies.delete(authCookies.access);
   response.cookies.delete(authCookies.refresh);
 
   return response;

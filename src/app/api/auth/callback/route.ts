@@ -29,13 +29,7 @@ export async function GET(request: NextRequest) {
     }
 
     const tokens = (await upstream.json()) as TokenResponse;
-    const response = NextResponse.redirect(new URL("/", request.url));
-
-    response.cookies.set(
-      authCookies.access,
-      tokens.accessToken,
-      cookieOptions(tokens.accessTokenExpiresIn),
-    );
+    const response = NextResponse.redirect(new URL("/auth/callback", request.url));
     response.cookies.set(
       authCookies.refresh,
       tokens.refreshToken,

@@ -3,6 +3,7 @@
 "use client";
 
 import { useState } from "react";
+import { clearAccessToken } from "@/lib/apollo-provider";
 
 export interface User {
   id: string;
@@ -46,7 +47,13 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    clearAccessToken();
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "same-origin",
+    }).catch(() => undefined);
+
     setAuthState({
       user: null,
       isAuthenticated: false,

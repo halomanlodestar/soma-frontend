@@ -1,10 +1,8 @@
 import "server-only";
 
-const ACCESS_COOKIE = "soma-access";
 const REFRESH_COOKIE = "soma-refresh";
 
 export const authCookies = {
-  access: ACCESS_COOKIE,
   refresh: REFRESH_COOKIE,
 };
 

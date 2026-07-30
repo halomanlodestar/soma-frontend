@@ -11,7 +11,6 @@ import {
 export const dynamic = "force-dynamic";
 
 function clearSession(response: NextResponse) {
-  response.cookies.delete(authCookies.access);
   response.cookies.delete(authCookies.refresh);
 
   return response;
@@ -34,16 +33,15 @@ export async function POST(request: NextRequest) {
       );
 
     const tokens = (await upstream.json()) as TokenResponse;
-    const response = NextResponse.json({
-      user: tokens.user,
-      accessTokenExpiresIn: tokens.accessTokenExpiresIn,
-    });
-
-    response.cookies.set(
-      authCookies.access,
-      tokens.accessToken,
-      cookieOptions(tokens.accessTokenExpiresIn),
+    const response = NextResponse.json(
+      {
+        accessToken: tokens.accessToken,
+        accessTokenExpiresIn: tokens.accessTokenExpiresIn,
+        user: tokens.user,
+      },
+      { headers: { "cache-control": "no-store" } },
     );
+
     response.cookies.set(
       authCookies.refresh,
       tokens.refreshToken,

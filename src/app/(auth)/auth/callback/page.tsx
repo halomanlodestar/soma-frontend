@@ -1,7 +1,17 @@
-import { redirect } from "next/navigation";
+"use client";
 
-// OAuth handoff codes are exchanged only by /api/auth/callback. Keeping this
-// route prevents the legacy URL from ever accepting credentials in the browser.
-export default function LegacyAuthCallbackPage() {
-  redirect("/login?error=invalid_callback");
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { getAccessToken } from "@/lib/apollo-provider";
+
+export default function AuthCallbackPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    void getAccessToken().then((token) => {
+      router.replace(token ? "/" : "/login?error=sign_in_failed");
+    });
+  }, [router]);
+
+  return null;
 }
