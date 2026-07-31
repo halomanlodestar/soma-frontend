@@ -237,13 +237,13 @@ export function PostCard({ post }: PostCardProps) {
         </div>
 
         {/* Secondary Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center overflow-hidden rounded-lg border border-border bg-muted/40">
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+            className="h-9 gap-2 rounded-none px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
           >
-            <MessageCircle className="size-4" />
+            <MessageCircle className="size-[1.125rem]" />
             <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
@@ -252,9 +252,10 @@ export function PostCard({ post }: PostCardProps) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+                aria-label="Share this work"
+                className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
               >
-                <Share2 className="size-4" />
+                <Share2 className="size-[1.125rem]" />
               </Button>
             </ShareDialog>
           ) : (
@@ -262,9 +263,10 @@ export function PostCard({ post }: PostCardProps) {
               variant="ghost"
               size="sm"
               onClick={() => requestAuth("share")}
-              className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+              aria-label="Share this work"
+              className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
             >
-              <Share2 className="size-4" />
+              <Share2 className="size-[1.125rem]" />
             </Button>
           )}
         </div>
