@@ -1,7 +1,7 @@
 /** @format */
 
 import Image from "next/image";
-import { ShieldCheck, Users } from "lucide-react";
+import { Eye, Users } from "lucide-react";
 import { Soma } from "@/modules/soma/types";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -32,6 +32,9 @@ export function SomaHeader({ soma, isLoading }: SomaHeaderProps) {
   const formattedCreators = new Intl.NumberFormat("en-US", {
     notation: "compact",
   }).format(soma.memberCount);
+  const formattedVisitors = new Intl.NumberFormat("en-US", {
+    notation: "compact",
+  }).format(soma.weeklyVisitorCount);
 
   return (
     <section className="border-b border-border bg-background">
@@ -66,8 +69,8 @@ export function SomaHeader({ soma, isLoading }: SomaHeaderProps) {
                 {formattedCreators} creators
               </span>
               <span className="flex items-center gap-2">
-                <ShieldCheck className="size-4 text-primary" />
-                Curated with care
+                <Eye className="size-4 text-primary" />
+                {formattedVisitors} visited this week
               </span>
             </div>
           </div>
