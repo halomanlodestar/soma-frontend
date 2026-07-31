@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UploadCloud, Image as ImageIcon } from "lucide-react";
+import { Image as ImageIcon, UploadCloud } from "lucide-react";
 
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -115,36 +116,41 @@ export default function CreatePostPage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-20">
-      <div className="w-full bg-card border-b border-border/40 py-8 px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-350">
-          <h1 className="text-3xl md:text-4xl font-heading font-extrabold tracking-tight">
-            Create a New Post
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Share your human-made art with the world. No generative AI allowed.
-          </p>
+    <div className="min-h-screen bg-background pb-20">
+      <header className="border-b border-border">
+        <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+          <div className="max-w-2xl">
+            <p className="text-xs font-medium tracking-[0.14em] text-primary uppercase">
+              Share a work
+            </p>
+            <h1 className="mt-3 font-heading text-4xl font-medium tracking-[-0.04em] text-foreground sm:text-5xl">
+              Make room for what you made.
+            </h1>
+            <p className="mt-4 text-sm leading-7 text-muted-foreground sm:text-base">
+              Share the work, then leave a little of the story behind it for the
+              people who find it.
+            </p>
+          </div>
         </div>
-      </div>
+      </header>
 
-      <div className="mx-auto w-full max-w-350 px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12"
+          className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14"
         >
-          {/* LEFT COLUMN: Image Upload */}
-          <div className="lg:col-span-7 flex flex-col h-[60vh] lg:h-[75vh]">
+          <div className="lg:col-span-7">
             <div
-              className={`relative w-full h-full rounded-2xl border-2 border-dashed transition-all duration-200 overflow-hidden flex flex-col items-center justify-center
-                ${imagePreview ? "border-border bg-card" : isDragging ? "border-primary bg-primary/5" : "border-border bg-card hover:bg-accent/10 hover:border-border/80"}
+              className={`relative flex min-h-92 w-full flex-col items-center justify-center overflow-hidden border border-dashed transition-colors duration-200 sm:min-h-120
+                ${imagePreview ? "border-border bg-secondary/40" : isDragging ? "border-primary bg-primary/10" : "border-border bg-secondary/40 hover:border-primary/50 hover:bg-secondary"}
               `}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
               {imagePreview && uploadedFile ? (
-                <div className="flex flex-col items-center justify-center w-full h-full p-6 relative">
-                  <div className="relative w-full flex-1 mb-6 rounded-xl overflow-hidden bg-muted/30">
+                <div className="relative flex h-full w-full flex-col items-center justify-center p-5 sm:p-7">
+                  <div className="relative mb-5 w-full flex-1 overflow-hidden bg-muted/30">
                     <Image
                       src={imagePreview}
                       alt="Preview"
@@ -155,7 +161,7 @@ export default function CreatePostPage() {
 
                   <Attachment
                     size="default"
-                    className="w-full max-w-sm shadow-sm bg-background border-border/60"
+                    className="w-full max-w-sm border-border bg-background shadow-none"
                   >
                     <AttachmentMedia variant="image">
                       <Image
@@ -183,15 +189,16 @@ export default function CreatePostPage() {
                   </Attachment>
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center p-6 text-center z-10 pointer-events-none">
-                  <div className="size-16 rounded-full bg-accent flex items-center justify-center mb-4">
-                    <ImageIcon className="size-8 text-muted-foreground" />
+                <div className="pointer-events-none z-10 flex flex-col items-center justify-center p-6 text-center">
+                  <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                    <ImageIcon className="size-5" />
                   </div>
-                  <h3 className="font-semibold text-lg text-foreground">
-                    Drag and drop your artwork here
-                  </h3>
-                  <p className="text-muted-foreground text-sm mt-2 max-w-sm">
-                    High-resolution JPEG, PNG, or WebP. Max 20MB.
+                  <h2 className="font-heading text-2xl font-medium tracking-[-0.02em] text-foreground">
+                    Bring your work in
+                  </h2>
+                  <p className="mt-2 max-w-sm text-sm leading-6 text-muted-foreground">
+                    Drop an image here, or choose one from your device. JPEG,
+                    PNG, or WebP up to 20MB.
                   </p>
                 </div>
               )}
@@ -208,121 +215,132 @@ export default function CreatePostPage() {
             </div>
           </div>
 
-          {/* RIGHT COLUMN: Form Fields */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
-            <div className="bg-card border border-border/40 rounded-2xl p-6 shadow-sm flex flex-col gap-6 h-full">
-              <FieldGroup className="flex-1 flex flex-col gap-6">
-                <Controller
-                  control={control}
-                  name="somaId"
-                  render={({ field }) => (
-                    <Field data-invalid={errors.somaId ? "" : undefined}>
-                      <FieldLabel
-                        htmlFor="somaId"
-                        className="text-foreground font-semibold"
+          <div className="flex flex-col lg:col-span-5">
+            <div className="border-y border-border py-6 sm:py-7">
+              <p className="text-xs font-medium tracking-[0.14em] text-primary uppercase">
+                A little context
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                A clear title and a few words help the right people linger with
+                the work.
+              </p>
+            </div>
+            <FieldGroup className="flex flex-col">
+              <Controller
+                control={control}
+                name="somaId"
+                render={({ field }) => (
+                  <Field
+                    data-invalid={errors.somaId ? "" : undefined}
+                    className="border-b border-border py-6 sm:py-7"
+                  >
+                    <FieldLabel
+                      htmlFor="somaId"
+                      className="font-medium text-foreground"
+                    >
+                      Choose a Soma
+                    </FieldLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={somasLoading}
+                    >
+                      <SelectTrigger
+                        id="somaId"
+                        aria-invalid={errors.somaId ? true : undefined}
+                        className="mt-2 h-11 border-border bg-background focus:ring-primary/20"
                       >
-                        Community (Soma)
-                      </FieldLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        disabled={somasLoading}
-                      >
-                        <SelectTrigger
-                          id="somaId"
-                          aria-invalid={errors.somaId ? true : undefined}
-                          className="h-12 bg-background border-border/60 focus:ring-primary/20"
-                        >
-                          <SelectValue placeholder="Select a Soma to post in" />
-                        </SelectTrigger>
-                        <SelectContent>
+                        <SelectValue placeholder="Select a Soma to post in" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
                           {somas?.map((soma) => (
                             <SelectItem key={soma.id} value={soma.id}>
                               s/{soma.slug} - {soma.name}
                             </SelectItem>
                           ))}
-                        </SelectContent>
-                      </Select>
-                      {errors.somaId ? (
-                        <FieldDescription className="text-destructive font-medium">
-                          {errors.somaId.message}
-                        </FieldDescription>
-                      ) : (
-                        <FieldDescription>
-                          Choose the community that best fits your art style.
-                        </FieldDescription>
-                      )}
-                    </Field>
-                  )}
-                />
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                    {errors.somaId ? (
+                      <FieldDescription className="text-destructive font-medium">
+                        {errors.somaId.message}
+                      </FieldDescription>
+                    ) : (
+                      <FieldDescription>
+                        Find the room where this work belongs.
+                      </FieldDescription>
+                    )}
+                  </Field>
+                )}
+              />
 
-                <Controller
-                  control={control}
-                  name="title"
-                  render={({ field }) => (
-                    <Field data-invalid={errors.title ? "" : undefined}>
-                      <FieldLabel
-                        htmlFor="title"
-                        className="text-foreground font-semibold"
-                      >
-                        Title
-                      </FieldLabel>
-                      <Input
-                        id="title"
-                        placeholder="Give your masterpiece a name..."
-                        aria-invalid={errors.title ? true : undefined}
-                        className="h-12 bg-background border-border/60 focus-visible:ring-primary/20 text-base font-medium"
-                        {...field}
-                      />
-                      {errors.title && (
-                        <FieldDescription className="text-destructive font-medium">
-                          {errors.title.message}
-                        </FieldDescription>
-                      )}
-                    </Field>
-                  )}
-                />
-
-                <Controller
-                  control={control}
-                  name="content"
-                  render={({ field }) => (
-                    <Field
-                      data-invalid={errors.content ? "" : undefined}
-                      className="flex-1 flex flex-col"
+              <Controller
+                control={control}
+                name="title"
+                render={({ field }) => (
+                  <Field
+                    data-invalid={errors.title ? "" : undefined}
+                    className="border-b border-border py-6 sm:py-7"
+                  >
+                    <FieldLabel
+                      htmlFor="title"
+                      className="font-medium text-foreground"
                     >
-                      <FieldLabel
-                        htmlFor="content"
-                        className="text-foreground font-semibold"
-                      >
-                        Story & Process
-                      </FieldLabel>
-                      <Textarea
-                        id="content"
-                        placeholder="What inspired you? What tools did you use? Share the human struggle behind this piece..."
-                        aria-invalid={errors.content ? true : undefined}
-                        className="flex-1 min-h-50 resize-none bg-background border-border/60 focus-visible:ring-primary/20 text-base p-4"
-                        {...field}
-                      />
-                      {errors.content && (
-                        <FieldDescription className="text-destructive font-medium">
-                          {errors.content.message}
-                        </FieldDescription>
-                      )}
-                    </Field>
-                  )}
-                />
-              </FieldGroup>
+                      Title
+                    </FieldLabel>
+                    <Input
+                      id="title"
+                      placeholder="Give the work a name"
+                      aria-invalid={errors.title ? true : undefined}
+                      className="mt-2 h-11 border-border bg-background text-base focus-visible:ring-primary/20"
+                      {...field}
+                    />
+                    {errors.title && (
+                      <FieldDescription className="text-destructive font-medium">
+                        {errors.title.message}
+                      </FieldDescription>
+                    )}
+                  </Field>
+                )}
+              />
 
-              <div className="pt-4 border-t border-border/40 mt-auto shrink-0">
-                <Button
-                  type="submit"
-                  className="w-full h-12 text-base font-semibold shadow-md gap-2 rounded-xl"
-                >
-                  <UploadCloud className="size-5" />
-                  Publish Artwork
-                </Button>
-              </div>
+              <Controller
+                control={control}
+                name="content"
+                render={({ field }) => (
+                  <Field
+                    data-invalid={errors.content ? "" : undefined}
+                    className="flex flex-col border-b border-border py-6 sm:py-7"
+                  >
+                    <FieldLabel
+                      htmlFor="content"
+                      className="font-medium text-foreground"
+                    >
+                      The story behind it
+                    </FieldLabel>
+                    <Textarea
+                      id="content"
+                      placeholder="What drew you to this? What should someone notice, wonder about, or know about the process?"
+                      aria-invalid={errors.content ? true : undefined}
+                      className="mt-2 min-h-48 resize-none border-border bg-background p-3 text-base leading-7 focus-visible:ring-primary/20"
+                      {...field}
+                    />
+                    {errors.content && (
+                      <FieldDescription className="text-destructive font-medium">
+                        {errors.content.message}
+                      </FieldDescription>
+                    )}
+                  </Field>
+                )}
+              />
+            </FieldGroup>
+
+            <div className="mt-7 flex justify-end">
+              <Button type="submit" className="h-11 w-full gap-2 sm:w-auto">
+                <UploadCloud className="size-4" />
+                Publish work
+              </Button>
             </div>
           </div>
         </form>
