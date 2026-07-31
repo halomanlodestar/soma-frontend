@@ -87,7 +87,6 @@ export default function HeaderBlock() {
     const nav = mobileNavRef.current;
     if (!nav) return;
 
-    updateMobileIndicator();
     const resizeObserver = new ResizeObserver(() => updateMobileIndicator());
     resizeObserver.observe(nav);
 
