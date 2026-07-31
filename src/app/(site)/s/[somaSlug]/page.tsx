@@ -20,26 +20,20 @@ export default function SomaPage({ params }: PageProps) {
 
   const { data: soma, isLoading: somaLoading } = useGetSomaBySlug(somaSlug);
   const { data: posts, isLoading: postsLoading } = useGetPosts();
+  const somaPosts = posts?.filter((post) => post.soma.slug === somaSlug);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background pb-12">
-      {/* The Hero Section */}
+    <div className="min-h-screen bg-background pb-16">
       <SomaHeader soma={soma} isLoading={somaLoading} />
 
-      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8 mt-8">
+      <div className="mx-auto mt-8 w-full max-w-7xl px-4 sm:mt-10 sm:px-6 lg:px-8">
         <Tabs defaultValue="feed" className="w-full">
-          <TabsList className="mb-6 grid w-full grid-cols-2 md:w-auto md:inline-flex bg-transparent p-0 border-b border-border/40 rounded-none h-auto">
-            <TabsTrigger
-              value="feed"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-6 text-base"
-            >
+          <TabsList variant="pill" className="mb-8 w-full sm:w-fit">
+            <TabsTrigger value="feed" className="flex-1 sm:flex-none">
               Feed
             </TabsTrigger>
-            <TabsTrigger
-              value="rules"
-              className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none py-3 px-6 text-base"
-            >
-              Rules & Guidelines
+            <TabsTrigger value="rules" className="flex-1 sm:flex-none">
+              Community notes
             </TabsTrigger>
           </TabsList>
 
@@ -47,9 +41,14 @@ export default function SomaPage({ params }: PageProps) {
             value="feed"
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
-              {/* Main Content Column */}
+            <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14">
               <div className="flex flex-col lg:col-span-8">
+                <div className="flex items-baseline justify-between border-b border-border pb-4">
+                  <h2 className="font-heading text-2xl font-medium tracking-[-0.025em]">
+                    Recent work
+                  </h2>
+                  <span className="text-sm text-muted-foreground">Newest first</span>
+                </div>
                 {postsLoading
                   ? Array.from({ length: 3 }).map((_, i) => (
                       <div
@@ -68,27 +67,31 @@ export default function SomaPage({ params }: PageProps) {
                         <Skeleton className="mt-2 aspect-video w-full rounded-xl" />
                       </div>
                     ))
-                  : posts?.map((post) => (
+                  : somaPosts?.map((post) => (
                       <PostCard key={post.id} post={post} />
                     ))}
+                {!postsLoading && somaPosts?.length === 0 && (
+                  <div className="py-16 text-center">
+                    <p className="font-heading text-2xl font-medium">Room for the first work.</p>
+                    <p className="mt-2 text-sm text-muted-foreground">This Soma is quiet for now. A good place to begin.</p>
+                  </div>
+                )}
               </div>
 
-              {/* Context Column (Rules summary) */}
-              <div className="hidden lg:flex flex-col gap-6 lg:col-span-4">
-                <div className="sticky top-8 flex flex-col gap-6">
-                  <div className="border-y border-border py-5">
-                    <h3 className="mb-2 font-semibold text-foreground">
-                      About s/{soma?.slug}
-                    </h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
+              <aside className="hidden lg:block lg:col-span-4">
+                <div className="sticky top-8 border-y border-border py-6">
+                  <p className="text-xs font-medium tracking-[0.14em] text-primary uppercase">The room</p>
+                  <h3 className="mt-3 font-heading text-2xl font-medium tracking-[-0.025em] text-foreground">
+                    About this Soma
+                  </h3>
+                  <p className="mt-3 text-sm leading-7 text-muted-foreground">
                       {soma?.description}
-                    </p>
-                    <div className="mt-4 border-t border-border pt-4 text-xs text-muted-foreground">
+                  </p>
+                  <div className="mt-5 border-t border-border pt-4 text-xs text-muted-foreground">
                       Created Jul 2026
-                    </div>
                   </div>
                 </div>
-              </div>
+              </aside>
             </div>
           </TabsContent>
 
@@ -96,35 +99,26 @@ export default function SomaPage({ params }: PageProps) {
             value="rules"
             className="mt-0 focus-visible:outline-none focus-visible:ring-0"
           >
-            <div className="max-w-3xl flex flex-col gap-6">
-              <div className="border-y border-border py-8">
-                <h3 className="font-heading text-xl font-bold mb-6">
-                  Community Guidelines
-                </h3>
-                <ul className="space-y-6 text-sm text-muted-foreground">
+            <div className="max-w-3xl border-y border-border py-8 sm:py-10">
+                <p className="text-xs font-medium tracking-[0.14em] text-primary uppercase">Shared expectations</p>
+                <h2 className="mt-3 font-heading text-3xl font-medium tracking-[-0.03em]">
+                  A few ways we keep this room good.
+                </h2>
+                <ul className="mt-8 space-y-7 text-sm leading-7 text-muted-foreground">
                   <li>
-                    <strong className="text-foreground block mb-1">
-                      1. Human Art Only
-                    </strong>
-                    Strictly no generative AI art. Process pictures or layered
-                    files may be requested by moderators.
+                    <p className="mb-1 font-medium text-foreground">Human art, clearly shared</p>
+                    Process pictures or layered files may be requested by moderators.
                   </li>
                   <li>
-                    <strong className="text-foreground block mb-1">
-                      2. Constructive Critique
-                    </strong>
-                    Feedback should elevate the artist. Toxicity results in an
-                    immediate ban.
+                    <p className="mb-1 font-medium text-foreground">Critique that helps the work grow</p>
+                    Feedback should elevate the artist. There is no place for toxicity here.
                   </li>
                   <li>
-                    <strong className="text-foreground block mb-1">
-                      3. Proper Attribution
-                    </strong>
+                    <p className="mb-1 font-medium text-foreground">Credit travels with the work</p>
                     If you are referencing another creator&apos;s piece, link to
                     their original work.
                   </li>
                 </ul>
-              </div>
             </div>
           </TabsContent>
         </Tabs>
