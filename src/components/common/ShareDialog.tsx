@@ -1,12 +1,9 @@
 /** @format */
 
+"use client";
+
 import React from "react";
-import { Link2 } from "lucide-react";
-import {
-  TwitterLogo,
-  InstagramLogo,
-  FacebookLogo,
-} from "@phosphor-icons/react";
+import { Check, Copy, Mail, Send } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -23,59 +20,93 @@ interface ShareDialogProps {
 }
 
 export function ShareDialog({ children, url }: ShareDialogProps) {
-  const handleCopyLink = () => {
-    navigator.clipboard.writeText(url);
-    // Could trigger a toast here
+  const [copied, setCopied] = React.useState(false);
+  const encodedUrl = encodeURIComponent(url);
+
+  const handleCopyLink = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = url;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+      }
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
   };
 
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle>Share to</DialogTitle>
-          <DialogDescription>
-            Share this piece of art with your network.
+      <DialogContent className="max-w-[calc(100%-1rem)] gap-0 overflow-hidden p-0 sm:max-w-lg">
+        <DialogHeader className="border-b border-border bg-secondary px-6 pt-7 pb-6 sm:px-8">
+          <div className="mb-5 flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Send className="size-[1.125rem]" />
+          </div>
+          <DialogTitle className="font-heading text-2xl font-medium tracking-[-0.025em]">
+            Pass the work along
+          </DialogTitle>
+          <DialogDescription className="mt-2 max-w-sm text-sm leading-6">
+            Give a piece that stayed with you another place to be seen.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex justify-center gap-6 py-6">
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-12 rounded-lg hover:bg-sky-500/10 hover:text-sky-500 hover:border-sky-500/30 transition-colors"
-          >
-            <TwitterLogo weight="fill" className="size-5" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-12 rounded-lg hover:bg-pink-500/10 hover:text-pink-500 hover:border-pink-500/30 transition-colors"
-          >
-            <InstagramLogo weight="fill" className="size-5" />
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            className="size-12 rounded-lg hover:bg-blue-600/10 hover:text-blue-600 hover:border-blue-600/30 transition-colors"
-          >
-            <FacebookLogo weight="fill" className="size-5" />
-          </Button>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex-1 overflow-hidden rounded-md border border-input bg-muted/50 px-3 py-2 text-sm text-muted-foreground truncate">
-            {url}
+        <div className="space-y-6 px-6 py-6 sm:px-8 sm:py-7">
+          <div className="space-y-2">
+            <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
+              Direct link
+            </p>
+            <div className="grid grid-cols-[minmax(0,1fr)_auto] gap-2">
+              <div className="min-w-0 flex-1 truncate border border-border bg-background px-3 py-2.5 text-sm text-muted-foreground">
+                {url}
+              </div>
+              <Button type="button" onClick={handleCopyLink} className="w-auto px-4">
+                {copied ? <Check className="size-4" /> : <Copy className="size-4" />}
+                {copied ? "Copied" : "Copy link"}
+              </Button>
+            </div>
           </div>
-          <Button
-            type="button"
-            size="sm"
-            className="px-4"
-            onClick={handleCopyLink}
-          >
-            <Link2 className="mr-2 size-4" />
-            Copy
-          </Button>
+
+          <div className="space-y-2">
+            <p className="text-xs font-medium tracking-[0.14em] text-muted-foreground uppercase">
+              Share elsewhere
+            </p>
+            <div className="grid grid-cols-[repeat(3,minmax(0,1fr))] overflow-hidden rounded-lg border border-border">
+              <Button variant="ghost" className="h-10 min-w-0 w-full overflow-hidden rounded-none px-2 text-sm" asChild>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${encodedUrl}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  X
+                </a>
+              </Button>
+              <Button variant="ghost" className="h-10 min-w-0 w-full overflow-hidden rounded-none border-x border-border px-2 text-sm" asChild>
+                <a href={`mailto:?body=${encodedUrl}`}>
+                  <Mail className="size-4" />
+                  Email
+                </a>
+              </Button>
+              <Button variant="ghost" className="h-10 min-w-0 w-full overflow-hidden rounded-none px-2 text-sm" asChild>
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Facebook
+                </a>
+              </Button>
+            </div>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
