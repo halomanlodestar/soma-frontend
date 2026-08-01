@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@apollo/client": "^4.2.8",
-    "@apollo/experimental-nextjs-app-support": "^0.14.5",
+    "@apollo/client-integration-nextjs": "^0.14.5",
     "@base-ui/react": "^1.0.0",
     "@hookform/resolvers": "^5.4.0",
     "@hugeicons/core-free-icons": "^2.0.0",

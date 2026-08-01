@@ -5,7 +5,7 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/providers";
-import { absoluteUrl, siteConfig } from "@/lib/metadata";
+import { absoluteUrl, siteConfig, stringifyJsonLd } from "@/lib/metadata";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -78,7 +78,7 @@ export default function RootLayout({
         </Providers>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+          dangerouslySetInnerHTML={{ __html: stringifyJsonLd(structuredData) }}
         />
       </body>
     </html>

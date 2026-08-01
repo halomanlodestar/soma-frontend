@@ -7,7 +7,7 @@ import {
   ApolloNextAppProvider,
   ApolloClient,
   InMemoryCache,
-} from "@apollo/experimental-nextjs-app-support";
+} from "@apollo/client-integration-nextjs";
 
 type RefreshResponse = {
   accessToken: string;

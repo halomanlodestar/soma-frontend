@@ -1,3 +1,5 @@
+/** @format */
+
 import type { Metadata } from "next";
 
 const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "");
@@ -17,6 +19,8 @@ type PageMetadataOptions = {
   title: string;
   description: string;
   path: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
   robots?: Metadata["robots"];
 };
 
@@ -24,8 +28,13 @@ export function createPageMetadata({
   title,
   description,
   path,
+  imageUrl,
+  imageAlt,
   robots,
 }: PageMetadataOptions): Metadata {
+  const socialImage = imageUrl ?? "/opengraph-image";
+  const socialImageAlt = imageAlt ?? "Soma — A home for work made by people.";
+
   return {
     title,
     description,
@@ -41,10 +50,10 @@ export function createPageMetadata({
       type: "website",
       images: [
         {
-          url: "/opengraph-image",
+          url: socialImage,
           width: 1200,
           height: 630,
-          alt: "Soma — A home for work made by people.",
+          alt: socialImageAlt,
         },
       ],
     },
@@ -52,7 +61,7 @@ export function createPageMetadata({
       card: "summary_large_image",
       title,
       description,
-      images: ["/opengraph-image"],
+      images: [socialImage],
     },
     robots,
   };
@@ -69,3 +78,7 @@ export const privatePageMetadata: Metadata = {
     },
   },
 };
+
+export function stringifyJsonLd(data: object) {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}

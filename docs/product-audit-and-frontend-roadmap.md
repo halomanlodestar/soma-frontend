@@ -15,6 +15,8 @@ that can proceed now from work that must wait for a backend contract.
 - [x] SEO foundation: site metadata helper, canonical URLs, default social
   image, JSON-LD, manifest, static sitemap, robots policy, and `noindex`
   metadata for authentication and currently private routes.
+- [x] Dynamic public SEO metadata and structured data for Somas, individual
+  works, and creator profiles via server-only Apollo queries in route layouts.
 - [x] Share URLs now use the actual
   `/s/[somaSlug]/posts/[postId]` route.
 
