@@ -22,6 +22,7 @@ import {
 import { Post } from "@/modules/post/types";
 import { ShareDialog } from "./ShareDialog";
 import { useVote } from "@/modules/post/api/useVote";
+import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 
 interface PostCardProps {
   post: Post;
@@ -29,6 +30,8 @@ interface PostCardProps {
 
 export function PostCard({ post }: PostCardProps) {
   const { vote, removeVote } = useVote();
+  const { isAuthenticated, requestAuth } = useAuthPrompt();
+  const [isUpvoteConfirming, setIsUpvoteConfirming] = React.useState(false);
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
   });
@@ -40,21 +43,27 @@ export function PostCard({ post }: PostCardProps) {
   const handleUpvote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (hasUpvoted) {
-      removeVote(post.id, "POST", 1);
-    } else {
-      vote(post.id, "POST", 1, post.userVoteValue);
-    }
+    requestAuth("support", () => {
+      if (hasUpvoted) {
+        removeVote(post.id, "POST", 1);
+      } else {
+        vote(post.id, "POST", 1, post.userVoteValue);
+        setIsUpvoteConfirming(true);
+        window.setTimeout(() => setIsUpvoteConfirming(false), 360);
+      }
+    });
   };
 
   const handleDownvote = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (hasDownvoted) {
-      removeVote(post.id, "POST", -1);
-    } else {
-      vote(post.id, "POST", -1, post.userVoteValue);
-    }
+    requestAuth("support", () => {
+      if (hasDownvoted) {
+        removeVote(post.id, "POST", -1);
+      } else {
+        vote(post.id, "POST", -1, post.userVoteValue);
+      }
+    });
   };
 
   return (
@@ -204,14 +213,14 @@ export function PostCard({ post }: PostCardProps) {
             variant="ghost"
             size="sm"
             onClick={handleUpvote}
-            className={`h-8 px-2.5 rounded-none hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"}`}
+            className={`h-8 px-2.5 rounded-none hover:bg-accent ${hasUpvoted ? "bg-accent text-primary" : "text-muted-foreground"} ${isUpvoteConfirming ? "motion-safe:animate-[soma-vote-pop_360ms_cubic-bezier(0.22,1,0.36,1)]" : ""}`}
           >
             <ArrowBigUp
-              className={`size-4 ${hasUpvoted ? "fill-current" : ""}`}
+              className={`size-4 transition-transform duration-200 ${hasUpvoted ? "fill-current" : ""} ${isUpvoteConfirming ? "scale-110" : ""}`}
             />
           </Button>
           <span
-            className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"}`}
+            className={`px-2 text-xs font-medium tabular-nums ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground"} ${isUpvoteConfirming ? "motion-safe:animate-[soma-vote-pop_360ms_cubic-bezier(0.22,1,0.36,1)]" : ""}`}
           >
             {post.stats.upvotes}
           </span>
@@ -228,25 +237,38 @@ export function PostCard({ post }: PostCardProps) {
         </div>
 
         {/* Secondary Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center overflow-hidden rounded-lg border border-border bg-muted/40">
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 gap-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+            className="h-9 gap-2 rounded-none px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
           >
-            <MessageCircle className="size-4" />
+            <MessageCircle className="size-[1.125rem]" />
             <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
-          <ShareDialog url={shareUrl}>
+          {isAuthenticated ? (
+            <ShareDialog url={shareUrl}>
+              <Button
+                variant="ghost"
+                size="sm"
+                aria-label="Share this work"
+                className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
+              >
+                <Share2 className="size-[1.125rem]" />
+              </Button>
+            </ShareDialog>
+          ) : (
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/30 rounded-md"
+              onClick={() => requestAuth("share")}
+              aria-label="Share this work"
+              className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
             >
-              <Share2 className="size-4" />
+              <Share2 className="size-[1.125rem]" />
             </Button>
-          </ShareDialog>
+          )}
         </div>
       </div>
     </article>

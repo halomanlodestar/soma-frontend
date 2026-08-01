@@ -1,3 +1,5 @@
+<!-- @format -->
+
 # Soma
 
 Soma is a calmer, human-first social home for art and craft—built to favor care and quality over volume.

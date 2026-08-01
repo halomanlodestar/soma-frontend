@@ -3,6 +3,7 @@
 "use client";
 
 import { useState } from "react";
+import { clearAccessToken } from "@/lib/apollo-provider";
 
 export interface User {
   id: string;
@@ -31,8 +32,12 @@ export const useAuth = () => {
   const loginWithGoogle = async () => {
     setAuthState((prev) => ({ ...prev, isLoading: true, error: null }));
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api/v1";
-      window.location.href = `${apiUrl}api/v1/auth/google`;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+      const authUrl = apiUrl
+        ? `${apiUrl}/api/v1/auth/google`
+        : "/api/v1/auth/google";
+
+      window.location.href = authUrl;
     } catch {
       setAuthState((prev) => ({
         ...prev,
@@ -42,7 +47,13 @@ export const useAuth = () => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    clearAccessToken();
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "same-origin",
+    }).catch(() => undefined);
+
     setAuthState({
       user: null,
       isAuthenticated: false,

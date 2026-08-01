@@ -5,7 +5,6 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/components/providers";
-import HeaderBlock from "@/components/header-block";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -27,7 +26,6 @@ export default function RootLayout({
     <html lang="en" className={cn("font-sans", inter.variable, lora.variable)} suppressHydrationWarning>
       <body className="antialiased font-sans bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
         <Providers>
-          <HeaderBlock />
           {children}
         </Providers>
       </body>
