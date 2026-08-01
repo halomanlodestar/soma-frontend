@@ -3,16 +3,15 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   BadgeCheck,
-  Bell,
   CalendarDays,
   Check,
-  Paintbrush,
   Trophy,
 } from "lucide-react";
 import { format } from "date-fns";
+import { toast } from "sonner";
 
 import { UserProfile } from "@/modules/user/types";
 import { Button } from "@/components/ui/button";
@@ -21,6 +20,8 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
+import { useFollow } from "@/modules/user/api/useFollow";
+import { useGetMe } from "@/modules/user/api/useGetMe";
 
 interface UserHeaderProps {
   user: UserProfile | null;
@@ -28,16 +29,10 @@ interface UserHeaderProps {
 }
 
 export function UserHeader({ user, isLoading }: UserHeaderProps) {
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [followStage, setFollowStage] = useState<
-    "bell" | "craft" | "check" | null
-  >(null);
-  const followTimers = useRef<number[]>([]);
   const { requestAuth } = useAuthPrompt();
-
-  useEffect(() => {
-    return () => followTimers.current.forEach(window.clearTimeout);
-  }, []);
+  const { me } = useGetMe();
+  const { isFollowing, isLoading: followLoading, isUpdating, toggleFollow } =
+    useFollow(user?.id);
 
   if (isLoading || !user) {
     return (
@@ -58,31 +53,16 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
 
   const joinDate = format(new Date(user.joinedAt), "MMMM yyyy");
 
-  const runFollowSequence = () => {
-    if (followStage) return;
-
-    if (isFollowing) {
-      setIsFollowing(false);
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setIsFollowing(true);
-      return;
-    }
-
-    setFollowStage("bell");
-    followTimers.current = [
-      window.setTimeout(() => setFollowStage("craft"), 360),
-      window.setTimeout(() => setFollowStage("check"), 720),
-      window.setTimeout(() => {
-        setFollowStage(null);
-        setIsFollowing(true);
-      }, 1080),
-    ];
-  };
-
-  const handleFollow = () => requestAuth("follow", runFollowSequence);
+  const handleFollow = () =>
+    requestAuth("follow", () => {
+      void toggleFollow().catch((error) => {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "We could not update this follow.",
+        );
+      });
+    });
 
   return (
     <section className="flex w-full flex-col border-b border-border bg-background">
@@ -115,42 +95,25 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
           </Avatar>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <Button variant="outline">Message</Button>
-            <Button
-              onClick={handleFollow}
-              aria-label={isFollowing ? "Unfollow" : "Follow creator"}
-              aria-busy={followStage !== null}
-              className={cn(
-                "h-10 overflow-hidden transition-[width,padding] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                followStage
-                  ? "w-28 px-0"
-                  : isFollowing
-                    ? "w-28 px-4"
-                    : "w-24 px-4",
-                followStage && "pointer-events-none",
-              )}
-            >
-              {followStage ? (
-                <span className="flex size-5 items-center justify-center">
-                  {followStage === "bell" && (
-                    <Bell className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
-                  )}
-                  {followStage === "craft" && (
-                    <Paintbrush className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
-                  )}
-                  {followStage === "check" && (
-                    <Check className="size-5 text-current motion-safe:animate-[soma-follow-step_360ms_cubic-bezier(0.22,1,0.36,1)]" />
-                  )}
-                </span>
-              ) : (
-                <>
-                  {isFollowing && (
-                    <Check data-icon="inline-start" className="text-current" />
-                  )}
-                  {isFollowing ? "Following" : "Follow"}
-                </>
-              )}
-            </Button>
+            {me?.id === user.id ? (
+              <Button variant="outline" asChild>
+                <Link href="/settings">Edit profile</Link>
+              </Button>
+            ) : (
+              <Button
+                onClick={handleFollow}
+                aria-label={isFollowing ? "Unfollow" : "Follow creator"}
+                aria-busy={isUpdating}
+                disabled={followLoading || isUpdating}
+                className={cn(
+                  "h-10 min-w-24 transition-colors",
+                  isFollowing && "bg-secondary text-secondary-foreground hover:bg-muted",
+                )}
+              >
+                {isFollowing && <Check data-icon="inline-start" />}
+                {isUpdating ? "Updating…" : isFollowing ? "Following" : "Follow"}
+              </Button>
+            )}
           </div>
         </div>
 

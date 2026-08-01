@@ -33,7 +33,7 @@ interface PostPageProps {
 export default function PostPage({ params }: PostPageProps) {
   const { somaSlug, postId } = use(params);
   const { data: post, isLoading: postLoading } = useGetPostById(postId);
-  const { data: comments, isLoading: commentsLoading } = useGetComments(postId);
+  const { data: comments, isLoading: commentsLoading, refetch: refetchComments } = useGetComments(postId);
   const { vote, removeVote } = useVote();
   const { isAuthenticated, requestAuth } = useAuthPrompt();
   const [isUpvoteConfirming, setIsUpvoteConfirming] = useState(false);
@@ -235,7 +235,12 @@ export default function PostPage({ params }: PostPageProps) {
             id="thoughts"
             className="mt-16 max-w-3xl border-t border-border pt-8 sm:mt-20 sm:pt-10"
           >
-            <CommentTree comments={comments} isLoading={commentsLoading} />
+            <CommentTree
+              comments={comments}
+              isLoading={commentsLoading}
+              postId={postId}
+              onChanged={() => refetchComments()}
+            />
           </section>
         </article>
       </div>

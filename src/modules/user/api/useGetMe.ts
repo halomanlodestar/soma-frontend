@@ -10,8 +10,16 @@ const GET_ME = graphql(`
         displayName
         username
         avatarUrl
+        coverUrl
+        bio
         role
         isVerified
+        stats {
+          posts
+          comments
+          followers
+          following
+        }
       }
     }
   }

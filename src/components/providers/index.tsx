@@ -5,6 +5,7 @@ import { TooltipProvider } from "../ui/tooltip";
 import { ReactQueryProvider } from "./ReactQueryProvider";
 import { ApolloAppProvider } from "@/lib/apollo-provider";
 import { AuthPromptProvider } from "@/components/providers/AuthPromptProvider";
+import { Toaster } from "@/components/ui/sonner";
 
 const Providers = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -17,7 +18,10 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
           disableTransitionOnChange
         >
           <TooltipProvider>
-            <AuthPromptProvider>{children}</AuthPromptProvider>
+            <AuthPromptProvider>
+              {children}
+              <Toaster richColors closeButton />
+            </AuthPromptProvider>
           </TooltipProvider>
         </ThemeProvider>
       </ReactQueryProvider>

@@ -11,6 +11,7 @@ import * as z from "zod";
 import { Image as ImageIcon, Info, Trash2, UploadCloud } from "lucide-react";
 
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
+import { useCreatePost } from "@/modules/post/api/useCreatePost";
 import { Button } from "@/components/ui/button";
 import {
   FieldGroup,
@@ -38,6 +39,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const acceptedImageTypes = ["image/jpeg", "image/png", "image/webp"];
 const maxImageSize = 20 * 1024 * 1024;
@@ -73,6 +75,7 @@ const formSchema = z.object({
 export default function CreatePostPage() {
   const router = useRouter();
   const { data: somas, isLoading: somasLoading } = useGetSomas();
+  const { publishPost } = useCreatePost();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -82,7 +85,8 @@ export default function CreatePostPage() {
     handleSubmit,
     setValue,
     watch,
-    formState: { errors },
+    setError,
+    formState: { errors, isSubmitting },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -103,9 +107,24 @@ export default function CreatePostPage() {
     };
   }, [imagePreview]);
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const selectedSoma = somas?.find((s) => s.id === values.somaId);
-    router.push(`/s/${selectedSoma?.slug || "visual-arts"}`);
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!values.media) return;
+
+    try {
+      const post = await publishPost({
+        file: values.media,
+        somaId: values.somaId,
+        title: values.title,
+        body: values.content,
+      });
+      toast.success("Your work is with the Soma for review.");
+      router.push(`/s/${post.soma.slug}/posts/${post.id}`);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "We could not publish this work.";
+      setError("root", { message });
+      toast.error(message);
+    }
   };
 
   const setUploadedImage = (file: File | null) => {
@@ -401,11 +420,16 @@ export default function CreatePostPage() {
             </FieldGroup>
 
             <div className="mt-7 flex justify-end">
-              <Button type="submit" className="h-11 w-full gap-2 sm:w-auto">
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="h-11 w-full gap-2 sm:w-auto"
+              >
                 <UploadCloud className="size-4" />
-                Publish work
+                {isSubmitting ? "Publishing work…" : "Publish work"}
               </Button>
             </div>
+            <FieldError errors={errors.root ? [errors.root] : undefined} />
           </div>
         </form>
       </div>

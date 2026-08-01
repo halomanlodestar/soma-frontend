@@ -1,136 +1,214 @@
 /** @format */
 
-import React from "react";
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { formatDistanceToNow } from "date-fns";
-import {
-  ArrowBigUp,
-  ArrowBigDown,
-  MessageSquare,
-  BadgeCheck,
-} from "lucide-react";
+import { ArrowBigDown, ArrowBigUp, BadgeCheck, MessageSquare, Send } from "lucide-react";
+import { toast } from "sonner";
+import * as z from "zod";
+
 import { Comment } from "@/modules/comment/types";
+import { useCommentActions } from "@/modules/comment/api/useCommentActions";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Textarea } from "@/components/ui/textarea";
 import { useVote } from "@/modules/post/api/useVote";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
+import { cn } from "@/lib/utils";
+
+const commentSchema = z.object({
+  content: z.string().trim().min(2, "Write at least two characters.").max(2_000, "Keep thoughts under 2,000 characters."),
+});
+
+type CommentValues = z.infer<typeof commentSchema>;
+
+function CommentComposer({
+  label,
+  onSubmit,
+  onCancel,
+  placeholder,
+}: {
+  label: string;
+  onSubmit: (content: string) => Promise<void>;
+  onCancel?: () => void;
+  placeholder: string;
+}) {
+  const {
+    control,
+    handleSubmit,
+    reset,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<CommentValues>({
+    resolver: zodResolver(commentSchema),
+    defaultValues: { content: "" },
+  });
+
+  const submit = async (values: CommentValues) => {
+    try {
+      await onSubmit(values.content);
+      reset();
+      onCancel?.();
+    } catch (error) {
+      setError("root", {
+        message: error instanceof Error ? error.message : "We could not add your thought.",
+      });
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit(submit)} className="mt-4">
+      <FieldGroup>
+        <Controller
+          control={control}
+          name="content"
+          render={({ field }) => (
+            <Field data-invalid={errors.content ? true : undefined}>
+              <FieldLabel htmlFor={label} className="sr-only">
+                {label}
+              </FieldLabel>
+              <Textarea
+                id={label}
+                className="min-h-24 resize-y"
+                placeholder={placeholder}
+                aria-invalid={errors.content ? true : undefined}
+                {...field}
+              />
+              <FieldError errors={errors.content ? [errors.content] : undefined} />
+            </Field>
+          )}
+        />
+        <FieldError errors={errors.root ? [errors.root] : undefined} />
+        <div className="flex items-center justify-end gap-2">
+          {onCancel && (
+            <Button type="button" variant="ghost" size="sm" onClick={onCancel}>
+              Cancel
+            </Button>
+          )}
+          <Button type="submit" size="sm" disabled={isSubmitting}>
+            <Send data-icon="inline-start" />
+            {isSubmitting ? "Sharing…" : "Share thought"}
+          </Button>
+        </div>
+      </FieldGroup>
+    </form>
+  );
+}
 
 interface CommentItemProps {
   comment: Comment;
   depth?: number;
+  onChanged?: () => Promise<unknown>;
+  postId?: string;
 }
 
-function CommentItem({ comment, depth = 0 }: CommentItemProps) {
+function CommentItem({ comment, depth = 0, onChanged, postId }: CommentItemProps) {
+  const [isReplying, setIsReplying] = useState(false);
   const { vote, removeVote } = useVote();
-  const { requestAuth } = useAuthPrompt();
-  const timeAgo = formatDistanceToNow(new Date(comment.createdAt), {
-    addSuffix: true,
-  });
+  const { addReply } = useCommentActions();
+  const { isAuthenticated, requestAuth } = useAuthPrompt();
+  const timeAgo = formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true });
   const isReply = depth > 0;
-
   const hasUpvoted = comment.userVoteValue === 1;
   const hasDownvoted = comment.userVoteValue === -1;
 
-  const handleUpvote = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleUpvote = () => {
     requestAuth("support", () => {
-      if (hasUpvoted) {
-        removeVote(comment.id, "COMMENT", 1);
-      } else {
-        vote(comment.id, "COMMENT", 1, comment.userVoteValue);
-      }
+      void (hasUpvoted
+        ? removeVote(comment.id, "COMMENT", 1)
+        : vote(comment.id, "COMMENT", 1, comment.userVoteValue)
+      ).catch(() => toast.error("We could not update that support."));
     });
   };
 
-  const handleDownvote = (e: React.MouseEvent) => {
-    e.preventDefault();
+  const handleDownvote = () => {
     requestAuth("support", () => {
-      if (hasDownvoted) {
-        removeVote(comment.id, "COMMENT", -1);
-      } else {
-        vote(comment.id, "COMMENT", -1, comment.userVoteValue);
-      }
+      void (hasDownvoted
+        ? removeVote(comment.id, "COMMENT", -1)
+        : vote(comment.id, "COMMENT", -1, comment.userVoteValue)
+      ).catch(() => toast.error("We could not update that support."));
     });
   };
+
+  const submitReply = (content: string) =>
+    new Promise<void>((resolve, reject) => {
+      if (!isAuthenticated) {
+        requestAuth("support");
+        resolve();
+        return;
+      }
+
+      requestAuth("support", () => {
+        void addReply(comment.id, content)
+          .then(async () => {
+            await onChanged?.();
+            resolve();
+          })
+          .catch(reject);
+      });
+    });
 
   return (
-    <div className={`flex gap-3 ${isReply ? "mt-4" : "mt-6"}`}>
-      {/* Avatar column with vertical thread line */}
+    <div className={cn("flex gap-3", isReply ? "mt-4" : "mt-6")}>
       <div className="flex flex-col items-center gap-2">
-        <Avatar className="size-8 ring-1 ring-border shrink-0">
-          <AvatarImage src={comment.author.avatarUrl} />
+        <Avatar className="size-8 shrink-0 ring-1 ring-border">
+          <AvatarImage src={comment.author.avatarUrl} alt={comment.author.name} />
           <AvatarFallback className="text-xs">
             {comment.author.name.substring(0, 2).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         {comment.replies && comment.replies.length > 0 && (
-          <div className="w-[1.5px] h-full bg-border/40 rounded-full my-1" />
+          <div className="my-1 h-full w-px rounded-full bg-border" />
         )}
       </div>
 
-      <div className="flex flex-col w-full">
-        {/* Comment Header */}
+      <div className="flex w-full flex-col">
         <div className="flex items-center gap-2 text-xs">
-          <Link
-            href={`/u/${comment.author.username}`}
-            className="font-semibold text-foreground flex items-center gap-1 hover:text-primary hover:underline"
-          >
+          <Link href={`/u/${comment.author.username}`} className="flex items-center gap-1 font-semibold text-foreground hover:text-primary hover:underline">
             {comment.author.name}
-            {comment.author.isVerified && (
-              <BadgeCheck className="size-3.5 text-primary" />
-            )}
+            {comment.author.isVerified && <BadgeCheck className="size-3.5 text-primary" aria-label="Verified creator" />}
           </Link>
           <span className="text-muted-foreground">•</span>
           <span className="text-muted-foreground">{timeAgo}</span>
         </div>
+        <p className="mt-1.5 pr-4 text-sm leading-relaxed text-foreground/90">{comment.content}</p>
 
-        {/* Comment Body */}
-        <p className="text-sm text-foreground/90 mt-1.5 leading-relaxed pr-4">
-          {comment.content}
-        </p>
-
-        {/* Action Row */}
-        <div className="flex items-center gap-1 mt-2 -ml-2 text-muted-foreground">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleUpvote}
-            className={`size-7 hover:text-primary hover:bg-primary/10 ${hasUpvoted ? "text-primary bg-primary/10" : ""}`}
-          >
-            <ArrowBigUp
-              className={`size-4 ${hasUpvoted ? "fill-current" : ""}`}
-            />
+        <div className="-ml-2 mt-2 flex items-center gap-1 text-muted-foreground">
+          <Button variant="ghost" size="icon-xs" onClick={handleUpvote} aria-label={hasUpvoted ? "Remove support" : "Support thought"} className={cn("hover:text-primary", hasUpvoted && "bg-primary/10 text-primary")}>
+            <ArrowBigUp className={cn(hasUpvoted && "fill-current")} />
           </Button>
-          <span
-            className={`text-xs font-semibold px-1 ${hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : ""}`}
-          >
+          <span className={cn("px-1 text-xs font-semibold", hasUpvoted ? "text-primary" : hasDownvoted ? "text-destructive" : "text-foreground")}>
             {comment.stats.upvotes}
           </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleDownvote}
-            className={`size-7 hover:text-destructive hover:bg-destructive/10 ${hasDownvoted ? "text-destructive bg-destructive/10" : ""}`}
-          >
-            <ArrowBigDown
-              className={`size-4 ${hasDownvoted ? "fill-current" : ""}`}
-            />
+          <Button variant="ghost" size="icon-xs" onClick={handleDownvote} aria-label={hasDownvoted ? "Remove downvote" : "Downvote thought"} className={cn("hover:text-destructive", hasDownvoted && "bg-destructive/10 text-destructive")}>
+            <ArrowBigDown className={cn(hasDownvoted && "fill-current")} />
           </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-7 px-2 ml-2 text-xs gap-1.5"
-          >
-            <MessageSquare className="size-3.5" />
-            Reply
-          </Button>
+          {postId && (
+            <Button variant="ghost" size="sm" className="ml-2" onClick={() => setIsReplying((value) => !value)}>
+              <MessageSquare data-icon="inline-start" />
+              Reply
+            </Button>
+          )}
         </div>
 
-        {/* Recursive Replies */}
+        {isReplying && (
+          <CommentComposer
+            label={`reply-${comment.id}`}
+            placeholder={`Reply to ${comment.author.name}`}
+            onSubmit={submitReply}
+            onCancel={() => setIsReplying(false)}
+          />
+        )}
+
         {comment.replies && comment.replies.length > 0 && (
-          <div className="flex flex-col gap-2 w-full">
+          <div className="flex w-full flex-col gap-2">
             {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} depth={depth + 1} />
+              <CommentItem key={reply.id} comment={reply} depth={depth + 1} postId={postId} onChanged={onChanged} />
             ))}
           </div>
         )}
@@ -142,35 +220,60 @@ function CommentItem({ comment, depth = 0 }: CommentItemProps) {
 interface CommentTreeProps {
   comments: Comment[] | null;
   isLoading: boolean;
+  postId?: string;
+  onChanged?: () => Promise<unknown>;
 }
 
-export function CommentTree({ comments, isLoading }: CommentTreeProps) {
-  if (isLoading) {
-    return (
-      <div className="text-sm text-muted-foreground py-8">
-        Loading thoughts...
-      </div>
-    );
-  }
+export function CommentTree({ comments, isLoading, postId, onChanged }: CommentTreeProps) {
+  const { addComment } = useCommentActions();
+  const { isAuthenticated, requestAuth } = useAuthPrompt();
 
-  if (!comments || comments.length === 0) {
-    return (
-      <div className="text-sm text-muted-foreground py-8">
-        No thoughts shared yet. Be the first.
-      </div>
-    );
+  const submitComment = (content: string) =>
+    new Promise<void>((resolve, reject) => {
+      if (!postId) {
+        resolve();
+        return;
+      }
+
+      if (!isAuthenticated) {
+        requestAuth("support");
+        resolve();
+        return;
+      }
+
+      requestAuth("support", () => {
+        void addComment(postId, content)
+          .then(async () => {
+            await onChanged?.();
+            resolve();
+          })
+          .catch(reject);
+      });
+    });
+
+  if (isLoading) {
+    return <div className="py-8 text-sm text-muted-foreground">Loading thoughts…</div>;
   }
 
   return (
-    <div className="flex flex-col w-full max-w-3xl mx-auto py-4">
-      <h3 className="font-heading text-lg font-bold mb-4">
-        Thoughts & Feedback
-      </h3>
-      <div className="flex flex-col">
-        {comments.map((comment) => (
-          <CommentItem key={comment.id} comment={comment} />
-        ))}
-      </div>
+    <div className="mx-auto flex w-full max-w-3xl flex-col py-4">
+      <h3 className="font-heading text-lg font-bold">Thoughts &amp; feedback</h3>
+      {postId && (
+        <CommentComposer
+          label="new-comment"
+          placeholder="Add something considered, specific, or useful…"
+          onSubmit={submitComment}
+        />
+      )}
+      {!comments || comments.length === 0 ? (
+        <p className="py-8 text-sm text-muted-foreground">No thoughts shared yet. Be the first.</p>
+      ) : (
+        <div className="flex flex-col">
+          {comments.map((comment) => (
+            <CommentItem key={comment.id} comment={comment} postId={postId} onChanged={onChanged} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

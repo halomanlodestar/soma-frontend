@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { Menu, Plus } from "lucide-react";
+import { Bell, Menu, Plus } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -174,12 +174,22 @@ export default function HeaderBlock() {
 
         <div className="ml-auto hidden items-center gap-1.5 md:flex">
           {me ? (
-            <Button size={"sm"} variant="outline" asChild>
-              <Link href="/create">
-                <Plus data-icon="inline-start" />
-                Share work
-              </Link>
-            </Button>
+            <>
+              <Button size="sm" variant="ghost" asChild>
+                <Link href="/studio">Studio</Link>
+              </Button>
+              <Button size="icon-sm" variant="ghost" asChild>
+                <Link href="/notifications" aria-label="Notifications">
+                  <Bell />
+                </Link>
+              </Button>
+              <Button size="sm" variant="outline" asChild>
+                <Link href="/create">
+                  <Plus data-icon="inline-start" />
+                  Share work
+                </Link>
+              </Button>
+            </>
           ) : (
             <Button
               size="sm"

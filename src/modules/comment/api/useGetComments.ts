@@ -23,7 +23,7 @@ const GET_COMMENTS_BY_POST = graphql(`
 `);
 
 export const useGetComments = (postId: string) => {
-  const { data: queryData, loading, error } = useQuery(GET_COMMENTS_BY_POST, {
+  const { data: queryData, loading, error, refetch } = useQuery(GET_COMMENTS_BY_POST, {
     variables: { postId },
   });
 
@@ -61,5 +61,5 @@ export const useGetComments = (postId: string) => {
     });
   }
 
-  return { data: comments, isLoading: loading, error };
+  return { data: comments, isLoading: loading, error, refetch };
 };

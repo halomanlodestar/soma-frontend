@@ -4,7 +4,7 @@
 
 import { use } from "react";
 import { useGetSomaBySlug } from "@/modules/soma/api/useGetSomaBySlug";
-import { useGetPosts } from "@/modules/post/api/useGetPosts";
+import { useGetSomaFeed } from "@/modules/post/api/useGetSomaFeed";
 import { SomaHeader } from "@/modules/soma/components/SomaHeader";
 import { PostCard } from "@/components/common/PostCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,8 +19,7 @@ export default function SomaPage({ params }: PageProps) {
   const { somaSlug } = use(params);
 
   const { data: soma, isLoading: somaLoading } = useGetSomaBySlug(somaSlug);
-  const { data: posts, isLoading: postsLoading } = useGetPosts();
-  const somaPosts = posts?.filter((post) => post.soma.slug === somaSlug);
+  const { data: somaPosts, isLoading: postsLoading } = useGetSomaFeed(soma?.id);
 
   return (
     <div className="min-h-screen bg-background pb-16">
