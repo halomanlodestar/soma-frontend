@@ -1,13 +1,18 @@
-"""
-Indicates exactly one field must be supplied and this field must not be `null`.
-"""
-directive @oneOf on INPUT_OBJECT
+enum AuthSessionClientType {
+  ANDROID
+  IOS
+  WEB
+}
 
-"""Exposes a URL that specifies the behavior of this scalar."""
-directive @specifiedBy(
-  """The URL that specifies the behavior of this scalar."""
-  url: String!
-) on SCALAR
+type AuthSessionDto {
+  clientType: AuthSessionClientType!
+  createdAt: DateTime!
+  deviceName: String
+  expiresAt: DateTime!
+  id: ID!
+  lastUsedAt: DateTime!
+  userAgent: String
+}
 
 type Award {
   awardedById: String!
@@ -34,6 +39,7 @@ type Comment {
   parentCommentId: String
   postId: String!
   updatedAt: DateTime!
+  userVoteValue: Int
   voteCount: Int!
 }
 
@@ -95,6 +101,7 @@ type FeedItem {
   mediaUrl: String
   soma: FeedSoma!
   title: String!
+  userVoteValue: Int
   voteCount: Int!
 }
 
@@ -164,6 +171,13 @@ type MediaItem {
   type: String!
 }
 
+enum MediaProcessingStatus {
+  FAILED
+  NONE
+  PENDING
+  READY
+}
+
 type Mutation {
   createAward(data: CreateAwardDto!): AwardResult!
   createComment(data: CreateCommentDto!, postId: String!): CommentResult!
@@ -176,6 +190,13 @@ type Mutation {
   markNotificationAsRead(id: String!): NotificationResult!
   removeVote(data: DeleteVoteDto!): Boolean!
   replyToComment(commentId: String!, data: CreateCommentDto!): CommentResult!
+  reviewSomaCreatorApplication(input: ReviewSomaCreatorApplicationInput!): SomaCreatorApplicationResult!
+  revokeAllSessions: Float!
+  revokeSession(sessionId: String!): Boolean!
+  setSomaMembershipRole(input: SetSomaMembershipRoleInput!): SomaMembership!
+  setSomaMembershipStatus(input: SetSomaMembershipStatusInput!): SomaMembership!
+  submitPost(id: String!): PostResult!
+  submitSomaCreatorApplication(input: SubmitSomaCreatorApplicationInput!): SomaCreatorApplicationResult!
   unfollow(userId: String!): FollowResponse!
   updateComment(data: UpdateCommentDto!, id: String!): CommentResult!
   updateMyProfile(data: UpdateUserProfileDto!): UserResult!
@@ -210,21 +231,36 @@ type Post {
   excerpt: String
   id: ID!
   impressions: Int!
+  mediaStatus: MediaProcessingStatus!
   mediaUrl: String
   soma: Soma!
   somaId: String!
   title: String!
   updatedAt: DateTime!
+  userVoteValue: Int
+  visibility: PostVisibility!
   voteCount: Int!
 }
 
 union PostResult = InvalidInputError | NotFoundError | Post | UnauthorizedError
+
+enum PostVisibility {
+  APPROVED
+  ARCHIVED
+  DRAFT
+  NEEDS_CHANGES
+  PUBLISHED
+  REJECTED
+  REMOVED
+  SUBMITTED
+}
 
 type Query {
   getAllSomas: [Soma!]!
   getAwardsByComment(commentId: String!): [Award!]!
   getAwardsByPost(postId: String!): [Award!]!
   getCommentsByPost(postId: String!): [Comment!]!
+  getCommentsByUser(userId: String!): [Comment!]!
   getFollowStatus(userId: String!): FollowStatus!
   getFollowers(userId: String!): [FollowUserDto!]!
   getFollowing(userId: String!): [FollowUserDto!]!
@@ -239,7 +275,33 @@ type Query {
   getTopPosts(limit: Int = 20, page: Int = 1): [Post!]!
   getUserById(id: String!): UserResult!
   me: UserResult!
+  mySessions: [AuthSessionDto!]!
+  mySomaCreatorApplication(somaId: String!): SomaCreatorApplication
+  mySomaCreatorApplications: [SomaCreatorApplication!]!
+  mySomaMembership(somaId: String!): SomaMembership
+  myStudioPost(id: String!): PostResult!
+  myStudioPosts(statuses: [PostVisibility!]): [Post!]!
+  somaCreatorReviewQueue(somaId: String!): [SomaCreatorApplication!]!
+  somaMemberships(somaId: String!): [SomaMembership!]!
   userByUsername(username: String!): UserResult!
+}
+
+input ReviewSomaCreatorApplicationInput {
+  applicationId: String!
+  decision: SomaCreatorApplicationStatus!
+  reviewerNote: String
+}
+
+input SetSomaMembershipRoleInput {
+  role: SomaMembershipRole!
+  somaId: String!
+  userId: String!
+}
+
+input SetSomaMembershipStatusInput {
+  somaId: String!
+  status: SomaMembershipStatus!
+  userId: String!
 }
 
 type Soma {
@@ -254,7 +316,70 @@ type Soma {
   weeklyVisitorCount: Int!
 }
 
+type SomaCreatorApplication {
+  applicantId: String!
+  createdAt: DateTime!
+  disciplines: [String!]!
+  id: ID!
+  moderationConsent: Boolean!
+  portfolioUrls: [String!]!
+  processSamples: [String!]!
+  reviewedAt: DateTime
+  reviewerId: String
+  reviewerNote: String
+  somaId: String!
+  statement: String!
+  status: SomaCreatorApplicationStatus!
+  updatedAt: DateTime!
+}
+
+union SomaCreatorApplicationResult = InvalidInputError | NotFoundError | SomaCreatorApplication | UnauthorizedError
+
+enum SomaCreatorApplicationStatus {
+  APPROVED
+  DECLINED
+  IN_REVIEW
+  NEEDS_INFO
+  SUBMITTED
+  WITHDRAWN
+}
+
+type SomaMembership {
+  approvedAt: DateTime
+  approvedById: String
+  createdAt: DateTime!
+  id: ID!
+  leftAt: DateTime
+  role: SomaMembershipRole!
+  somaId: String!
+  status: SomaMembershipStatus!
+  suspendedAt: DateTime
+  updatedAt: DateTime!
+  userId: String!
+}
+
+enum SomaMembershipRole {
+  CREATOR
+  MODERATOR
+  OWNER
+}
+
+enum SomaMembershipStatus {
+  ACTIVE
+  LEFT
+  SUSPENDED
+}
+
 union SomaResult = InvalidInputError | NotFoundError | Soma
+
+input SubmitSomaCreatorApplicationInput {
+  disciplines: [String!]! = []
+  moderationConsent: Boolean!
+  portfolioUrls: [String!]! = []
+  processSamples: [String!]! = []
+  somaId: String!
+  statement: String!
+}
 
 enum TargetType {
   COMMENT
@@ -290,6 +415,7 @@ input UploadIntentDto {
   fileName: String!
   mediaType: String!
   mimeType: String!
+  somaId: String!
 }
 
 type UploadIntentResponseDto {
@@ -322,4 +448,3 @@ type UserStats {
   following: Int!
   posts: Int!
 }
-

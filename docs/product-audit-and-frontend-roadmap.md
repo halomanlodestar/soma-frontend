@@ -17,6 +17,8 @@ that can proceed now from work that must wait for a backend contract.
   metadata for authentication and currently private routes.
 - [x] Dynamic public SEO metadata and structured data for Somas, individual
   works, and creator profiles via server-only Apollo queries in route layouts.
+- [x] Live GraphQL schema introspected and typed client regenerated from the
+  current backend schema source.
 - [x] Share URLs now use the actual
   `/s/[somaSlug]/posts/[postId]` route.
 
@@ -112,6 +114,16 @@ that can proceed now from work that must wait for a backend contract.
 - `getMediaByPost`: support galleries instead of one `mediaUrl`.
 - `updatePost`, `deletePost`, and `updateSoma`: support creator/community
   management.
+- `submitSomaCreatorApplication`, `mySomaCreatorApplication`,
+  `mySomaCreatorApplications`, and `reviewSomaCreatorApplication`: build the
+  Soma-specific creator application and review lifecycle.
+- `myStudioPosts`, `myStudioPost`, and `submitPost`: build a real creator
+  studio around draft, submitted, published, needs-changes, and archived work.
+- `mySomaMembership`, `somaMemberships`, `setSomaMembershipRole`, and
+  `setSomaMembershipStatus`: show creator/moderator/owner access and build
+  community management.
+- `mySessions`, `revokeSession`, and `revokeAllSessions`: add account session
+  controls to settings.
 
 ## Backend APIs and data to add
 
@@ -130,10 +142,7 @@ that can proceed now from work that must wait for a backend contract.
 
 ### Trust and moderation
 
-- Creatorship application/review/decision/appeal lifecycle.
 - Backend-enforced role and permission checks.
-- Work status: draft, submitted, approved, published, needs changes, rejected,
-  removed, archived.
 - AI-assisted/human-made disclosure, process/provenance, collaborators,
   attribution, licensing, and rights-holder fields.
 - Content/user reports, reporter privacy, moderation queue, decision reasons,
@@ -224,6 +233,15 @@ the project’s existing shadcn primitives and Soma’s semantic design tokens.
   clearly say unavailable until their mutations exist.
 - Studio/moderation table/card layouts using fixture data isolated under a
   development-only story/fixture module.
+
+### Form implementation rule
+
+- Every form uses React Hook Form with a Zod schema, `FieldGroup` and `Field`
+  from the project’s shadcn primitives, linked labels, inline `FieldError`, and
+  accessible submitting/success/error feedback.
+- File inputs are registered with React Hook Form too; they are not maintained
+  only in local component state. The current create-post picker needs this
+  small refactor before the real upload mutation is connected.
 
 ### Ship now: engineering hardening
 

@@ -2,7 +2,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import {
   FieldGroup,
   Field,
+  FieldError,
   FieldLabel,
   FieldDescription,
 } from "@/components/ui/field";
@@ -36,8 +37,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+
+const acceptedImageTypes = ["image/jpeg", "image/png", "image/webp"];
+const maxImageSize = 20 * 1024 * 1024;
+
+const isFile = (value: unknown): value is File =>
+  typeof File !== "undefined" && value instanceof File;
 
 const formSchema = z.object({
+  media: z
+    .custom<File | null>()
+    .refine(
+      (file) => Boolean(isFile(file)),
+      "Please upload an image of your artwork",
+    )
+    .refine(
+      (file) => !isFile(file) || acceptedImageTypes.includes(file.type),
+      "Use a JPEG, PNG, or WebP image",
+    )
+    .refine(
+      (file) => !isFile(file) || file.size <= maxImageSize,
+      "Image must be 20MB or smaller",
+    ),
   title: z
     .string()
     .min(3, "Title must be at least 3 characters")
@@ -53,38 +75,51 @@ export default function CreatePostPage() {
   const { data: somas, isLoading: somasLoading } = useGetSomas();
 
   const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const {
     control,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      media: null,
       title: "",
       somaId: "",
       content: "",
     },
   });
 
+  const uploadedFile = watch("media");
+
+  useEffect(() => {
+    return () => {
+      if (imagePreview) {
+        URL.revokeObjectURL(imagePreview);
+      }
+    };
+  }, [imagePreview]);
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    if (!uploadedFile) {
-      alert("Please upload an image of your artwork.");
-      return;
-    }
     const selectedSoma = somas?.find((s) => s.id === values.somaId);
     router.push(`/s/${selectedSoma?.slug || "visual-arts"}`);
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setUploadedFile(file);
-      const url = URL.createObjectURL(file);
-      setImagePreview(url);
+  const setUploadedImage = (file: File | null) => {
+    setValue("media", file, {
+      shouldDirty: true,
+      shouldValidate: true,
+    });
+
+    if (!file || !file.type.startsWith("image/")) {
+      setImagePreview(null);
+      return;
     }
+
+    setImagePreview(URL.createObjectURL(file));
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -100,17 +135,12 @@ export default function CreatePostPage() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith("image/")) {
-      setUploadedFile(file);
-      const url = URL.createObjectURL(file);
-      setImagePreview(url);
-    }
+    setUploadedImage(e.dataTransfer.files?.[0] ?? null);
   };
 
   const clearUpload = () => {
+    setValue("media", null, { shouldDirty: true, shouldValidate: true });
     setImagePreview(null);
-    setUploadedFile(null);
   };
 
   return (
@@ -138,16 +168,26 @@ export default function CreatePostPage() {
           className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-14"
         >
           <div className="lg:col-span-7">
-            <div
-              className={`relative flex aspect-4/3 min-h-92 w-full flex-col items-center justify-center overflow-hidden border border-dashed transition-colors duration-200 sm:min-h-120
-                ${imagePreview ? "border-border bg-secondary/40" : isDragging ? "border-primary bg-primary/10" : "border-border bg-secondary/40 hover:border-primary/50 hover:bg-secondary"}
-              `}
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-            >
-              {imagePreview && uploadedFile ? (
-                <>
+            <Controller
+              control={control}
+              name="media"
+              render={({ field }) => (
+                <Field
+                  data-invalid={errors.media ? true : undefined}
+                  className={cn(
+                    "relative flex aspect-4/3 min-h-92 w-full flex-col items-center justify-center overflow-hidden border border-dashed transition-colors duration-200 sm:min-h-120",
+                    imagePreview
+                      ? "border-border bg-secondary/40"
+                      : isDragging
+                        ? "border-primary bg-primary/10"
+                        : "border-border bg-secondary/40 hover:border-primary/50 hover:bg-secondary",
+                  )}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
+                  {imagePreview && uploadedFile ? (
+                    <>
                   <Image
                     src={imagePreview}
                     alt={`Preview of ${uploadedFile.name}`}
@@ -202,8 +242,8 @@ export default function CreatePostPage() {
                     </Button>
                   </div>
                 </>
-              ) : (
-                <div className="pointer-events-none z-10 flex flex-col items-center justify-center p-6 text-center">
+                  ) : (
+                    <div className="pointer-events-none z-10 flex flex-col items-center justify-center p-6 text-center">
                   <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
                     <ImageIcon className="size-5" />
                   </div>
@@ -214,19 +254,36 @@ export default function CreatePostPage() {
                     Drop an image here, or choose one from your device. JPEG,
                     PNG, or WebP up to 20MB.
                   </p>
-                </div>
-              )}
+                    </div>
+                  )}
 
-              {/* Hidden File Input covering the entire dropzone if no image */}
-              {!imagePreview && (
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  onChange={handleImageUpload}
-                />
+                  {!imagePreview && (
+                    <>
+                      <FieldLabel htmlFor="media" className="sr-only">
+                        Artwork image
+                      </FieldLabel>
+                      <Input
+                        id="media"
+                        name={field.name}
+                        ref={field.ref}
+                        type="file"
+                        accept={acceptedImageTypes.join(",")}
+                        aria-invalid={errors.media ? true : undefined}
+                        className="absolute inset-0 size-full cursor-pointer border-0 opacity-0"
+                        onBlur={field.onBlur}
+                        onChange={(event) =>
+                          setUploadedImage(event.target.files?.[0] ?? null)
+                        }
+                      />
+                    </>
+                  )}
+                  <FieldError
+                    errors={errors.media ? [errors.media] : undefined}
+                    className="absolute right-4 bottom-4 left-4 z-20 bg-background/90 px-3 py-2 text-center supports-backdrop-filter:backdrop-blur-sm"
+                  />
+                </Field>
               )}
-            </div>
+            />
           </div>
 
           <div className="flex flex-col lg:col-span-5">
@@ -245,7 +302,7 @@ export default function CreatePostPage() {
                 name="somaId"
                 render={({ field }) => (
                   <Field
-                    data-invalid={errors.somaId ? "" : undefined}
+                    data-invalid={errors.somaId ? true : undefined}
                     className="border-b border-border py-6 sm:py-7"
                   >
                     <FieldLabel
@@ -256,7 +313,8 @@ export default function CreatePostPage() {
                     </FieldLabel>
                     <Select
                       onValueChange={field.onChange}
-                      defaultValue={field.value}
+                      name={field.name}
+                      value={field.value}
                       disabled={somasLoading}
                     >
                       <SelectTrigger
@@ -277,9 +335,9 @@ export default function CreatePostPage() {
                       </SelectContent>
                     </Select>
                     {errors.somaId ? (
-                      <FieldDescription className="text-destructive font-medium">
+                      <FieldError>
                         {errors.somaId.message}
-                      </FieldDescription>
+                      </FieldError>
                     ) : (
                       <FieldDescription>
                         Find the room where this work belongs.
@@ -294,7 +352,7 @@ export default function CreatePostPage() {
                 name="title"
                 render={({ field }) => (
                   <Field
-                    data-invalid={errors.title ? "" : undefined}
+                    data-invalid={errors.title ? true : undefined}
                     className="border-b border-border py-6 sm:py-7"
                   >
                     <FieldLabel
@@ -310,11 +368,7 @@ export default function CreatePostPage() {
                       className="mt-2 h-11 border-border bg-background text-base focus-visible:ring-primary/20"
                       {...field}
                     />
-                    {errors.title && (
-                      <FieldDescription className="text-destructive font-medium">
-                        {errors.title.message}
-                      </FieldDescription>
-                    )}
+                    <FieldError errors={errors.title ? [errors.title] : undefined} />
                   </Field>
                 )}
               />
@@ -324,7 +378,7 @@ export default function CreatePostPage() {
                 name="content"
                 render={({ field }) => (
                   <Field
-                    data-invalid={errors.content ? "" : undefined}
+                    data-invalid={errors.content ? true : undefined}
                     className="flex flex-col border-b border-border py-6 sm:py-7"
                   >
                     <FieldLabel
@@ -340,11 +394,7 @@ export default function CreatePostPage() {
                       className="mt-2 min-h-48 resize-none border-border bg-background p-3 text-base leading-7 focus-visible:ring-primary/20"
                       {...field}
                     />
-                    {errors.content && (
-                      <FieldDescription className="text-destructive font-medium">
-                        {errors.content.message}
-                      </FieldDescription>
-                    )}
+                    <FieldError errors={errors.content ? [errors.content] : undefined} />
                   </Field>
                 )}
               />
