@@ -8,7 +8,7 @@ import Image from "next/image";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Image as ImageIcon, UploadCloud } from "lucide-react";
+import { Image as ImageIcon, Info, Trash2, UploadCloud } from "lucide-react";
 
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
 import { Button } from "@/components/ui/button";
@@ -29,15 +29,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Attachment,
-  AttachmentContent,
-  AttachmentDescription,
-  AttachmentMedia,
-  AttachmentTitle,
-  AttachmentActions,
-  AttachmentAction,
-} from "@/components/ui/attachment";
-import { Trash2 } from "lucide-react";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 const formSchema = z.object({
   title: z
@@ -141,7 +139,7 @@ export default function CreatePostPage() {
         >
           <div className="lg:col-span-7">
             <div
-              className={`relative flex min-h-92 w-full flex-col items-center justify-center overflow-hidden border border-dashed transition-colors duration-200 sm:min-h-120
+              className={`relative flex aspect-4/3 min-h-92 w-full flex-col items-center justify-center overflow-hidden border border-dashed transition-colors duration-200 sm:min-h-120
                 ${imagePreview ? "border-border bg-secondary/40" : isDragging ? "border-primary bg-primary/10" : "border-border bg-secondary/40 hover:border-primary/50 hover:bg-secondary"}
               `}
               onDragOver={handleDragOver}
@@ -149,45 +147,61 @@ export default function CreatePostPage() {
               onDrop={handleDrop}
             >
               {imagePreview && uploadedFile ? (
-                <div className="relative flex h-full w-full flex-col items-center justify-center p-5 sm:p-7">
-                  <div className="relative mb-5 w-full flex-1 overflow-hidden bg-muted/30">
-                    <Image
-                      src={imagePreview}
-                      alt="Preview"
-                      fill
-                      className="object-contain"
-                    />
+                <>
+                  <Image
+                    src={imagePreview}
+                    alt={`Preview of ${uploadedFile.name}`}
+                    fill
+                    className="object-contain p-5 sm:p-7"
+                  />
+                  <div className="absolute top-5 right-5 z-10 flex gap-2 sm:top-7 sm:right-7">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          aria-label="Inspect uploaded image"
+                          className="size-9 bg-background/90 supports-backdrop-filter:backdrop-blur-sm"
+                        >
+                          <Info />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="gap-0 p-0 sm:max-w-sm">
+                        <DialogHeader className="border-b border-border px-6 pt-6 pb-5">
+                          <DialogTitle className="font-heading text-xl font-medium tracking-[-0.025em]">
+                            {uploadedFile.name}
+                          </DialogTitle>
+                          <DialogDescription className="mt-1 text-sm">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid grid-cols-2 gap-4 px-6 py-5 text-sm">
+                          <div>
+                            <p className="text-xs text-muted-foreground">Type</p>
+                            <p className="mt-1 font-medium text-foreground">{uploadedFile.type || "Image"}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground">Size</p>
+                            <p className="mt-1 font-medium text-foreground">
+                              {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      aria-label="Remove uploaded image"
+                      onClick={clearUpload}
+                      className="size-9 bg-background/90 text-destructive supports-backdrop-filter:backdrop-blur-sm hover:text-destructive"
+                    >
+                      <Trash2 />
+                    </Button>
                   </div>
-
-                  <Attachment
-                    size="default"
-                    className="w-full max-w-sm border-border bg-background shadow-none"
-                  >
-                    <AttachmentMedia variant="image">
-                      <Image
-                        src={imagePreview}
-                        alt="Thumbnail"
-                        fill
-                        className="object-cover"
-                      />
-                    </AttachmentMedia>
-                    <AttachmentContent>
-                      <AttachmentTitle>{uploadedFile.name}</AttachmentTitle>
-                      <AttachmentDescription>
-                        {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                      </AttachmentDescription>
-                    </AttachmentContent>
-                    <AttachmentActions>
-                      <AttachmentAction
-                        type="button"
-                        variant="ghost"
-                        onClick={clearUpload}
-                      >
-                        <Trash2 className="size-4 text-destructive" />
-                      </AttachmentAction>
-                    </AttachmentActions>
-                  </Attachment>
-                </div>
+                </>
               ) : (
                 <div className="pointer-events-none z-10 flex flex-col items-center justify-center p-6 text-center">
                   <div className="mb-5 flex size-12 items-center justify-center rounded-lg bg-primary text-primary-foreground">
