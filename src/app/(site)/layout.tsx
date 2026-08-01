@@ -1,6 +1,7 @@
 /** @format */
 
 import HeaderBlock from "@/components/header-block";
+import { SiteFooter } from "@/components/site-footer";
 
 export default function SiteLayout({
   children,
@@ -11,6 +12,7 @@ export default function SiteLayout({
     <>
       <HeaderBlock />
       {children}
+      <SiteFooter />
     </>
   );
 }
