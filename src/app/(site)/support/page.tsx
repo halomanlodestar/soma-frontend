@@ -1,11 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { InformationLinks, InformationPage } from "@/components/common/InformationPage";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Support",
   description: "Help with using Soma, sharing work, and keeping the community safe.",
-};
+  path: "/support",
+});
 
 export default function SupportPage() {
   return (

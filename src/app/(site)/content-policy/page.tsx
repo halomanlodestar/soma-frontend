@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import { InformationLinks, InformationPage } from "@/components/common/InformationPage";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Content Policy",
   description: "What may be shared on Soma and how moderation protects human-made work.",
-};
+  path: "/content-policy",
+});
 
 export default function ContentPolicyPage() {
   return (

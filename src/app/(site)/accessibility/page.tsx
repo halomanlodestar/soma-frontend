@@ -1,10 +1,11 @@
-import type { Metadata } from "next";
 import { InformationLinks, InformationPage } from "@/components/common/InformationPage";
+import { createPageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata = createPageMetadata({
   title: "Accessibility",
   description: "Soma’s commitment to an accessible, considered experience for everyone.",
-};
+  path: "/accessibility",
+});
 
 export default function AccessibilityPage() {
   return (

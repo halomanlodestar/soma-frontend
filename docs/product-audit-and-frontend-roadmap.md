@@ -7,6 +7,17 @@ care, context, attribution, and moderation over engagement volume. This
 document records the product gaps found in the web client and separates work
 that can proceed now from work that must wait for a backend contract.
 
+## Completed frontend work
+
+- [x] Public trust pages: How It Works, Guidelines, Content Policy,
+  Accessibility, Contact, and Support.
+- [x] Shared information-page layout and public-site footer.
+- [x] SEO foundation: site metadata helper, canonical URLs, default social
+  image, JSON-LD, manifest, static sitemap, robots policy, and `noindex`
+  metadata for authentication and currently private routes.
+- [x] Share URLs now use the actual
+  `/s/[somaSlug]/posts/[postId]` route.
+
 ## Current baseline
 
 - Implemented public routes: home, Explore, creator profile, Soma profile, and

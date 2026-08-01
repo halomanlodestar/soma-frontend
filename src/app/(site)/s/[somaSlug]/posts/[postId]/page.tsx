@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShareDialog } from "@/components/common/ShareDialog";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
+import { absoluteUrl } from "@/lib/metadata";
 
 interface PostPageProps {
   params: Promise<{ somaSlug: string; postId: string }>;
@@ -61,7 +62,7 @@ export default function PostPage({ params }: PostPageProps) {
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
   });
-  const shareUrl = `https://soma.art/p/${post.id}`;
+  const shareUrl = absoluteUrl(`/s/${post.soma.slug}/posts/${post.id}`);
   const hasUpvoted = post.userVoteValue === 1;
   const hasDownvoted = post.userVoteValue === -1;
 
