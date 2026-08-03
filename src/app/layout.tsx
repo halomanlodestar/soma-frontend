@@ -71,11 +71,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={cn("font-sans", inter.variable, lora.variable)} suppressHydrationWarning>
-      <body className="antialiased font-sans bg-background text-foreground selection:bg-accent selection:text-accent-foreground">
-        <Providers>
-          {children}
-        </Providers>
+    <html
+      lang="en"
+      className={cn("font-sans", inter.variable, lora.variable)}
+      suppressHydrationWarning
+    >
+      <body
+        suppressHydrationWarning
+        className="antialiased font-sans bg-background text-foreground selection:bg-accent selection:text-accent-foreground"
+      >
+        <Providers>{children}</Providers>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: stringifyJsonLd(structuredData) }}
