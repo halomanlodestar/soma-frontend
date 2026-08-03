@@ -153,14 +153,20 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
               <CalendarDays className="size-4" />
               Joined {joinDate}
             </span>
-            <span className="flex items-center gap-1.5 text-foreground">
+            <Link
+              href={`/u/${user.username}/following`}
+              className="flex items-center gap-1.5 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {user.stats.following}{" "}
               <span className="text-muted-foreground">Following</span>
-            </span>
-            <span className="flex items-center gap-1.5 text-foreground">
+            </Link>
+            <Link
+              href={`/u/${user.username}/followers`}
+              className="flex items-center gap-1.5 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
               {user.stats.followers}{" "}
               <span className="text-muted-foreground">Followers</span>
-            </span>
+            </Link>
           </div>
 
           {user.awards && user.awards.length > 0 && (

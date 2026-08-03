@@ -44,6 +44,8 @@ type Documents = {
     "\n  query GetMe {\n    me {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n        role\n        isVerified\n        stats {\n          posts\n          comments\n          followers\n          following\n        }\n      }\n    }\n  }\n": typeof types.GetMeDocument,
     "\n  query GetUserByUsername($username: String!) {\n    userByUsername(username: $username) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n        isVerified\n        createdAt\n        stats {\n          posts\n          comments\n          followers\n          following\n        }\n        awards\n      }\n    }\n  }\n": typeof types.GetUserByUsernameDocument,
     "\n  mutation UpdateMyProfile($data: UpdateUserProfileDto!) {\n    updateMyProfile(data: $data) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n      }\n      ... on NotFoundError {\n        message\n      }\n    }\n  }\n": typeof types.UpdateMyProfileDocument,
+    "\n  query GetFollowers($userId: String!) {\n    getFollowers(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n": typeof types.GetFollowersDocument,
+    "\n  query GetFollowing($userId: String!) {\n    getFollowing(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n": typeof types.GetFollowingDocument,
 };
 const documents: Documents = {
     "\n  query ExploreAutocomplete($input: AutocompleteInput!) {\n    autocomplete(input: $input) {\n      id\n      kind\n      title\n      subtitle\n      slug\n    }\n  }\n": types.ExploreAutocompleteDocument,
@@ -76,6 +78,8 @@ const documents: Documents = {
     "\n  query GetMe {\n    me {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n        role\n        isVerified\n        stats {\n          posts\n          comments\n          followers\n          following\n        }\n      }\n    }\n  }\n": types.GetMeDocument,
     "\n  query GetUserByUsername($username: String!) {\n    userByUsername(username: $username) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n        isVerified\n        createdAt\n        stats {\n          posts\n          comments\n          followers\n          following\n        }\n        awards\n      }\n    }\n  }\n": types.GetUserByUsernameDocument,
     "\n  mutation UpdateMyProfile($data: UpdateUserProfileDto!) {\n    updateMyProfile(data: $data) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n      }\n      ... on NotFoundError {\n        message\n      }\n    }\n  }\n": types.UpdateMyProfileDocument,
+    "\n  query GetFollowers($userId: String!) {\n    getFollowers(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n": types.GetFollowersDocument,
+    "\n  query GetFollowing($userId: String!) {\n    getFollowing(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n": types.GetFollowingDocument,
 };
 
 /**
@@ -212,6 +216,14 @@ export function graphql(source: "\n  query GetUserByUsername($username: String!)
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  mutation UpdateMyProfile($data: UpdateUserProfileDto!) {\n    updateMyProfile(data: $data) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n      }\n      ... on NotFoundError {\n        message\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation UpdateMyProfile($data: UpdateUserProfileDto!) {\n    updateMyProfile(data: $data) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n      }\n      ... on NotFoundError {\n        message\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetFollowers($userId: String!) {\n    getFollowers(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n"): (typeof documents)["\n  query GetFollowers($userId: String!) {\n    getFollowers(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query GetFollowing($userId: String!) {\n    getFollowing(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n"): (typeof documents)["\n  query GetFollowing($userId: String!) {\n    getFollowing(userId: $userId) {\n      id\n      displayName\n      username\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
