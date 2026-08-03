@@ -21,6 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useGetMe } from "@/modules/user/api/useGetMe";
 import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
+import { ShareWorkButton } from "@/modules/post/drafts/ShareWorkButton";
 
 const navLinks = [
   {
@@ -183,12 +184,7 @@ export default function HeaderBlock() {
                   <Bell />
                 </Link>
               </Button>
-              <Button size="sm" variant="outline" asChild>
-                <Link href="/create">
-                  <Plus data-icon="inline-start" />
-                  Share work
-                </Link>
-              </Button>
+              <ShareWorkButton size="sm" />
             </>
           ) : (
             <Button

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { useQuery } from "@apollo/client/react";
 import { formatDistanceToNow } from "date-fns";
-import { FilePenLine, Plus, Sparkles } from "lucide-react";
+import { FilePenLine, Sparkles } from "lucide-react";
 
 import { graphql } from "@/gql";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useGetMe } from "@/modules/user/api/useGetMe";
+import { ShareWorkButton } from "@/modules/post/drafts/ShareWorkButton";
 
 const MyStudioPostsDocument = graphql(`
   query MyStudioPosts {
@@ -95,12 +96,7 @@ export default function StudioPage() {
               Keep track of the work you are shaping and where it is in the review process.
             </p>
           </div>
-          <Button asChild>
-            <Link href="/create">
-              <Plus data-icon="inline-start" />
-              Share work
-            </Link>
-          </Button>
+          <ShareWorkButton variant="default" />
         </div>
       </header>
 
@@ -138,9 +134,7 @@ export default function StudioPage() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent>
-                        <Button asChild variant="outline">
-                          <Link href="/create">Start a post</Link>
-                        </Button>
+                        <ShareWorkButton variant="outline" label="Start a post" />
                       </CardContent>
                     </Card>
                   ) : (
