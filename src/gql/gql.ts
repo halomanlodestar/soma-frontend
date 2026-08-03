@@ -14,6 +14,8 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
+    "\n  query ExploreAutocomplete($input: AutocompleteInput!) {\n    autocomplete(input: $input) {\n      id\n      kind\n      title\n      subtitle\n      slug\n    }\n  }\n": typeof types.ExploreAutocompleteDocument,
+    "\n  query SearchPage($input: SearchInput!) {\n    search(input: $input) {\n      totalCount\n      nodes {\n        id\n        kind\n        title\n        subtitle\n        slug\n        imageUrl\n      }\n    }\n  }\n": typeof types.SearchPageDocument,
     "\n  query GetNotifications {\n    getNotifications {\n      __typename\n      id\n      type\n      message\n      createdAt\n      readAt\n      postId\n      commentId\n    }\n  }\n": typeof types.GetNotificationsDocument,
     "\n  mutation MarkNotificationAsRead($id: String!) {\n    markNotificationAsRead(id: $id) {\n      __typename\n      ... on Notification {\n        id\n        readAt\n      }\n      ... on NotFoundError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": typeof types.MarkNotificationAsReadDocument,
     "\n  query MyStudioPosts {\n    myStudioPosts {\n      id\n      title\n      body\n      excerpt\n      mediaUrl\n      mediaStatus\n      visibility\n      createdAt\n      updatedAt\n      soma {\n        name\n        slug\n      }\n    }\n  }\n": typeof types.MyStudioPostsDocument,
@@ -44,6 +46,8 @@ type Documents = {
     "\n  mutation UpdateMyProfile($data: UpdateUserProfileDto!) {\n    updateMyProfile(data: $data) {\n      __typename\n      ... on UserResponseDto {\n        id\n        displayName\n        username\n        avatarUrl\n        coverUrl\n        bio\n      }\n      ... on NotFoundError {\n        message\n      }\n    }\n  }\n": typeof types.UpdateMyProfileDocument,
 };
 const documents: Documents = {
+    "\n  query ExploreAutocomplete($input: AutocompleteInput!) {\n    autocomplete(input: $input) {\n      id\n      kind\n      title\n      subtitle\n      slug\n    }\n  }\n": types.ExploreAutocompleteDocument,
+    "\n  query SearchPage($input: SearchInput!) {\n    search(input: $input) {\n      totalCount\n      nodes {\n        id\n        kind\n        title\n        subtitle\n        slug\n        imageUrl\n      }\n    }\n  }\n": types.SearchPageDocument,
     "\n  query GetNotifications {\n    getNotifications {\n      __typename\n      id\n      type\n      message\n      createdAt\n      readAt\n      postId\n      commentId\n    }\n  }\n": types.GetNotificationsDocument,
     "\n  mutation MarkNotificationAsRead($id: String!) {\n    markNotificationAsRead(id: $id) {\n      __typename\n      ... on Notification {\n        id\n        readAt\n      }\n      ... on NotFoundError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": types.MarkNotificationAsReadDocument,
     "\n  query MyStudioPosts {\n    myStudioPosts {\n      id\n      title\n      body\n      excerpt\n      mediaUrl\n      mediaStatus\n      visibility\n      createdAt\n      updatedAt\n      soma {\n        name\n        slug\n      }\n    }\n  }\n": types.MyStudioPostsDocument,
@@ -88,6 +92,14 @@ const documents: Documents = {
  */
 export function graphql(source: string): unknown;
 
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query ExploreAutocomplete($input: AutocompleteInput!) {\n    autocomplete(input: $input) {\n      id\n      kind\n      title\n      subtitle\n      slug\n    }\n  }\n"): (typeof documents)["\n  query ExploreAutocomplete($input: AutocompleteInput!) {\n    autocomplete(input: $input) {\n      id\n      kind\n      title\n      subtitle\n      slug\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query SearchPage($input: SearchInput!) {\n    search(input: $input) {\n      totalCount\n      nodes {\n        id\n        kind\n        title\n        subtitle\n        slug\n        imageUrl\n      }\n    }\n  }\n"): (typeof documents)["\n  query SearchPage($input: SearchInput!) {\n    search(input: $input) {\n      totalCount\n      nodes {\n        id\n        kind\n        title\n        subtitle\n        slug\n        imageUrl\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
