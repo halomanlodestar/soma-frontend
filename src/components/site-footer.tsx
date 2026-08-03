@@ -21,6 +21,10 @@ const footerGroups = [
     title: "Policies",
     links: [
       { href: "/content-policy", label: "Content Policy" },
+      { href: "/copyright", label: "Copyright" },
+      { href: "/privacy", label: "Privacy" },
+      { href: "/terms", label: "Terms" },
+      { href: "/cookies", label: "Cookies" },
     ],
   },
 ];

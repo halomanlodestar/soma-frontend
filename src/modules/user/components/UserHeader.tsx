@@ -4,12 +4,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  BadgeCheck,
-  CalendarDays,
-  Check,
-  Trophy,
-} from "lucide-react";
+import { BadgeCheck, CalendarDays, Check, Trophy } from "lucide-react";
 import { format } from "date-fns";
 import { toast } from "sonner";
 
@@ -22,6 +17,7 @@ import { cn } from "@/lib/utils";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 import { useFollow } from "@/modules/user/api/useFollow";
 import { useGetMe } from "@/modules/user/api/useGetMe";
+import { ReportEntryPoint } from "@/components/common/ReportEntryPoint";
 
 interface UserHeaderProps {
   user: UserProfile | null;
@@ -31,8 +27,12 @@ interface UserHeaderProps {
 export function UserHeader({ user, isLoading }: UserHeaderProps) {
   const { requestAuth } = useAuthPrompt();
   const { me } = useGetMe();
-  const { isFollowing, isLoading: followLoading, isUpdating, toggleFollow } =
-    useFollow(user?.id);
+  const {
+    isFollowing,
+    isLoading: followLoading,
+    isUpdating,
+    toggleFollow,
+  } = useFollow(user?.id);
 
   if (isLoading || !user) {
     return (
@@ -100,19 +100,31 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
                 <Link href="/settings">Edit profile</Link>
               </Button>
             ) : (
-              <Button
-                onClick={handleFollow}
-                aria-label={isFollowing ? "Unfollow" : "Follow creator"}
-                aria-busy={isUpdating}
-                disabled={followLoading || isUpdating}
-                className={cn(
-                  "h-10 min-w-24 transition-colors",
-                  isFollowing && "bg-secondary text-secondary-foreground hover:bg-muted",
-                )}
-              >
-                {isFollowing && <Check data-icon="inline-start" />}
-                {isUpdating ? "Updating…" : isFollowing ? "Following" : "Follow"}
-              </Button>
+              <>
+                <Button
+                  onClick={handleFollow}
+                  aria-label={isFollowing ? "Unfollow" : "Follow creator"}
+                  aria-busy={isUpdating}
+                  disabled={followLoading || isUpdating}
+                  className={cn(
+                    "h-10 min-w-24 transition-colors",
+                    isFollowing &&
+                      "bg-secondary text-secondary-foreground hover:bg-muted",
+                  )}
+                >
+                  {isFollowing && <Check data-icon="inline-start" />}
+                  {isUpdating
+                    ? "Updating…"
+                    : isFollowing
+                      ? "Following"
+                      : "Follow"}
+                </Button>
+                <ReportEntryPoint
+                  subject="profile"
+                  label={user.name}
+                  className="h-10"
+                />
+              </>
             )}
           </div>
         </div>

@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ShareDialog } from "@/components/common/ShareDialog";
+import { ReportEntryPoint } from "@/components/common/ReportEntryPoint";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
 import { absoluteUrl } from "@/lib/metadata";
 
@@ -228,6 +229,12 @@ export default function PostPage({ params }: PostPageProps) {
                   <span>Share</span>
                 </Button>
               )}
+
+              <ReportEntryPoint
+                subject="work"
+                label={post.title}
+                className="h-8 gap-2 px-3 text-muted-foreground hover:bg-accent/30 hover:text-foreground lg:justify-start"
+              />
             </aside>
           </div>
 
