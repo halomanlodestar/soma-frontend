@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import { useMutation } from "@apollo/client/react";
@@ -50,20 +52,28 @@ export function useCommentActions() {
   const [replyToComment] = useMutation(ReplyToCommentDocument);
 
   const addComment = async (postId: string, content: string) => {
-    const result = await createComment({ variables: { postId, data: { content } } });
+    const result = await createComment({
+      variables: { postId, data: { content } },
+    });
     const comment = result.data?.createComment;
 
     if (!comment || comment.__typename !== "Comment") {
-      throw new Error(getResultErrorMessage(comment, "We could not add your thought."));
+      throw new Error(
+        getResultErrorMessage(comment, "We could not add your thought."),
+      );
     }
   };
 
   const addReply = async (commentId: string, content: string) => {
-    const result = await replyToComment({ variables: { commentId, data: { content } } });
+    const result = await replyToComment({
+      variables: { commentId, data: { content } },
+    });
     const reply = result.data?.replyToComment;
 
     if (!reply || reply.__typename !== "Comment") {
-      throw new Error(getResultErrorMessage(reply, "We could not add your reply."));
+      throw new Error(
+        getResultErrorMessage(reply, "We could not add your reply."),
+      );
     }
   };
 

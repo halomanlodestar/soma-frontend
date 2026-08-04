@@ -11,6 +11,12 @@ const GetSomaFeedDocument = graphql(`
       excerpt
       body
       mediaUrl
+      media {
+        items {
+          originalUrl
+          type
+        }
+      }
       createdAt
       voteCount
       userVoteValue
@@ -47,6 +53,7 @@ export function useGetSomaFeed(somaId?: string) {
         excerpt: item.excerpt ?? "",
         content: item.body ?? "",
         mediaUrl: item.mediaUrl ?? undefined,
+        attachments: item.media?.items ?? [],
         createdAt: item.createdAt,
         soma: { name: item.soma.name, slug: item.soma.slug },
         author: {

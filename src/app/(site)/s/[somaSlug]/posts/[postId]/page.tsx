@@ -3,7 +3,6 @@
 "use client";
 
 import { use, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -16,7 +15,9 @@ import {
 } from "lucide-react";
 
 import { useGetPostById } from "@/modules/post/api/useGetPostById";
+import { useGetPostAttachments } from "@/modules/post/api/useGetPostAttachments";
 import { useVote } from "@/modules/post/api/useVote";
+import { PostAttachments } from "@/modules/post/components/PostAttachments";
 import { useGetComments } from "@/modules/comment/api/useGetComments";
 import { CommentTree } from "@/modules/comment/components/CommentTree";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,7 +35,12 @@ interface PostPageProps {
 export default function PostPage({ params }: PostPageProps) {
   const { somaSlug, postId } = use(params);
   const { data: post, isLoading: postLoading } = useGetPostById(postId);
-  const { data: comments, isLoading: commentsLoading, refetch: refetchComments } = useGetComments(postId);
+  const { data: postAttachments } = useGetPostAttachments(postId);
+  const {
+    data: comments,
+    isLoading: commentsLoading,
+    refetch: refetchComments,
+  } = useGetComments(postId);
   const { vote, removeVote } = useVote();
   const { isAuthenticated, requestAuth } = useAuthPrompt();
   const [isUpvoteConfirming, setIsUpvoteConfirming] = useState(false);
@@ -149,17 +155,19 @@ export default function PostPage({ params }: PostPageProps) {
             </Link>
           </header>
 
-          {post.mediaUrl && (
-            <figure className="relative mt-10 aspect-4/3 w-full overflow-hidden rounded-xl bg-muted sm:aspect-16/10">
-              <Image
-                src={post.mediaUrl}
-                alt={post.title}
-                fill
-                className="object-contain"
-                priority
-              />
-            </figure>
-          )}
+          <div className="mt-10">
+            <PostAttachments
+              attachments={
+                postAttachments.length
+                  ? postAttachments
+                  : post.mediaUrl
+                    ? [{ originalUrl: post.mediaUrl, type: "image" }]
+                    : []
+              }
+              postTitle={post.title}
+              variant="detail"
+            />
+          </div>
 
           <div className="mt-10 grid gap-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-16">
             <div className="max-w-2xl whitespace-pre-wrap text-[0.9375rem] leading-7 text-foreground sm:text-base sm:leading-8">

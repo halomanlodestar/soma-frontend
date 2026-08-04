@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import {
   MessageCircle,
@@ -23,6 +22,8 @@ import { Post } from "@/modules/post/types";
 import { ShareDialog } from "./ShareDialog";
 import { useVote } from "@/modules/post/api/useVote";
 import { useAuthPrompt } from "@/components/providers/AuthPromptProvider";
+import { PostAttachments } from "@/modules/post/components/PostAttachments";
+import { useGetPostAttachments } from "@/modules/post/api/useGetPostAttachments";
 
 interface PostCardProps {
   post: Post;
@@ -31,6 +32,10 @@ interface PostCardProps {
 export function PostCard({ post }: PostCardProps) {
   const { vote, removeVote } = useVote();
   const { isAuthenticated, requestAuth } = useAuthPrompt();
+  const { data: fetchedAttachments } = useGetPostAttachments(
+    post.id,
+    post.attachments !== undefined,
+  );
   const [isUpvoteConfirming, setIsUpvoteConfirming] = React.useState(false);
   const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
     addSuffix: true,
@@ -39,6 +44,12 @@ export function PostCard({ post }: PostCardProps) {
 
   const hasUpvoted = post.userVoteValue === 1;
   const hasDownvoted = post.userVoteValue === -1;
+  const resolvedAttachments = post.attachments ?? fetchedAttachments;
+  const displayAttachments = resolvedAttachments.length
+    ? resolvedAttachments
+    : post.mediaUrl
+      ? [{ originalUrl: post.mediaUrl, type: "image" }]
+      : [];
 
   const handleUpvote = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -190,20 +201,11 @@ export function PostCard({ post }: PostCardProps) {
         </p>
       </Link>
 
-      {/* Media Preview */}
-      {post.mediaUrl && (
-        <Link
-          href={`/s/${post.soma.slug}/posts/${post.id}`}
-          className="relative aspect-4/3 w-full cursor-pointer overflow-hidden rounded-lg bg-muted sm:aspect-video"
-        >
-          <Image
-            src={post.mediaUrl}
-            alt={post.title}
-            fill
-            className="object-cover transition-transform duration-500 group-hover/post:scale-[1.015]"
-          />
-        </Link>
-      )}
+      <PostAttachments
+        attachments={displayAttachments}
+        postTitle={post.title}
+        postHref={`/s/${post.soma.slug}/posts/${post.id}`}
+      />
 
       {/* Interaction Row */}
       <div className="flex items-center justify-between pt-1">
@@ -243,7 +245,7 @@ export function PostCard({ post }: PostCardProps) {
             size="sm"
             className="h-9 gap-2 rounded-none px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
           >
-            <MessageCircle className="size-[1.125rem]" />
+            <MessageCircle className="size-4.5" />
             <span className="text-xs font-medium">{post.stats.comments}</span>
           </Button>
 
@@ -255,7 +257,7 @@ export function PostCard({ post }: PostCardProps) {
                 aria-label="Share this work"
                 className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
               >
-                <Share2 className="size-[1.125rem]" />
+                <Share2 className="size-4.5" />
               </Button>
             </ShareDialog>
           ) : (
@@ -266,7 +268,7 @@ export function PostCard({ post }: PostCardProps) {
               aria-label="Share this work"
               className="h-9 rounded-none border-l border-border px-3 text-muted-foreground hover:bg-accent hover:text-foreground"
             >
-              <Share2 className="size-[1.125rem]" />
+              <Share2 className="size-4.5" />
             </Button>
           )}
         </div>

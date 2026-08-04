@@ -11,6 +11,12 @@ const GET_POSTS = graphql(`
       title
       excerpt
       mediaUrl
+      media {
+        items {
+          originalUrl
+          type
+        }
+      }
       createdAt
       voteCount
       userVoteValue
@@ -43,6 +49,7 @@ export const useGetPosts = () => {
         title: item.title,
         excerpt: item.excerpt || "",
         mediaUrl: item.mediaUrl || undefined,
+        attachments: item.media?.items ?? [],
         createdAt: item.createdAt,
         soma: {
           name: item.soma.name,

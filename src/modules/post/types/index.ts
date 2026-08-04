@@ -1,9 +1,15 @@
+export interface PostAttachment {
+  originalUrl: string;
+  type: string;
+}
+
 export interface Post {
   id: string;
   title: string;
   excerpt: string;
   content?: string; // Full markdown/html content for detailed view
   mediaUrl?: string;
+  attachments?: PostAttachment[];
   author: {
     name: string;
     username: string;
