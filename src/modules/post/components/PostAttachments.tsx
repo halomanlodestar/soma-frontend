@@ -74,11 +74,11 @@ export function PostAttachments({
     <div className="flex flex-col gap-3">
       {visualAttachments.length > 0 && (
         <div
-          className={`grid gap-2 overflow-hidden rounded-xl ${visualGridClass}`}
+          className={`grid gap-2 overflow-hidden rounded-sm ${visualGridClass}`}
         >
           {visualAttachments.map((attachment, index) => {
             const label = `${postTitle} — ${attachmentLabel(attachment.type, index)}`;
-            const className = `relative block overflow-hidden rounded-lg bg-muted ${visualAspectClass}`;
+            const className = `relative block overflow-hidden rounded-sm bg-muted ${visualAspectClass}`;
 
             if (isVideo(attachment)) {
               return (
