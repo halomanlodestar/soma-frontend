@@ -2,7 +2,7 @@ import { useQuery } from "@apollo/client/react";
 import { graphql } from "@/gql";
 import { Comment } from "../types";
 
-const GET_COMMENTS_BY_POST = graphql(`
+export const GetCommentsByPostDocument = graphql(`
   query GetCommentsByPost($postId: String!) {
     getCommentsByPost(postId: $postId) {
       id
@@ -23,7 +23,7 @@ const GET_COMMENTS_BY_POST = graphql(`
 `);
 
 export const useGetComments = (postId: string) => {
-  const { data: queryData, loading, error, refetch } = useQuery(GET_COMMENTS_BY_POST, {
+  const { data: queryData, loading, error, refetch } = useQuery(GetCommentsByPostDocument, {
     variables: { postId },
   });
 

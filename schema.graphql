@@ -1,3 +1,7 @@
+type AsyncAccepted {
+  commandId: ID!
+}
+
 enum AuthSessionClientType {
   ANDROID
   IOS
@@ -37,7 +41,7 @@ type Award {
   postId: String
 }
 
-union AwardResult = Award | InvalidInputError
+union AwardResult = AsyncAccepted | Award | InvalidInputError
 
 enum AwardTargetType {
   COMMENT
@@ -76,7 +80,7 @@ type Comment {
   voteCount: Int!
 }
 
-union CommentResult = Comment | InvalidInputError | NotFoundError | UnauthorizedError
+union CommentResult = AsyncAccepted | Comment | InvalidInputError | NotFoundError | UnauthorizedError
 
 input CreateAwardDto {
   name: String!
@@ -272,6 +276,7 @@ type Notification {
   message: String!
   postId: String
   readAt: DateTime
+  sourceEventId: String
   type: String!
   userId: String!
 }

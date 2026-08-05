@@ -39,7 +39,6 @@ export default function PostPage({ params }: PostPageProps) {
   const {
     data: comments,
     isLoading: commentsLoading,
-    refetch: refetchComments,
   } = useGetComments(postId);
   const { vote, removeVote } = useVote();
   const { isAuthenticated, requestAuth } = useAuthPrompt();
@@ -254,7 +253,6 @@ export default function PostPage({ params }: PostPageProps) {
               comments={comments}
               isLoading={commentsLoading}
               postId={postId}
-              onChanged={() => refetchComments()}
             />
           </section>
         </article>

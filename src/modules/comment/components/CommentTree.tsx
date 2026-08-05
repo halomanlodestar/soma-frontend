@@ -103,11 +103,10 @@ function CommentComposer({
 interface CommentItemProps {
   comment: Comment;
   depth?: number;
-  onChanged?: () => Promise<unknown>;
   postId?: string;
 }
 
-function CommentItem({ comment, depth = 0, onChanged, postId }: CommentItemProps) {
+function CommentItem({ comment, depth = 0, postId }: CommentItemProps) {
   const [isReplying, setIsReplying] = useState(false);
   const { vote, removeVote } = useVote();
   const { addReply } = useCommentActions();
@@ -144,11 +143,13 @@ function CommentItem({ comment, depth = 0, onChanged, postId }: CommentItemProps
       }
 
       requestAuth("support", () => {
-        void addReply(comment.id, content)
-          .then(async () => {
-            await onChanged?.();
-            resolve();
-          })
+        if (!postId) {
+          resolve();
+          return;
+        }
+
+        void addReply(postId, comment.id, content)
+          .then(() => resolve())
           .catch(reject);
       });
     });
@@ -208,7 +209,7 @@ function CommentItem({ comment, depth = 0, onChanged, postId }: CommentItemProps
         {comment.replies && comment.replies.length > 0 && (
           <div className="flex w-full flex-col gap-2">
             {comment.replies.map((reply) => (
-              <CommentItem key={reply.id} comment={reply} depth={depth + 1} postId={postId} onChanged={onChanged} />
+              <CommentItem key={reply.id} comment={reply} depth={depth + 1} postId={postId} />
             ))}
           </div>
         )}
@@ -221,10 +222,9 @@ interface CommentTreeProps {
   comments: Comment[] | null;
   isLoading: boolean;
   postId?: string;
-  onChanged?: () => Promise<unknown>;
 }
 
-export function CommentTree({ comments, isLoading, postId, onChanged }: CommentTreeProps) {
+export function CommentTree({ comments, isLoading, postId }: CommentTreeProps) {
   const { addComment } = useCommentActions();
   const { isAuthenticated, requestAuth } = useAuthPrompt();
 
@@ -243,10 +243,7 @@ export function CommentTree({ comments, isLoading, postId, onChanged }: CommentT
 
       requestAuth("support", () => {
         void addComment(postId, content)
-          .then(async () => {
-            await onChanged?.();
-            resolve();
-          })
+          .then(() => resolve())
           .catch(reject);
       });
     });
@@ -270,7 +267,7 @@ export function CommentTree({ comments, isLoading, postId, onChanged }: CommentT
       ) : (
         <div className="flex flex-col">
           {comments.map((comment) => (
-            <CommentItem key={comment.id} comment={comment} postId={postId} onChanged={onChanged} />
+            <CommentItem key={comment.id} comment={comment} postId={postId} />
           ))}
         </div>
       )}
