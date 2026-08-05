@@ -113,6 +113,7 @@ function CommentItem({ comment, depth = 0, postId }: CommentItemProps) {
   const { isAuthenticated, requestAuth } = useAuthPrompt();
   const timeAgo = formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true });
   const isReply = depth > 0;
+  const isPending = comment.id.startsWith("client:comment:");
   const hasUpvoted = comment.userVoteValue === 1;
   const hasDownvoted = comment.userVoteValue === -1;
 
@@ -190,9 +191,15 @@ function CommentItem({ comment, depth = 0, postId }: CommentItemProps) {
             <ArrowBigDown className={cn(hasDownvoted && "fill-current")} />
           </Button>
           {postId && (
-            <Button variant="ghost" size="sm" className="ml-2" onClick={() => setIsReplying((value) => !value)}>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2"
+              disabled={isPending}
+              onClick={() => setIsReplying((value) => !value)}
+            >
               <MessageSquare data-icon="inline-start" />
-              Reply
+              {isPending ? "Posting…" : "Reply"}
             </Button>
           )}
         </div>
