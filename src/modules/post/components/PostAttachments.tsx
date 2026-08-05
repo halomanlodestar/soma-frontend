@@ -1,3 +1,5 @@
+/** @format */
+
 import Image from "next/image";
 import Link from "next/link";
 import { FileText, Paperclip } from "lucide-react";
@@ -15,11 +17,17 @@ const imageExtension = /\.(avif|gif|jpe?g|png|svg|webp)(?:\?|$)/i;
 const videoExtension = /\.(m4v|mov|mp4|webm)(?:\?|$)/i;
 
 function isImage(attachment: PostAttachment) {
-  return attachment.type.toLowerCase().includes("image") || imageExtension.test(attachment.originalUrl);
+  return (
+    attachment.type.toLowerCase().includes("image") ||
+    imageExtension.test(attachment.originalUrl)
+  );
 }
 
 function isVideo(attachment: PostAttachment) {
-  return attachment.type.toLowerCase().includes("video") || videoExtension.test(attachment.originalUrl);
+  return (
+    attachment.type.toLowerCase().includes("video") ||
+    videoExtension.test(attachment.originalUrl)
+  );
 }
 
 function attachmentLabel(type: string, index: number) {
@@ -36,7 +44,9 @@ export function PostAttachments({
   const uniqueAttachments = attachments.filter(
     (attachment, index) =>
       attachment.originalUrl &&
-      attachments.findIndex((candidate) => candidate.originalUrl === attachment.originalUrl) === index,
+      attachments.findIndex(
+        (candidate) => candidate.originalUrl === attachment.originalUrl,
+      ) === index,
   );
 
   if (!uniqueAttachments.length) {
@@ -50,9 +60,7 @@ export function PostAttachments({
     (attachment) => !isImage(attachment) && !isVideo(attachment),
   );
   const isSingleVisual = visualAttachments.length === 1;
-  const visualGridClass = isSingleVisual
-    ? "grid-cols-1"
-    : "grid-cols-2";
+  const visualGridClass = isSingleVisual ? "grid-cols-1" : "grid-cols-2";
   const visualAspectClass =
     variant === "detail"
       ? isSingleVisual
@@ -65,7 +73,9 @@ export function PostAttachments({
   return (
     <div className="flex flex-col gap-3">
       {visualAttachments.length > 0 && (
-        <div className={`grid gap-2 overflow-hidden rounded-xl ${visualGridClass}`}>
+        <div
+          className={`grid gap-2 overflow-hidden rounded-xl ${visualGridClass}`}
+        >
           {visualAttachments.map((attachment, index) => {
             const label = `${postTitle} — ${attachmentLabel(attachment.type, index)}`;
             const className = `relative block overflow-hidden rounded-lg bg-muted ${visualAspectClass}`;
@@ -92,14 +102,22 @@ export function PostAttachments({
                   alt={label}
                   fill
                   unoptimized
-                  sizes={isSingleVisual ? "(max-width: 1280px) 100vw, 1280px" : "(max-width: 640px) 50vw, 640px"}
-                  className="object-cover transition-transform duration-500 group-hover/post:scale-[1.015]"
+                  sizes={
+                    isSingleVisual
+                      ? "(max-width: 1280px) 100vw, 1280px"
+                      : "(max-width: 640px) 50vw, 640px"
+                  }
+                  className="object-cover transition-transform duration-500"
                 />
               </div>
             );
 
             return postHref ? (
-              <Link key={attachment.originalUrl} href={postHref} aria-label={`Open ${postTitle}`}>
+              <Link
+                key={attachment.originalUrl}
+                href={postHref}
+                aria-label={`Open ${postTitle}`}
+              >
                 {image}
               </Link>
             ) : (
