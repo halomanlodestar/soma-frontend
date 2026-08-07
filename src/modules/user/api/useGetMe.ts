@@ -7,18 +7,15 @@ const GET_ME = graphql(`
       __typename
       ... on UserResponseDto {
         id
-        displayName
-        username
-        avatarUrl
-        coverUrl
-        bio
-        role
-        isVerified
-        stats {
-          posts
-          comments
-          followers
-          following
+        email
+        platformRole
+        emailVerified
+        profile {
+          username
+          displayName
+          bio
+          avatarUrl
+          coverUrl
         }
       }
     }
@@ -27,7 +24,15 @@ const GET_ME = graphql(`
 
 export const useGetMe = () => {
   const { data, loading, error } = useQuery(GET_ME);
-  const me = data?.me?.__typename === "UserResponseDto" ? data.me : null;
+  const user = data?.me?.__typename === "UserResponseDto" ? data.me : null;
+  const me = user
+    ? {
+        ...user,
+        ...user.profile,
+        role: user.platformRole,
+        isVerified: user.emailVerified,
+      }
+    : null;
 
   return { me, isLoading: loading, error };
 };

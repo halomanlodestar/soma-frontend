@@ -51,7 +51,7 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
     );
   }
 
-  const joinDate = format(new Date(user.joinedAt), "MMMM yyyy");
+  const joinDate = user.joinedAt ? format(new Date(user.joinedAt), "MMMM yyyy") : null;
 
   const handleFollow = () =>
     requestAuth("follow", () => {
@@ -149,10 +149,12 @@ export function UserHeader({ user, isLoading }: UserHeaderProps) {
           </p>
 
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4 text-sm text-muted-foreground">
-            <span className="flex items-center gap-1.5">
-              <CalendarDays className="size-4" />
-              Joined {joinDate}
-            </span>
+            {joinDate && (
+              <span className="flex items-center gap-1.5">
+                <CalendarDays className="size-4" />
+                Joined {joinDate}
+              </span>
+            )}
             <Link
               href={`/u/${user.username}/following`}
               className="flex items-center gap-1.5 text-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"

@@ -39,8 +39,10 @@ const GetPublicPostSeoDocument = graphql(`
           slug
         }
         author {
-          displayName
-          username
+          profile {
+            username
+            displayName
+          }
         }
       }
     }
@@ -52,13 +54,13 @@ const GetPublicProfileSeoDocument = graphql(`
     userByUsername(username: $username) {
       __typename
       ... on UserResponseDto {
-        displayName
-        username
-        avatarUrl
-        coverUrl
-        bio
-        createdAt
-        updatedAt
+        profile {
+          username
+          displayName
+          bio
+          avatarUrl
+          coverUrl
+        }
       }
     }
   }
@@ -89,7 +91,7 @@ export const getPublicPostSeo = cache(async (id: string) => {
 
     const post = data?.getPostById;
     return post?.__typename === "Post" && post.visibility === "PUBLISHED"
-      ? post
+      ? { ...post, author: post.author.profile }
       : null;
   } catch {
     return null;
@@ -105,7 +107,7 @@ export const getPublicProfileSeo = cache(async (username: string) => {
 
     const profile = data?.userByUsername;
     return profile?.__typename === "UserResponseDto"
-      ? profile
+      ? profile.profile
       : null;
   } catch {
     return null;

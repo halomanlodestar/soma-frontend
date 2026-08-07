@@ -173,14 +173,9 @@ type FeedSoma {
 }
 
 type FeedUser {
-  avatarUrl: String
-  awards: [String]
-  coverUrl: String
-  displayName: String
+  emailVerified: Boolean!
   id: ID!
-  isVerified: Boolean!
-  stats: UserStats
-  username: String!
+  profile: UserProfileDto!
 }
 
 type FollowResponse {
@@ -555,20 +550,20 @@ type UploadIntentResponseDto {
   presignedUploadUrl: String!
 }
 
-type UserResponseDto {
+type UserProfileDto {
   avatarUrl: String
-  awards: [String]
   bio: String
   coverUrl: String
-  createdAt: DateTime!
   displayName: String
-  email: String!
-  id: ID!
-  isVerified: Boolean!
-  role: String!
-  stats: UserStats
-  updatedAt: DateTime!
   username: String!
+}
+
+type UserResponseDto {
+  email: String!
+  emailVerified: Boolean!
+  id: ID!
+  platformRole: String!
+  profile: UserProfileDto!
 }
 
 union UserResult = NotFoundError | UserResponseDto

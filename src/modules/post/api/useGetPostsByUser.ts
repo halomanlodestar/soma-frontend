@@ -21,16 +21,13 @@ const GET_POSTS_BY_USER = graphql(`
         slug
       }
       author {
-        displayName
-        username
-        avatarUrl
-        isVerified
-        bio
-        stats {
-          posts
-          comments
+        emailVerified
+        profile {
+          username
+          displayName
+          avatarUrl
+          bio
         }
-        awards
       }
     }
   }
@@ -59,18 +56,16 @@ export const useGetPostsByUser = (userId?: string) => {
           slug: item.soma.slug,
         },
         author: {
-          name: item.author.displayName || item.author.username,
-          username: item.author.username,
-          avatarUrl: item.author.avatarUrl || undefined,
-          isVerified: item.author.isVerified,
-          bio: item.author.bio || "",
+          name: item.author.profile.displayName || item.author.profile.username,
+          username: item.author.profile.username,
+          avatarUrl: item.author.profile.avatarUrl || undefined,
+          isVerified: item.author.emailVerified,
+          bio: item.author.profile.bio || "",
           stats: {
-            posts: item.author.stats?.posts || 0,
-            comments: item.author.stats?.comments || 0,
+            posts: 0,
+            comments: 0,
           },
-          awards: (item.author.awards || []).filter(
-            (a): a is string => a !== null,
-          ),
+          awards: [],
         },
         stats: {
           upvotes: item.voteCount,

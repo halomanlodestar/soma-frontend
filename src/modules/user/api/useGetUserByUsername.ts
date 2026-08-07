@@ -8,20 +8,14 @@ const GET_USER_BY_USERNAME = graphql(`
       __typename
       ... on UserResponseDto {
         id
-        displayName
-        username
-        avatarUrl
-        coverUrl
-        bio
-        isVerified
-        createdAt
-        stats {
-          posts
-          comments
-          followers
-          following
+        emailVerified
+        profile {
+          username
+          displayName
+          bio
+          avatarUrl
+          coverUrl
         }
-        awards
       }
     }
   }
@@ -37,20 +31,20 @@ export const useGetUserByUsername = (username: string) => {
 
   const userProfile: UserProfile | null = item ? {
     id: item.id,
-    name: item.displayName || item.username,
-    username: item.username,
-    avatarUrl: item.avatarUrl || undefined,
-    coverUrl: item.coverUrl || undefined,
-    bio: item.bio || "",
-    isVerified: item.isVerified,
-    joinedAt: item.createdAt,
+    name: item.profile.displayName || item.profile.username,
+    username: item.profile.username,
+    avatarUrl: item.profile.avatarUrl || undefined,
+    coverUrl: item.profile.coverUrl || undefined,
+    bio: item.profile.bio || "",
+    isVerified: item.emailVerified,
+    joinedAt: "",
     stats: {
-      posts: item.stats?.posts || 0,
-      comments: item.stats?.comments || 0,
-      followers: item.stats?.followers || 0,
-      following: item.stats?.following || 0,
+      posts: 0,
+      comments: 0,
+      followers: 0,
+      following: 0,
     },
-    awards: (item.awards || []).filter((a): a is string => a !== null),
+    awards: [],
   } : null;
 
   return { data: userProfile, isLoading: loading, error };

@@ -11,11 +11,16 @@ const UpdateMyProfileDocument = graphql(`
       __typename
       ... on UserResponseDto {
         id
-        displayName
-        username
-        avatarUrl
-        coverUrl
-        bio
+        email
+        platformRole
+        emailVerified
+        profile {
+          username
+          displayName
+          bio
+          avatarUrl
+          coverUrl
+        }
       }
       ... on NotFoundError {
         message

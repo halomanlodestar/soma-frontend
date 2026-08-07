@@ -48,10 +48,12 @@ const GET_REVIEW_APPLICANT = graphql(`
       __typename
       ... on UserResponseDto {
         id
-        displayName
-        username
-        avatarUrl
-        bio
+        profile {
+          username
+          displayName
+          bio
+          avatarUrl
+        }
       }
     }
   }
@@ -108,7 +110,7 @@ export function CreatorApplicationReviewQueue() {
     skip: !selectedApplication,
   });
   const applicant = applicantData?.getUserById.__typename === "UserResponseDto"
-    ? applicantData.getUserById
+    ? applicantData.getUserById.profile
     : null;
   const [reviewApplication, { loading: isReviewing }] = useMutation(REVIEW_CREATOR_APPLICATION);
   const { control, handleSubmit, reset, setError, formState: { errors } } = useForm<ReviewValues>({ defaultValues: { reviewerNote: "" } });

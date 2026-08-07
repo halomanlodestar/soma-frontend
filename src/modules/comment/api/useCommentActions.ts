@@ -93,10 +93,12 @@ export function useCommentActions() {
     createdAt: new Date().toISOString(),
     author: {
       __typename: "UserResponseDto" as const,
-      displayName: me?.displayName ?? me?.username ?? "You",
-      username: me?.username ?? "you",
-      avatarUrl: me?.avatarUrl ?? null,
-      isVerified: me?.isVerified ?? false,
+      emailVerified: me?.emailVerified ?? false,
+      profile: {
+        username: me?.username ?? "you",
+        displayName: me?.displayName ?? me?.username ?? "You",
+        avatarUrl: me?.avatarUrl ?? null,
+      },
     },
   });
 

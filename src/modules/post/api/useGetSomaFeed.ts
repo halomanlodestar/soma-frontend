@@ -26,15 +26,12 @@ const GetSomaFeedDocument = graphql(`
         slug
       }
       author {
-        displayName
-        username
-        avatarUrl
-        isVerified
-        stats {
-          posts
-          comments
+        emailVerified
+        profile {
+          username
+          displayName
+          avatarUrl
         }
-        awards
       }
     }
   }
@@ -57,16 +54,16 @@ export function useGetSomaFeed(somaId?: string) {
         createdAt: item.createdAt,
         soma: { name: item.soma.name, slug: item.soma.slug },
         author: {
-          name: item.author.displayName ?? item.author.username,
-          username: item.author.username,
-          avatarUrl: item.author.avatarUrl ?? undefined,
-          isVerified: item.author.isVerified,
+          name: item.author.profile.displayName ?? item.author.profile.username,
+          username: item.author.profile.username,
+          avatarUrl: item.author.profile.avatarUrl ?? undefined,
+          isVerified: item.author.emailVerified,
           bio: "",
           stats: {
-            posts: item.author.stats?.posts ?? 0,
-            comments: item.author.stats?.comments ?? 0,
+            posts: 0,
+            comments: 0,
           },
-          awards: (item.author.awards ?? []).filter((award): award is string => award !== null),
+          awards: [],
         },
         stats: { upvotes: item.voteCount, comments: item.commentCount },
         userVoteValue: item.userVoteValue,
