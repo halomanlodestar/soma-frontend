@@ -17,12 +17,12 @@ export function NotificationRow({ notification, marking, onMarkRead }: { notific
   const actor = profile?.displayName || profile?.username || "Someone";
   const isUnread = !notification.readAt;
 
-  return <article className={cn("relative flex gap-3 py-5 sm:gap-4", isUnread && "before:absolute before:inset-y-5 before:left-0 before:w-0.5 before:bg-primary")}>
-    <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground"><view.Icon aria-hidden="true" className="size-4" /></div>
-    <div className="min-w-0 flex-1 pl-1">
+  return <article className={cn("relative -mx-3 flex gap-3 rounded-xl px-3 py-6 transition-colors duration-200 hover:bg-muted/65 focus-within:bg-muted/65 motion-reduce:transition-none sm:gap-4", isUnread && "before:absolute before:inset-y-6 before:left-0 before:w-0.5 before:rounded-full before:bg-primary")}>
+    <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-full bg-secondary text-secondary-foreground ring-1 ring-border/60", isUnread && "bg-primary/10 text-primary ring-primary/15")}><view.Icon aria-hidden="true" className="size-4" /></div>
+    <div className="min-w-0 flex-1 pl-1 sm:pl-2">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          {view.href ? <Link className="font-heading text-base font-medium underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" href={view.href} onClick={() => { if (isUnread) void onMarkRead(notification.id); }}>{view.title(actor)}</Link> : <h2 className="font-heading text-base font-medium">{view.title(actor)}</h2>}
+          {view.href ? <Link className="font-heading text-[1.0625rem] font-medium tracking-[-0.015em] underline-offset-4 hover:text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" href={view.href} onClick={() => { if (isUnread) void onMarkRead(notification.id); }}>{view.title(actor)}</Link> : <h2 className="font-heading text-[1.0625rem] font-medium tracking-[-0.015em]">{view.title(actor)}</h2>}
           <p className="mt-1 text-xs text-muted-foreground">{formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}</p>
         </div>
         {isUnread && <Button disabled={marking} onClick={() => void onMarkRead(notification.id)} size="sm" variant="outline"><Check data-icon="inline-start" />{marking ? "Saving" : "Mark read"}</Button>}

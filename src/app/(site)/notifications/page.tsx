@@ -64,8 +64,8 @@ export default function NotificationsPage() {
 
   return (
     <main className="min-h-screen bg-background pb-20">
-      <header className="border-b border-border bg-muted/20">
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-10 sm:px-6 lg:px-8">
+      <header className="border-b border-border bg-muted/30">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
@@ -74,7 +74,7 @@ export default function NotificationsPage() {
               <h1 className="mt-3 font-heading text-4xl font-medium tracking-[-0.04em]">
                 Notifications
               </h1>
-              <p className="mt-2 max-w-lg text-sm leading-6 text-muted-foreground">
+              <p className="mt-2 max-w-md text-sm leading-6 text-muted-foreground">
                 Keep up with the conversations and recognition around your work.
               </p>
             </div>
@@ -88,12 +88,12 @@ export default function NotificationsPage() {
               <RefreshCw className={cn(isRefreshing && "animate-spin")} />
             </Button>
           </div>
-          <Badge variant={unreadCount > 0 ? "default" : "secondary"}>
+          <Badge className="rounded-full px-2.5" variant={unreadCount > 0 ? "default" : "secondary"}>
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </Badge>
         </div>
       </header>
-      <div className="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-3xl px-4 py-10 sm:px-6 lg:px-8">
         {error ? (
           <div className="border-l-2 border-destructive py-1 pl-4">
             <h2 className="font-heading text-lg font-medium">
@@ -112,8 +112,8 @@ export default function NotificationsPage() {
             </Button>
           </div>
         ) : notifications.length === 0 ? (
-          <section className="flex min-h-72 flex-col items-center justify-center text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
+          <section className="flex min-h-80 flex-col items-center justify-center text-center">
+            <div className="flex size-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground ring-8 ring-secondary/35">
               <Sparkles aria-hidden="true" className="size-5" />
             </div>
             <h2 className="mt-5 font-heading text-2xl font-medium tracking-[-0.03em]">
@@ -125,6 +125,10 @@ export default function NotificationsPage() {
           </section>
         ) : (
           <section aria-label="Notification list">
+            <div className="mb-3 flex items-center justify-between">
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Inbox</p>
+              <p className="text-xs text-muted-foreground">Newest first</p>
+            </div>
             {mutationError && (
               <p aria-live="polite" className="mb-4 text-sm text-destructive">
                 {mutationError}
