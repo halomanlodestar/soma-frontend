@@ -16,17 +16,30 @@ export default function HomeFeedPage() {
     <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-12">
       <div className="mb-10 flex flex-col justify-between gap-5 border-b border-border pb-8 sm:flex-row sm:items-end">
         <div className="max-w-2xl">
-          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary">A quieter place for art</p>
-          <h1 className="font-heading text-4xl font-medium tracking-[-0.055em] text-foreground sm:text-5xl">Made by people.<br />Given room to breathe.</h1>
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-primary">
+            A quieter place for art
+          </p>
+          <h1 className="font-heading text-4xl font-medium tracking-[-0.055em] text-foreground sm:text-5xl">
+            Made by people.
+            <br />
+            Given room to breathe.
+          </h1>
         </div>
-        <p className="max-w-xs text-sm leading-6 text-muted-foreground">A considered feed of work, process, and conversation—without the endless noise.</p>
+        <p className="max-w-xs text-sm leading-6 text-muted-foreground">
+          A considered feed of work, process, and conversation—without the
+          endless noise.
+        </p>
       </div>
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-12">
         {/* Main Content Column (Primary Flow) */}
         <section className="flex min-w-0 flex-col gap-4 lg:col-span-8">
           <div className="flex items-center justify-between">
-            <h2 className="font-heading text-2xl font-medium tracking-[-0.04em]">Latest work</h2>
-            <span className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Take your time</span>
+            <h2 className="font-heading text-2xl font-medium tracking-[-0.04em]">
+              Latest work
+            </h2>
+            <span className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+              Take your time
+            </span>
           </div>
 
           <div className="flex flex-col">
@@ -56,7 +69,7 @@ export default function HomeFeedPage() {
 
         {/* Context Column (Metadata & Actions) */}
         <div className="flex flex-col gap-8 lg:col-span-4">
-          <div className="sticky top-8 flex flex-col gap-8">
+          <div className="sticky top-16 flex flex-col gap-8">
             {/* Featured Communities */}
             <div className="flex flex-col gap-3">
               <h2 className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">
@@ -81,7 +94,9 @@ export default function HomeFeedPage() {
 
             {/* Apply Banner */}
             <div className="flex flex-col items-start gap-3 rounded-2xl bg-primary p-6 text-left text-primary-foreground">
-              <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary-foreground/70">Your work belongs here</p>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary-foreground/70">
+                Your work belongs here
+              </p>
               <h3 className="font-heading text-2xl font-medium tracking-[-0.04em]">
                 Are you a creator?
               </h3>
