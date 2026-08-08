@@ -126,6 +126,7 @@ input CreateVoteDto {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
+scalar JSON
 
 input DeleteVoteDto {
   targetId: String!
@@ -267,7 +268,7 @@ type NotFoundError {
 type Notification {
   actorId: String
   createdAt: DateTime!
-  eventData: String!
+  eventData: JSON!
   eventType: String!
   id: ID!
   readAt: DateTime
