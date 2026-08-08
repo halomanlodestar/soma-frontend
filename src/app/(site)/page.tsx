@@ -69,7 +69,7 @@ export default function HomeFeedPage() {
 
         {/* Context Column (Metadata & Actions) */}
         <div className="flex flex-col gap-8 lg:col-span-4">
-          <div className="sticky top-20 flex flex-col gap-8">
+          <div className="sticky top-24 flex flex-col gap-8">
             {/* Featured Communities */}
             <div className="flex flex-col gap-3">
               <h2 className="text-xs font-medium tracking-[0.16em] text-muted-foreground uppercase">

@@ -64,7 +64,7 @@ export default function NotificationsPage() {
 
   return (
     <main className="min-h-screen bg-background pb-20">
-      <header className="border-b border-border bg-muted/30">
+      <header className="border-b border-border">
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -88,7 +88,10 @@ export default function NotificationsPage() {
               <RefreshCw className={cn(isRefreshing && "animate-spin")} />
             </Button>
           </div>
-          <Badge className="rounded-full px-2.5" variant={unreadCount > 0 ? "default" : "secondary"}>
+          <Badge
+            className="rounded-full px-2.5"
+            variant={unreadCount > 0 ? "default" : "secondary"}
+          >
             {unreadCount > 0 ? `${unreadCount} unread` : "All caught up"}
           </Badge>
         </div>
@@ -126,7 +129,9 @@ export default function NotificationsPage() {
         ) : (
           <section aria-label="Notification list">
             <div className="mb-3 flex items-center justify-between">
-              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">Inbox</p>
+              <p className="text-xs font-medium uppercase tracking-[0.14em] text-muted-foreground">
+                Inbox
+              </p>
               <p className="text-xs text-muted-foreground">Newest first</p>
             </div>
             {mutationError && (

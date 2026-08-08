@@ -47,7 +47,7 @@ export default function HeaderBlock() {
   const mobileSelectedKey =
     navLinks.find((link) =>
       link.href === "/" ? pathname === "/" : pathname.startsWith(link.href),
-    )?.href ?? (pathname.startsWith("/u/") ? "account" : null);
+  )?.href ?? ((pathname.startsWith("/u/") || pathname.startsWith("/settings")) ? "account" : null);
   const mobileHighlightKey = mobileHoverKey ?? mobileSelectedKey;
 
   useLayoutEffect(() => {
@@ -200,7 +200,7 @@ export default function HeaderBlock() {
             <div className="size-9 rounded-full bg-muted animate-pulse" />
           ) : me ? (
             <Link
-              href={`/u/${me.username}`}
+              href="/settings"
               className="ml-1 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-ring/30"
             >
               <Avatar className="size-9">
@@ -338,7 +338,7 @@ export default function HeaderBlock() {
               })}
               <SheetClose asChild>
                 <Link
-                  href={me ? `/u/${me.username}` : "/login"}
+                  href={me ? "/settings" : "/login"}
                   className={cn(
                     "relative z-10 flex items-baseline gap-4 px-6 py-3 font-heading text-5xl font-medium leading-none tracking-[-0.055em] outline-none transition-colors sm:text-6xl",
                     mobileHighlightKey === "account"
@@ -357,7 +357,7 @@ export default function HeaderBlock() {
                     updateMobileIndicator(event.currentTarget);
                   }}
                 >
-                  {me ? `u/${me.displayName || me.username}` : "Log in"}
+                  {me ? "Settings" : "Log in"}
                 </Link>
               </SheetClose>
             </nav>
