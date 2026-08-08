@@ -1,5 +1,8 @@
+/** @format */
+
 "use client";
 
+import { useState } from "react";
 import { useMutation } from "@apollo/client/react";
 
 import { graphql } from "@/gql";
@@ -8,9 +11,8 @@ import { getResultErrorMessage } from "@/lib/graphql-errors";
 const CreateUploadIntentDocument = graphql(`
   mutation CreateUploadIntent($data: UploadIntentDto!) {
     createUploadIntent(data: $data) {
-      key
+      assetId
       presignedUploadUrl
-      finalPublicUrl
     }
   }
 `);
@@ -73,32 +75,45 @@ export function useCreatePost() {
   const [createUploadIntent] = useMutation(CreateUploadIntentDocument);
   const [createPost] = useMutation(CreatePostDocument);
   const [submitPost] = useMutation(SubmitPostDocument);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
-  const publishPost = async ({ body, file, somaId, title }: PublishPostInput) => {
+  const publishPost = async ({
+    body,
+    file,
+    somaId,
+    title,
+  }: PublishPostInput) => {
     const uploadIntentResult = await createUploadIntent({
       variables: {
         data: {
+          byteSize: file.size,
           fileName: file.name,
           mediaType: "IMAGE",
           mimeType: file.type,
+          purpose: "POST_MEDIA",
           somaId,
         },
       },
     });
 
     const uploadIntent = uploadIntentResult.data?.createUploadIntent;
+
     if (!uploadIntent) {
-      throw new Error("We could not prepare that image for upload. Please try again.");
+      throw new Error(
+        "We could not prepare that image for upload. Please try again.",
+      );
     }
 
-    const uploadResponse = await fetch(uploadIntent.presignedUploadUrl, {
-      method: "PUT",
-      headers: { "Content-Type": file.type },
-      body: file,
-    });
+    setUploadProgress(0);
 
-    if (!uploadResponse.ok) {
-      throw new Error("The image upload did not finish. Please try again.");
+    try {
+      await uploadFile(
+        uploadIntent.presignedUploadUrl,
+        file,
+        setUploadProgress,
+      );
+    } finally {
+      setUploadProgress(null);
     }
 
     const createResult = await createPost({
@@ -107,14 +122,19 @@ export function useCreatePost() {
           body,
           somaId,
           title,
-          media: [{ key: uploadIntent.key, type: "IMAGE" }],
+          media: [
+            { assetId: uploadIntent.assetId, altText: title, caption: body },
+          ],
         },
       },
     });
+
     const post = createResult.data?.createPost;
 
     if (!post || post.__typename !== "Post") {
-      throw new Error(getResultErrorMessage(post, "We could not save this work."));
+      throw new Error(
+        getResultErrorMessage(post, "We could not save this work."),
+      );
     }
 
     const submitResult = await submitPost({ variables: { id: post.id } });
@@ -132,5 +152,35 @@ export function useCreatePost() {
     return submittedPost;
   };
 
-  return { publishPost };
+  return { publishPost, uploadProgress };
+}
+
+function uploadFile(
+  url: string,
+  file: File,
+  onProgress: (progress: number) => void,
+) {
+  return new Promise<void>((resolve, reject) => {
+    const request = new XMLHttpRequest();
+
+    request.open("PUT", url);
+    request.setRequestHeader("Content-Type", file.type);
+    request.upload.onprogress = (event) => {
+      if (event.lengthComputable)
+        onProgress(Math.round((event.loaded / event.total) * 100));
+    };
+
+    request.onerror = () =>
+      reject(new Error("The image upload did not finish. Please try again."));
+    request.onload = () => {
+      if (request.status >= 200 && request.status < 300) {
+        onProgress(100);
+        resolve();
+      } else {
+        reject(new Error("The image upload did not finish. Please try again."));
+      }
+    };
+
+    request.send(file);
+  });
 }

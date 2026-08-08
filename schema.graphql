@@ -99,8 +99,9 @@ input CreateCommentDto {
 }
 
 input CreateMediaItemDto {
-  key: String!
-  type: String!
+  altText: String
+  assetId: String!
+  caption: String
 }
 
 input CreatePostDto {
@@ -537,14 +538,16 @@ input UpdateUserProfileDto {
 }
 
 input UploadIntentDto {
+  byteSize: Int!
   fileName: String!
   mediaType: String!
   mimeType: String!
-  somaId: String!
+  purpose: String!
+  somaId: String
 }
 
 type UploadIntentResponseDto {
-  finalPublicUrl: String!
+  assetId: String!
   key: String!
   presignedUploadUrl: String!
 }

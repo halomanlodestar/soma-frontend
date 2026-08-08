@@ -32,7 +32,7 @@ type Documents = {
     "\n  query GetNotifications { getNotifications { id recipientId actorId eventType eventData readAt createdAt } }\n": typeof types.GetNotificationsDocument,
     "\n  query GetNotificationActor($id: String!) {\n    getUserById(id: $id) { __typename ... on UserResponseDto { profile { displayName username } } }\n  }\n": typeof types.GetNotificationActorDocument,
     "\n  mutation MarkNotificationAsRead($id: String!) {\n    markNotificationAsRead(id: $id) {\n      __typename\n      ... on Notification { id readAt }\n      ... on NotFoundError { message }\n      ... on UnauthorizedError { message }\n    }\n  }\n": typeof types.MarkNotificationAsReadDocument,
-    "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      key\n      presignedUploadUrl\n      finalPublicUrl\n    }\n  }\n": typeof types.CreateUploadIntentDocument,
+    "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      assetId\n      presignedUploadUrl\n    }\n  }\n": typeof types.CreateUploadIntentDocument,
     "\n  mutation CreatePost($data: CreatePostDto!) {\n    createPost(data: $data) {\n      __typename\n      ... on Post {\n        id\n        title\n        visibility\n        soma {\n          slug\n        }\n      }\n      ... on InvalidInputError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": typeof types.CreatePostDocument,
     "\n  mutation SubmitPost($id: String!) {\n    submitPost(id: $id) {\n      __typename\n      ... on Post {\n        id\n        title\n        visibility\n        soma {\n          slug\n        }\n      }\n      ... on InvalidInputError {\n        message\n      }\n      ... on NotFoundError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": typeof types.SubmitPostDocument,
     "\n  query GetPostAttachments($postId: String!) {\n    getMediaByPost(postId: $postId) {\n      items {\n        originalUrl\n        type\n      }\n    }\n  }\n": typeof types.GetPostAttachmentsDocument,
@@ -76,7 +76,7 @@ const documents: Documents = {
     "\n  query GetNotifications { getNotifications { id recipientId actorId eventType eventData readAt createdAt } }\n": types.GetNotificationsDocument,
     "\n  query GetNotificationActor($id: String!) {\n    getUserById(id: $id) { __typename ... on UserResponseDto { profile { displayName username } } }\n  }\n": types.GetNotificationActorDocument,
     "\n  mutation MarkNotificationAsRead($id: String!) {\n    markNotificationAsRead(id: $id) {\n      __typename\n      ... on Notification { id readAt }\n      ... on NotFoundError { message }\n      ... on UnauthorizedError { message }\n    }\n  }\n": types.MarkNotificationAsReadDocument,
-    "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      key\n      presignedUploadUrl\n      finalPublicUrl\n    }\n  }\n": types.CreateUploadIntentDocument,
+    "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      assetId\n      presignedUploadUrl\n    }\n  }\n": types.CreateUploadIntentDocument,
     "\n  mutation CreatePost($data: CreatePostDto!) {\n    createPost(data: $data) {\n      __typename\n      ... on Post {\n        id\n        title\n        visibility\n        soma {\n          slug\n        }\n      }\n      ... on InvalidInputError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": types.CreatePostDocument,
     "\n  mutation SubmitPost($id: String!) {\n    submitPost(id: $id) {\n      __typename\n      ... on Post {\n        id\n        title\n        visibility\n        soma {\n          slug\n        }\n      }\n      ... on InvalidInputError {\n        message\n      }\n      ... on NotFoundError {\n        message\n      }\n      ... on UnauthorizedError {\n        message\n      }\n    }\n  }\n": types.SubmitPostDocument,
     "\n  query GetPostAttachments($postId: String!) {\n    getMediaByPost(postId: $postId) {\n      items {\n        originalUrl\n        type\n      }\n    }\n  }\n": types.GetPostAttachmentsDocument,
@@ -191,7 +191,7 @@ export function graphql(source: "\n  mutation MarkNotificationAsRead($id: String
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      key\n      presignedUploadUrl\n      finalPublicUrl\n    }\n  }\n"): (typeof documents)["\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      key\n      presignedUploadUrl\n      finalPublicUrl\n    }\n  }\n"];
+export function graphql(source: "\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      assetId\n      presignedUploadUrl\n    }\n  }\n"): (typeof documents)["\n  mutation CreateUploadIntent($data: UploadIntentDto!) {\n    createUploadIntent(data: $data) {\n      assetId\n      presignedUploadUrl\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
