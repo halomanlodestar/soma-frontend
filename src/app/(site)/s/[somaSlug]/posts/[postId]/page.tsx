@@ -34,7 +34,12 @@ interface PostPageProps {
 
 export default function PostPage({ params }: PostPageProps) {
   const { somaSlug, postId } = use(params);
-  const { data: post, isLoading: postLoading } = useGetPostById(postId);
+  const {
+    data: post,
+    isLoading: postLoading,
+    error: postError,
+    isNotFound,
+  } = useGetPostById(postId);
   const { data: postAttachments } = useGetPostAttachments(postId);
   const {
     data: comments,
@@ -44,7 +49,7 @@ export default function PostPage({ params }: PostPageProps) {
   const { isAuthenticated, requestAuth } = useAuthPrompt();
   const [isUpvoteConfirming, setIsUpvoteConfirming] = useState(false);
 
-  if (postLoading || !post) {
+  if (postLoading) {
     return (
       <main className="min-h-screen bg-background pb-24">
         <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
@@ -60,6 +65,48 @@ export default function PostPage({ params }: PostPageProps) {
             <Skeleton className="h-4 w-11/12" />
             <Skeleton className="h-4 w-4/5" />
           </div>
+        </div>
+      </main>
+    );
+  }
+
+  if (isNotFound) {
+    return (
+      <main className="min-h-screen bg-background pb-24">
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-4 py-24 sm:px-6 lg:px-8">
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary">
+            Work unavailable
+          </p>
+          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.04em] text-foreground sm:text-4xl">
+            This post could not be found.
+          </h1>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
+            It may have been removed, or the link may be incorrect.
+          </p>
+          <Button asChild className="mt-7">
+            <Link href={`/s/${somaSlug}`}>Back to s/{somaSlug}</Link>
+          </Button>
+        </div>
+      </main>
+    );
+  }
+
+  if (postError || !post) {
+    return (
+      <main className="min-h-screen bg-background pb-24">
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-start px-4 py-24 sm:px-6 lg:px-8">
+          <p className="text-xs font-medium uppercase tracking-[0.16em] text-primary">
+            Unable to load work
+          </p>
+          <h1 className="mt-3 font-heading text-3xl font-medium tracking-[-0.04em] text-foreground sm:text-4xl">
+            We could not load this post.
+          </h1>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-muted-foreground">
+            Please try again, or return to the Soma.
+          </p>
+          <Button asChild className="mt-7">
+            <Link href={`/s/${somaSlug}`}>Back to s/{somaSlug}</Link>
+          </Button>
         </div>
       </main>
     );
@@ -164,7 +211,6 @@ export default function PostPage({ params }: PostPageProps) {
                     : []
               }
               postTitle={post.title}
-              variant="detail"
             />
           </div>
 

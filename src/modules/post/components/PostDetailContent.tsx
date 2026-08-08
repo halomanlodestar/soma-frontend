@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
 import {
   BadgeCheck,
@@ -171,15 +170,12 @@ export function PostDetailContent({ post, isLoading }: PostDetailContentProps) {
 
       {/* Hero Media */}
       {post.mediaUrl && (
-        <div className="relative w-full aspect-video md:aspect-21/9 rounded-2xl overflow-hidden bg-muted shadow-sm">
-          <Image
-            src={post.mediaUrl}
-            alt={post.title}
-            fill
-            className="object-cover"
-            priority
-          />
-        </div>
+        /* eslint-disable-next-line @next/next/no-img-element -- The media API does not expose the intrinsic dimensions required by next/image. */
+        <img
+          src={post.mediaUrl}
+          alt={post.title}
+          className="h-auto w-full rounded-2xl bg-muted shadow-sm"
+        />
       )}
 
       {/* Body Content */}

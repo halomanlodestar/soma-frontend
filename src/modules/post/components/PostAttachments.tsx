@@ -1,6 +1,5 @@
 /** @format */
 
-import Image from "next/image";
 import Link from "next/link";
 import { FileText, Paperclip } from "lucide-react";
 
@@ -10,7 +9,6 @@ interface PostAttachmentsProps {
   attachments: PostAttachment[];
   postTitle: string;
   postHref?: string;
-  variant?: "feed" | "detail";
 }
 
 const imageExtension = /\.(avif|gif|jpe?g|png|svg|webp)(?:\?|$)/i;
@@ -39,7 +37,6 @@ export function PostAttachments({
   attachments,
   postTitle,
   postHref,
-  variant = "feed",
 }: PostAttachmentsProps) {
   const uniqueAttachments = attachments.filter(
     (attachment, index) =>
@@ -59,26 +56,14 @@ export function PostAttachments({
   const fileAttachments = uniqueAttachments.filter(
     (attachment) => !isImage(attachment) && !isVideo(attachment),
   );
-  const isSingleVisual = visualAttachments.length === 1;
-  const visualGridClass = isSingleVisual ? "grid-cols-1" : "grid-cols-2";
-  const visualAspectClass =
-    variant === "detail"
-      ? isSingleVisual
-        ? "aspect-4/3 sm:aspect-16/10"
-        : "aspect-square"
-      : isSingleVisual
-        ? "aspect-4/3 sm:aspect-video"
-        : "aspect-square";
-
   return (
     <div className="flex flex-col gap-3">
       {visualAttachments.length > 0 && (
-        <div
-          className={`grid gap-2 overflow-hidden rounded-sm ${visualGridClass}`}
-        >
+        <div className="flex flex-col gap-2">
           {visualAttachments.map((attachment, index) => {
             const label = `${postTitle} — ${attachmentLabel(attachment.type, index)}`;
-            const className = `relative block overflow-hidden rounded-sm bg-muted ${visualAspectClass}`;
+            const className =
+              "block w-full overflow-hidden rounded-sm bg-muted";
 
             if (isVideo(attachment)) {
               return (
@@ -86,7 +71,7 @@ export function PostAttachments({
                   key={attachment.originalUrl}
                   controls
                   preload="metadata"
-                  className={`${className} h-full w-full object-cover`}
+                  className={`${className} h-auto`}
                   aria-label={label}
                 >
                   <source src={attachment.originalUrl} type={attachment.type} />
@@ -96,20 +81,12 @@ export function PostAttachments({
             }
 
             const image = (
-              <div className={className}>
-                <Image
-                  src={attachment.originalUrl}
-                  alt={label}
-                  fill
-                  unoptimized
-                  sizes={
-                    isSingleVisual
-                      ? "(max-width: 1280px) 100vw, 1280px"
-                      : "(max-width: 640px) 50vw, 640px"
-                  }
-                  className="object-cover transition-transform duration-500"
-                />
-              </div>
+              /* eslint-disable-next-line @next/next/no-img-element -- The media API does not expose the intrinsic dimensions required by next/image. */
+              <img
+                src={attachment.originalUrl}
+                alt={label}
+                className={`${className} h-auto`}
+              />
             );
 
             return postHref ? (

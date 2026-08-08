@@ -41,6 +41,7 @@ export const useGetPostById = (postId: string) => {
 
   const postData = queryData?.getPostById;
   const item = postData?.__typename === 'Post' ? postData : null;
+  const isNotFound = postData?.__typename === "NotFoundError";
 
   const post: Post | null = item ? {
     id: item.id,
@@ -72,5 +73,5 @@ export const useGetPostById = (postId: string) => {
     userVoteValue: item.userVoteValue,
   } : null;
 
-  return { data: post, isLoading: loading, error };
+  return { data: post, isLoading: loading, error, isNotFound };
 };
