@@ -7,6 +7,7 @@ import { useMutation } from "@apollo/client/react";
 
 import { graphql } from "@/gql";
 import { getResultErrorMessage } from "@/lib/graphql-errors";
+import { CreatePostInput } from "../types";
 
 const CreateUploadIntentDocument = graphql(`
   mutation CreateUploadIntent($data: UploadIntentDto!) {
@@ -39,50 +40,12 @@ const CreatePostDocument = graphql(`
   }
 `);
 
-const SubmitPostDocument = graphql(`
-  mutation SubmitPost($id: String!) {
-    submitPost(id: $id) {
-      __typename
-      ... on Post {
-        id
-        title
-        visibility
-        soma {
-          slug
-        }
-      }
-      ... on InvalidInputError {
-        message
-      }
-      ... on NotFoundError {
-        message
-      }
-      ... on UnauthorizedError {
-        message
-      }
-    }
-  }
-`);
-
-type PublishPostInput = {
-  body: string;
-  file: File;
-  somaId: string;
-  title: string;
-};
-
 export function useCreatePost() {
   const [createUploadIntent] = useMutation(CreateUploadIntentDocument);
-  const [createPost] = useMutation(CreatePostDocument);
-  const [submitPost] = useMutation(SubmitPostDocument);
+  const [createPostMutation] = useMutation(CreatePostDocument);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
 
-  const publishPost = async ({
-    body,
-    file,
-    somaId,
-    title,
-  }: PublishPostInput) => {
+  const createPost = async ({ body, file, somaId, title }: CreatePostInput) => {
     const uploadIntentResult = await createUploadIntent({
       variables: {
         data: {
@@ -116,7 +79,7 @@ export function useCreatePost() {
       setUploadProgress(null);
     }
 
-    const createResult = await createPost({
+    const createResult = await createPostMutation({
       variables: {
         data: {
           body,
@@ -137,22 +100,10 @@ export function useCreatePost() {
       );
     }
 
-    const submitResult = await submitPost({ variables: { id: post.id } });
-    const submittedPost = submitResult.data?.submitPost;
-
-    if (!submittedPost || submittedPost.__typename !== "Post") {
-      throw new Error(
-        getResultErrorMessage(
-          submittedPost,
-          "Your work was saved, but could not be submitted for review.",
-        ),
-      );
-    }
-
-    return submittedPost;
+    return post;
   };
 
-  return { publishPost, uploadProgress };
+  return { createPost, uploadProgress };
 }
 
 function uploadFile(

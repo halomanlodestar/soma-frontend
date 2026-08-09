@@ -103,7 +103,7 @@ export default function CreatePostPage() {
   const searchParams = useSearchParams();
   const requestedDraftId = searchParams.get("draft");
   const { data: somas, isLoading: somasLoading } = useGetSomas();
-  const { publishPost, uploadProgress } = useCreatePost();
+  const { createPost, uploadProgress } = useCreatePost();
   const drafts = usePostDraftStore((state) => state.drafts);
   const hasHydrated = usePostDraftStore((state) => state.hasHydrated);
   const saveDraft = usePostDraftStore((state) => state.saveDraft);
@@ -250,7 +250,7 @@ export default function CreatePostPage() {
     if (!submission.media) return;
 
     try {
-      const post = await publishPost({
+      await createPost({
         file: submission.media,
         somaId: submission.somaId,
         title: submission.title,
@@ -262,8 +262,8 @@ export default function CreatePostPage() {
         await deleteDraftMedia(activeDraftId).catch(() => undefined);
       }
 
-      toast.success("Your work is with the Soma for review.");
-      router.push(`/s/${post.soma.slug}/posts/${post.id}`);
+      toast.success("Your work is being prepared for publication.");
+      router.push("/studio");
     } catch (error) {
       const message =
         error instanceof Error
@@ -527,7 +527,8 @@ export default function CreatePostPage() {
                   Ready to share
                 </p>
                 <p className="mt-2 text-sm leading-6 text-muted-foreground">
-                  Your work will be sent to the chosen Soma for review.
+                  Your work will be prepared and published once its media is
+                  ready.
                 </p>
               </div>
             </FieldGroup>
@@ -584,7 +585,7 @@ export default function CreatePostPage() {
                 {uploadProgress !== null
                   ? `Uploading ${uploadProgress}%`
                   : isSubmitting
-                    ? "Publishing work…"
+                    ? "Preparing work…"
                     : "Publish work"}
               </Button>
             )}

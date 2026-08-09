@@ -250,7 +250,6 @@ type Mutation {
   savePost(postId: String!): Boolean!
   setSomaMembershipRole(input: SetSomaMembershipRoleInput!): SomaMembership!
   setSomaMembershipStatus(input: SetSomaMembershipStatusInput!): SomaMembership!
-  submitPost(id: String!): PostResult!
   submitSomaCreatorApplication(input: SubmitSomaCreatorApplicationInput!): SomaCreatorApplicationResult!
   unfollow(userId: String!): FollowResponse!
   unsavePost(postId: String!): Boolean!

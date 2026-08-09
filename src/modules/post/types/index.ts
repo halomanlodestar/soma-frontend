@@ -1,7 +1,16 @@
+/** @format */
+
 export interface PostAttachment {
   originalUrl: string;
   type: string;
 }
+
+export type CreatePostInput = {
+  body: string;
+  file: File;
+  somaId: string;
+  title: string;
+};
 
 export interface Post {
   id: string;

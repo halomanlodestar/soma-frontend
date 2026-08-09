@@ -45,7 +45,7 @@ const MyStudioPostsDocument = graphql(`
 const studioTabs = [
   { value: "all", label: "All work" },
   { value: "DRAFT", label: "Drafts" },
-  { value: "SUBMITTED", label: "In review" },
+  { value: "APPROVED", label: "Preparing" },
   { value: "NEEDS_CHANGES", label: "Needs changes" },
   { value: "PUBLISHED", label: "Published" },
 ] as const;
@@ -93,7 +93,8 @@ export default function StudioPage() {
             <p className="text-xs font-medium uppercase tracking-[0.14em] text-primary">Your practice</p>
             <h1 className="mt-3 font-heading text-4xl font-medium tracking-[-0.04em] sm:text-5xl">Studio</h1>
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-              Keep track of the work you are shaping and where it is in the review process.
+              Keep track of work that is being prepared and what is already
+              published.
             </p>
           </div>
           <ShareWorkButton variant="default" />
@@ -154,12 +155,20 @@ export default function StudioPage() {
                             </CardDescription>
                           </CardHeader>
                           <CardContent>
-                            <Button asChild variant="outline" size="sm">
-                              <Link href={`/s/${post.soma.slug}/posts/${post.id}`}>
-                                <FilePenLine data-icon="inline-start" />
-                                View work
-                              </Link>
-                            </Button>
+                            {post.visibility === "PUBLISHED" ? (
+                              <Button asChild variant="outline" size="sm">
+                                <Link href={`/s/${post.soma.slug}/posts/${post.id}`}>
+                                  <FilePenLine data-icon="inline-start" />
+                                  View work
+                                </Link>
+                              </Button>
+                            ) : (
+                              <p className="text-sm text-muted-foreground">
+                                {post.visibility === "DRAFT"
+                                  ? "Media is being prepared for publication."
+                                  : "Publication is being finalized."}
+                              </p>
+                            )}
                           </CardContent>
                         </Card>
                       ))}
