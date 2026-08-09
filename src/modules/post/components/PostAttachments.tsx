@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { FileText, Paperclip } from "lucide-react";
 
+import { Media } from "@/modules/media/components";
 import type { PostAttachment } from "@/modules/post/types";
 
 interface PostAttachmentsProps {
@@ -81,10 +82,10 @@ export function PostAttachments({
             }
 
             const image = (
-              /* eslint-disable-next-line @next/next/no-img-element -- The media API does not expose the intrinsic dimensions required by next/image. */
-              <img
-                src={attachment.originalUrl}
+              <Media
+                attachment={attachment}
                 alt={label}
+                sizes="(max-width: 1280px) 100vw, 1280px"
                 className={`${className} h-auto`}
               />
             );

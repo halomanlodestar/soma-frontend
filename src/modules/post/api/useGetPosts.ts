@@ -15,6 +15,10 @@ const GET_POSTS = graphql(`
         items {
           originalUrl
           type
+          metadata {
+            width
+            height
+          }
         }
       }
       createdAt

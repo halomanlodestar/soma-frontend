@@ -15,6 +15,10 @@ const GetSomaFeedDocument = graphql(`
         items {
           originalUrl
           type
+          metadata {
+            width
+            height
+          }
         }
       }
       createdAt

@@ -161,6 +161,7 @@ type FeedMediaCollection {
 }
 
 type FeedMediaItem {
+  metadata: MediaMetadata
   originalUrl: String!
   type: String!
 }
@@ -213,8 +214,14 @@ type MediaItem {
   collectionId: String!
   createdAt: DateTime!
   id: ID!
+  metadata: MediaMetadata
   originalUrl: String!
   type: String!
+}
+
+type MediaMetadata {
+  height: Int
+  width: Int
 }
 
 enum MediaProcessingStatus {

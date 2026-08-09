@@ -1,8 +1,14 @@
 /** @format */
 
+export interface MediaMetadata {
+  width?: number | null;
+  height?: number | null;
+}
+
 export interface PostAttachment {
   originalUrl: string;
   type: string;
+  metadata?: MediaMetadata | null;
 }
 
 export type CreatePostInput = {

@@ -9,6 +9,10 @@ const GetPostAttachmentsDocument = graphql(`
       items {
         originalUrl
         type
+        metadata {
+          width
+          height
+        }
       }
     }
   }
