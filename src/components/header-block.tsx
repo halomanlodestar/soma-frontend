@@ -44,8 +44,15 @@ export default function HeaderBlock() {
   const pathname = usePathname();
   const { me, isLoading } = useGetMe();
   const { requestAuth } = useAuthPrompt();
+  const mobileNavLinks = me
+    ? [
+        ...navLinks,
+        { label: "Studio", href: "/studio" },
+        { label: "Notifications", href: "/notifications" },
+      ]
+    : navLinks;
   const mobileSelectedKey =
-    navLinks.find((link) =>
+    mobileNavLinks.find((link) =>
       link.href === "/" ? pathname === "/" : pathname.startsWith(link.href),
   )?.href ?? ((pathname.startsWith("/u/") || pathname.startsWith("/settings")) ? "account" : null);
   const mobileHighlightKey = mobileHoverKey ?? mobileSelectedKey;
@@ -304,7 +311,7 @@ export default function HeaderBlock() {
                   height: mobileIndicator.height,
                 }}
               />
-              {navLinks.map((link) => {
+              {mobileNavLinks.map((link, index) => {
                 const isHighlighted = mobileHighlightKey === link.href;
 
                 return (
@@ -320,7 +327,7 @@ export default function HeaderBlock() {
                       data-mobile-highlight={isHighlighted}
                       data-sheet-reveal
                       style={{
-                        animationDelay: link.href === "/" ? "140ms" : "210ms",
+                        animationDelay: `${140 + index * 70}ms`,
                       }}
                       onPointerEnter={(event) => {
                         setMobileHoverKey(link.href);
@@ -360,6 +367,18 @@ export default function HeaderBlock() {
                   {me ? "Settings" : "Log in"}
                 </Link>
               </SheetClose>
+              {me && (
+                <SheetClose asChild>
+                  <Link
+                    href="/create"
+                    className="relative z-10 mt-6 px-6 py-3 font-heading text-2xl font-medium tracking-[-0.04em] text-primary transition-colors hover:text-foreground focus-visible:text-foreground"
+                    data-sheet-reveal
+                    style={{ animationDelay: `${140 + mobileNavLinks.length * 70}ms` }}
+                  >
+                    Share work
+                  </Link>
+                </SheetClose>
+              )}
             </nav>
           </SheetContent>
         </Sheet>

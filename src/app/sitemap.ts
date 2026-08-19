@@ -11,9 +11,14 @@ const publicPages: Array<{
   { path: "/how-it-works", changeFrequency: "monthly", priority: 0.8 },
   { path: "/guidelines", changeFrequency: "monthly", priority: 0.7 },
   { path: "/content-policy", changeFrequency: "monthly", priority: 0.7 },
+  { path: "/copyright", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/privacy", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/terms", changeFrequency: "monthly", priority: 0.6 },
+  { path: "/cookies", changeFrequency: "monthly", priority: 0.6 },
   { path: "/accessibility", changeFrequency: "monthly", priority: 0.6 },
   { path: "/support", changeFrequency: "monthly", priority: 0.6 },
   { path: "/contact", changeFrequency: "monthly", priority: 0.5 },
+  { path: "/report", changeFrequency: "monthly", priority: 0.5 },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {

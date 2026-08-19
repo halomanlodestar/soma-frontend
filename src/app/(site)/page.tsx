@@ -2,11 +2,14 @@
 
 "use client";
 
+import Link from "next/link";
+
 import { useGetPosts } from "@/modules/post/api/useGetPosts";
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
 import { PostCard } from "@/components/common/PostCard";
 import { SomaCard } from "@/components/common/SomaCard";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 
 export default function HomeFeedPage() {
   const { data: posts, isLoading: postsLoading } = useGetPosts();
@@ -104,9 +107,9 @@ export default function HomeFeedPage() {
                 Join the sanctuary. Apply to verify your craft and share your
                 work.
               </p>
-              <button className="mt-2 text-sm font-medium text-primary-foreground underline-offset-4 hover:underline">
-                Apply for Creatorship →
-              </button>
+              <Button className="mt-2" variant="secondary" asChild>
+                <Link href="/apply">Apply for Creatorship</Link>
+              </Button>
             </div>
           </div>
         </div>

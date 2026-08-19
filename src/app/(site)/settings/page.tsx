@@ -5,7 +5,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronRight, LogOut, ShieldCheck, UserRound } from "lucide-react";
+import { ChevronRight, ClipboardCheck, LogOut, ShieldCheck, UserRound } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -72,7 +72,7 @@ export default function SettingsPage() {
       </section>
 
       <nav aria-label="Account settings" className="border-y border-border">
-        {settingsSections.map(({ href, icon: Icon, title, description }) => (
+        {[...settingsSections, ...(me?.role === "ADMIN" ? [{ href: "/admin", icon: ClipboardCheck, title: "Creator applications", description: "Review applications submitted to Soma communities." }] : [])].map(({ href, icon: Icon, title, description }) => (
           <Link key={href} href={href} className="group flex items-center gap-4 py-5 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <Icon className="size-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden="true" />
             <span className="min-w-0 flex-1"><span className="block font-medium text-foreground">{title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{description}</span></span>

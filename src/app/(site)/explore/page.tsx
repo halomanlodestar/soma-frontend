@@ -3,21 +3,24 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useQuery } from "@apollo/client/react";
-import { Compass, FileText, Search, Sparkles, UserRound } from "lucide-react";
+import { Compass, FileText, Plus, Search, Sparkles, UserRound } from "lucide-react";
 
 import { graphql } from "@/gql";
 import { PostCard } from "@/components/common/PostCard";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { SomaGridCard } from "@/modules/soma/components/SomaGridCard";
 import { useGetPosts } from "@/modules/post/api/useGetPosts";
 import { useGetSomas } from "@/modules/soma/api/useGetSomas";
 
 const SEARCH_DELAY_MS = 300;
 const MIN_SEARCH_LENGTH = 2;
+const exploreTabs = ["somas", "posts", "foryou"] as const;
 
 const ExploreAutocompleteDocument = graphql(`
   query ExploreAutocomplete($input: AutocompleteInput!) {
@@ -33,6 +36,7 @@ const ExploreAutocompleteDocument = graphql(`
 
 export default function ExplorePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [suggestionsOpen, setSuggestionsOpen] = useState(false);
@@ -60,6 +64,19 @@ export default function ExplorePage() {
   }, [autocompleteData]);
   const hasSuggestions = groups.some((group) => group.results.length > 0);
   const searchHref = `/explore/search?query=${encodeURIComponent(searchQuery.trim())}`;
+  const requestedTab = searchParams.get("tab");
+  const activeTab = exploreTabs.find((tab) => tab === requestedTab) ?? "somas";
+
+  const setActiveTab = (tab: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (tab === "somas") {
+      nextParams.delete("tab");
+    } else {
+      nextParams.set("tab", tab);
+    }
+    const query = nextParams.toString();
+    router.push(query ? `/explore?${query}` : "/explore");
+  };
 
   return (
     <main className="flex min-h-screen flex-col bg-background pb-24">
@@ -90,9 +107,9 @@ export default function ExplorePage() {
       </section>
 
       <section className="mx-auto w-full max-w-7xl px-4 pt-8 sm:px-6 sm:pt-10">
-        <Tabs defaultValue="somas" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList variant="pill" className="mb-10"><TabsTrigger value="somas">Communities</TabsTrigger><TabsTrigger value="posts">Work</TabsTrigger><TabsTrigger value="foryou">For You</TabsTrigger></TabsList>
-          <TabsContent value="somas" className="mt-0 focus-visible:outline-none focus-visible:ring-0"><div className="mb-7 flex flex-col gap-1"><h2 className="font-heading text-2xl font-medium tracking-[-0.03em]">Communities worth lingering in</h2><p className="text-sm text-muted-foreground">Find people who care about the same details you do.</p></div><div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{somasLoading ? Array.from({ length: 8 }).map((_, index) => <SomaSkeleton key={index} />) : somas?.map((soma) => <SomaGridCard key={soma.id} soma={soma} />)}</div></TabsContent>
+          <TabsContent value="somas" className="mt-0 focus-visible:outline-none focus-visible:ring-0"><div className="mb-7 flex flex-col gap-1"><h2 className="font-heading text-2xl font-medium tracking-[-0.03em]">Communities worth lingering in</h2><p className="text-sm text-muted-foreground">Find people who care about the same details you do.</p></div><div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">{somasLoading ? Array.from({ length: 8 }).map((_, index) => <SomaSkeleton key={index} />) : somas?.map((soma) => <SomaGridCard key={soma.id} soma={soma} />)}</div><section className="mt-10 flex flex-col items-start gap-4 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between"><div><h3 className="font-heading text-xl font-medium tracking-[-0.03em]">Have a focused idea?</h3><p className="mt-1 text-sm leading-6 text-muted-foreground">Start a Soma for the people and practice it brings together.</p></div><Button variant="outline" asChild><Link href="/create-community"><Plus data-icon="inline-start" />Start a Soma</Link></Button></section></TabsContent>
           <TabsContent value="posts" className="mt-0 focus-visible:outline-none focus-visible:ring-0"><div className="max-w-3xl"><div className="mb-7 flex flex-col gap-1"><h2 className="font-heading text-2xl font-medium tracking-[-0.03em]">Work being shared now</h2><p className="text-sm text-muted-foreground">A slower feed of process, practice, and finished work.</p></div>{postsLoading ? <WorkSkeleton /> : posts?.map((post) => <PostCard key={post.id} post={post} />)}</div></TabsContent>
           <TabsContent value="foryou" className="mt-0 focus-visible:outline-none focus-visible:ring-0"><div className="flex max-w-xl flex-col items-start border-y border-border py-16 text-left"><div className="mb-5 flex size-11 items-center justify-center rounded-full bg-accent"><Sparkles className="size-5 text-primary" aria-hidden="true" /></div><h3 className="font-heading text-2xl font-medium tracking-[-0.03em]">Curated for your taste</h3><p className="mt-3 max-w-sm text-sm leading-6 text-muted-foreground">Interact with more art and communities to help us tailor this feed to your exact preferences.</p></div></TabsContent>
         </Tabs>

@@ -6,6 +6,8 @@ const privatePaths = [
   "/auth/",
   "/login",
   "/settings",
+  "/admin",
+  "/apply",
   "/create",
   "/create-community",
 ];
